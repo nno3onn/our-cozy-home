@@ -46,7 +46,11 @@ export function AssetGalleryScreen({ enabled }: { enabled: boolean }) {
               />
               <AppText numberOfLines={2} variant="label">{item.nameKo}</AppText>
               <AppText tone="muted" variant="caption">{item.category} · {item.size.width}×{item.size.height}</AppText>
+              <AppText tone="muted" variant="caption">테마 {item.theme} · 형태 {item.silhouette}</AppText>
+              <AppText tone="muted" variant="caption">기준점 {item.anchor.x},{item.anchor.y} · 레이어 {item.layerBias}</AppText>
               <AppText tone="muted" variant="caption">슬롯 {item.allowedSlotIds.join(', ')}</AppText>
+              <AppText tone="muted" variant="caption">상호작용 {item.interaction}</AppText>
+              <AppText tone="muted" variant="caption">썸네일/방 키 분리됨</AppText>
               <View style={styles.badge}>
                 <AppText variant="caption">임시 에셋</AppText>
               </View>

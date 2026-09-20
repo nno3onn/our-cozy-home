@@ -16,12 +16,14 @@ type RoomCanvasProps = {
   selectedAnimalId: string | null;
   isActive: boolean;
   memoryFurniture?: { name: string; memoryId: string };
+  accentFurniture?: { name: string; color: string };
   onOpenMemory: (memoryId: string) => void;
   onSelectAnimal: (animalId: string) => void;
 };
 
 export function RoomCanvas({
   animals,
+  accentFurniture,
   isActive,
   memoryFurniture,
   onOpenMemory,
@@ -76,7 +78,7 @@ export function RoomCanvas({
           y={rugTopLeft.y}
         />
         <RoundedRect
-          color={colors.peach}
+          color={accentFurniture?.color ?? colors.peach}
           height={tableBottomRight.y - tableTopLeft.y}
           r={42 * scale}
           width={tableBottomRight.x - tableTopLeft.x}

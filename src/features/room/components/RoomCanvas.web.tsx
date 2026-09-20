@@ -15,12 +15,14 @@ type RoomCanvasProps = {
   selectedAnimalId: string | null;
   isActive: boolean;
   memoryFurniture?: { name: string; memoryId: string };
+  accentFurniture?: { name: string; color: string };
   onOpenMemory: (memoryId: string) => void;
   onSelectAnimal: (animalId: string) => void;
 };
 
 export function RoomCanvas({
   animals,
+  accentFurniture,
   isActive,
   members,
   memoryFurniture,
@@ -51,7 +53,10 @@ export function RoomCanvas({
       <View style={[styles.wall, { height: wallBottom }]} />
       <View style={[styles.floor, { top: wallBottom }]} />
       <View style={[styles.rug, { left: 220 * scale, top: 690 * scale, width: 560 * scale, height: 138 * scale }]} />
-      <View style={[styles.table, { left: 360 * scale, top: 545 * scale, width: 280 * scale, height: 195 * scale }]} />
+      <View
+        accessibilityLabel={accentFurniture ? `${accentFurniture.name} 배치됨` : undefined}
+        style={[styles.table, { backgroundColor: accentFurniture?.color ?? colors.peach, left: 360 * scale, top: 545 * scale, width: 280 * scale, height: 195 * scale }]}
+      />
       <View style={[styles.plantStem, { left: 850 * scale, top: 420 * scale, width: 32 * scale, height: 220 * scale }]} />
       <View style={[styles.plantLeaf, { left: 745 * scale, top: 330 * scale, width: 150 * scale, height: 150 * scale }]} />
       {memoryFurniture ? (
@@ -76,8 +81,8 @@ export function RoomCanvas({
                 backgroundColor: member?.pointColor ?? colors.mutedInk,
                 left: foot.x - 30 * scale,
                 top: foot.y - 68 * scale,
-                width: 60 * scale,
-                height: 60 * scale,
+                width: (animal.species === 'rabbit' ? 52 : animal.species === 'cat' ? 66 : 60) * scale,
+                height: (animal.species === 'rabbit' ? 72 : animal.species === 'cat' ? 54 : 60) * scale,
               },
             ]}
           />

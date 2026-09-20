@@ -42,6 +42,9 @@ describe('HomeScreen', () => {
     await view.findByText('4/4');
 
     await user.press(view.getByRole('button', { name: '토리 동물 선택' }));
+    await waitFor(() => {
+      expect(view.getByText('토리 · 반가워하고 있어요')).toBeOnTheScreen();
+    });
     await user.press(view.getByRole('button', { name: '놀기' }));
 
     await waitFor(() => {

@@ -63,8 +63,8 @@ export function AnimalActor({
       style={[
         styles.target,
         {
-          left: foot.x - 46,
-          top: foot.y - 108,
+          left: foot.x - 26,
+          top: foot.y - 78,
         },
       ]}
     >
@@ -88,11 +88,11 @@ export function AnimalActor({
 const styles = StyleSheet.create({
   target: {
     position: 'absolute',
-    width: 92,
-    height: 108,
+    width: 52,
+    height: 60,
     alignItems: 'center',
     justifyContent: 'flex-start',
-    paddingTop: 4,
+    paddingTop: 0,
   },
   nameTag: {
     minHeight: 28,

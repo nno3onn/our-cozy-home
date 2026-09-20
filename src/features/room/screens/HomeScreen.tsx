@@ -63,6 +63,17 @@ export function HomeScreen({
     return memory && definition ? { memoryId: memory.id, name: definition.nameKo } : undefined;
   }, [homeQuery.data, memoriesQuery.data]);
 
+  const accentFurniture = useMemo(() => {
+    const placement = homeQuery.data?.placements.find(
+      (candidate) => candidate.slotId === 'floor-accent-left',
+    );
+    const ownedItem = homeQuery.data?.ownedItems.find(
+      (candidate) => candidate.id === placement?.ownedItemId,
+    );
+    const definition = ownedItem ? ITEM_BY_ID.get(ownedItem.itemDefinitionId) : undefined;
+    return definition ? { name: definition.nameKo, color: definition.previewColor } : undefined;
+  }, [homeQuery.data]);
+
   if (homeQuery.isPending) {
     return (
       <SafeAreaView style={styles.centered}>
@@ -89,6 +100,13 @@ export function HomeScreen({
     actionMutation.mutate({ animalId: selectedAnimal.id, action });
   };
 
+  const handleAnimalPress = (animalId: string) => {
+    setSelectedAnimalId(animalId);
+    if (isActive && !actionMutation.isPending) {
+      actionMutation.mutate({ animalId, action: 'reacting' });
+    }
+  };
+
   return (
     <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content}>
@@ -110,12 +128,13 @@ export function HomeScreen({
         <View style={[styles.stage, isWideLayout && styles.stageWide]}>
           <View style={styles.roomColumn}>
             <RoomCanvas
+              accentFurniture={accentFurniture}
               animals={homeQuery.data.animals}
               isActive={isActive}
               memoryFurniture={memoryFurniture}
               members={homeQuery.data.members}
               onOpenMemory={onOpenMemory}
-              onSelectAnimal={setSelectedAnimalId}
+              onSelectAnimal={handleAnimalPress}
               selectedAnimalId={effectiveSelectedAnimalId}
             />
           </View>
