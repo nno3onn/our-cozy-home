@@ -19,7 +19,8 @@ export type RuntimeConfig =
       reason:
         | 'missing_app_mode'
         | 'invalid_app_mode'
-        | 'missing_supabase_environment';
+        | 'missing_supabase_environment'
+        | 'supabase_repository_unavailable';
     };
 
 export function resolveRuntimeConfig(environment: RuntimeEnvironment): RuntimeConfig {

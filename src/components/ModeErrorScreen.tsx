@@ -12,6 +12,8 @@ const descriptions: Record<RuntimeError, string> = {
     '실행 모드는 demo 또는 supabase만 사용할 수 있어요. 환경 변수 값을 확인해 주세요.',
   missing_supabase_environment:
     'Supabase 주소와 publishable key가 필요해요. .env 설정을 확인해 주세요.',
+  supabase_repository_unavailable:
+    'Supabase 데이터 연결은 다음 구현 단계에서 활성화돼요. 지금은 데모 모드를 명시해서 확인해 주세요.',
 };
 
 export function ModeErrorScreen({ reason }: { reason: RuntimeError }) {

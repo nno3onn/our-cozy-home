@@ -1,0 +1,49 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
+
+import { RepositoryProvider } from '@/repositories/RepositoryContext';
+import { DemoRepository } from '@/repositories/demo/DemoRepository';
+
+import { HomeScreen } from '../HomeScreen';
+
+async function renderHome() {
+  const repository = new DemoRepository();
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false, gcTime: Infinity } },
+  });
+  const view = await render(
+    <QueryClientProvider client={client}>
+      <RepositoryProvider repository={repository}>
+        <HomeScreen />
+      </RepositoryProvider>
+    </QueryClientProvider>,
+  );
+  return { repository, view };
+}
+
+describe('HomeScreen', () => {
+  it('shows four clearly identified members and animals', async () => {
+    const { view } = await renderHome();
+
+    expect(await view.findByText('4/4')).toBeOnTheScreen();
+    for (const memberName of ['나래', '민준', '유빈', '하루']) {
+      expect(view.getByText(memberName)).toBeOnTheScreen();
+    }
+    expect(view.getAllByRole('button', { name: /동물 선택$/ })).toHaveLength(4);
+    expect(view.queryByText(/온라인|접속 중/)).not.toBeOnTheScreen();
+  });
+
+  it('uses the same action controls after an animal is selected by touch', async () => {
+    const { view } = await renderHome();
+    await view.findByText('4/4');
+
+    fireEvent.press(view.getByRole('button', { name: '토리 동물 선택' }));
+    fireEvent.press(view.getByRole('button', { name: '놀기' }));
+
+    await waitFor(() => {
+      expect(view.getByText('토리 · 놀고 있어요')).toBeOnTheScreen();
+    });
+    expect(view.getByRole('button', { name: '먹기' })).toBeOnTheScreen();
+    expect(view.getByRole('button', { name: '쉬기' })).toBeOnTheScreen();
+  });
+});

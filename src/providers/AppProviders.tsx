@@ -4,7 +4,13 @@ import { useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-export function AppProviders({ children }: PropsWithChildren) {
+import type { HomeRepository } from '@/domain/repository';
+import { RepositoryProvider } from '@/repositories/RepositoryContext';
+
+export function AppProviders({
+  children,
+  repository,
+}: PropsWithChildren<{ repository?: HomeRepository }>) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -23,7 +29,15 @@ export function AppProviders({ children }: PropsWithChildren) {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+        <QueryClientProvider client={queryClient}>
+          {repository ? (
+            <RepositoryProvider repository={repository}>
+              {children}
+            </RepositoryProvider>
+          ) : (
+            children
+          )}
+        </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
