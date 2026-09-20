@@ -23,3 +23,15 @@ Object.defineProperty(require('react-native').AppState, 'currentState', {
   configurable: true,
   value: 'active',
 });
+
+const { act: reactAct } = jest.requireActual<typeof import('react')>('react');
+const { notifyManager } = jest.requireActual<typeof import('@tanstack/react-query')>(
+  '@tanstack/react-query',
+);
+
+notifyManager.setNotifyFunction((notify) => {
+  const previous = globalThis.IS_REACT_ACT_ENVIRONMENT;
+  globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+  reactAct(notify);
+  globalThis.IS_REACT_ACT_ENVIRONMENT = previous;
+});

@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { render, userEvent, waitFor } from '@testing-library/react-native';
 
 import { RepositoryProvider } from '@/repositories/RepositoryContext';
 import { DemoRepository } from '@/repositories/demo/DemoRepository';
@@ -9,7 +9,10 @@ import { HomeScreen } from '../HomeScreen';
 async function renderHome() {
   const repository = new DemoRepository();
   const client = new QueryClient({
-    defaultOptions: { queries: { retry: false, gcTime: Infinity } },
+    defaultOptions: {
+      queries: { retry: false, gcTime: Infinity },
+      mutations: { retry: false, gcTime: Infinity },
+    },
   });
   const view = await render(
     <QueryClientProvider client={client}>
@@ -35,10 +38,11 @@ describe('HomeScreen', () => {
 
   it('uses the same action controls after an animal is selected by touch', async () => {
     const { view } = await renderHome();
+    const user = userEvent.setup();
     await view.findByText('4/4');
 
-    fireEvent.press(view.getByRole('button', { name: '토리 동물 선택' }));
-    fireEvent.press(view.getByRole('button', { name: '놀기' }));
+    await user.press(view.getByRole('button', { name: '토리 동물 선택' }));
+    await user.press(view.getByRole('button', { name: '놀기' }));
 
     await waitFor(() => {
       expect(view.getByText('토리 · 놀고 있어요')).toBeOnTheScreen();
