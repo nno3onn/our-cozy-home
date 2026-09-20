@@ -1,12 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, userEvent, waitFor } from '@testing-library/react-native';
+import { fireEvent, render, userEvent, waitFor } from '@testing-library/react-native';
 
 import { RepositoryProvider } from '@/repositories/RepositoryContext';
 import { DemoRepository } from '@/repositories/demo/DemoRepository';
 
 import { HomeScreen } from '../HomeScreen';
 
-async function renderHome() {
+async function renderHome(onOpenMemory = jest.fn()) {
   const repository = new DemoRepository();
   const client = new QueryClient({
     defaultOptions: {
@@ -17,7 +17,7 @@ async function renderHome() {
   const view = await render(
     <QueryClientProvider client={client}>
       <RepositoryProvider repository={repository}>
-        <HomeScreen />
+        <HomeScreen onOpenMemory={onOpenMemory} />
       </RepositoryProvider>
     </QueryClientProvider>,
   );
@@ -49,5 +49,14 @@ describe('HomeScreen', () => {
     });
     expect(view.getByRole('button', { name: '먹기' })).toBeOnTheScreen();
     expect(view.getByRole('button', { name: '쉬기' })).toBeOnTheScreen();
+  });
+
+  it('opens the memory detail from its room furniture', async () => {
+    const onOpenMemory = jest.fn();
+    const { view } = await renderHome(onOpenMemory);
+
+    const furniture = await view.findByRole('button', { name: '소풍 라디오 추억 열기' });
+    fireEvent.press(furniture);
+    expect(onOpenMemory).toHaveBeenCalledWith('memory-river-picnic');
   });
 });

@@ -4,6 +4,8 @@ import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { AnimalAction } from '@/domain/models';
+import { ITEM_BY_ID } from '@/catalog/items';
+import { useMemories } from '@/features/memories/hooks/useMemories';
 import { colors, spacing } from '@/theme/tokens';
 import { AppText } from '@/components/ui/AppText';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -14,10 +16,11 @@ import { RoomCanvas } from '../components/RoomCanvas';
 import { homeSnapshotKey, useAnimalAction, useHomeSnapshot } from '../hooks/useHomeSnapshot';
 import { useAppLifecycle } from '../hooks/useAppLifecycle';
 
-export function HomeScreen() {
+export function HomeScreen({ onOpenMemory }: { onOpenMemory: (memoryId: string) => void }) {
   const queryClient = useQueryClient();
   const homeQuery = useHomeSnapshot();
   const actionMutation = useAnimalAction();
+  const memoriesQuery = useMemories();
   const [selectedAnimalId, setSelectedAnimalId] = useState<string | null>(null);
   const isActive = useAppLifecycle({
     onActive: () => {
@@ -35,6 +38,20 @@ export function HomeScreen() {
     () => homeQuery.data?.animals.find((animal) => animal.id === effectiveSelectedAnimalId),
     [effectiveSelectedAnimalId, homeQuery.data],
   );
+
+  const memoryFurniture = useMemo(() => {
+    const placement = homeQuery.data?.placements.find(
+      (candidate) => candidate.slotId === 'memory-shelf',
+    );
+    const ownedItem = homeQuery.data?.ownedItems.find(
+      (candidate) => candidate.id === placement?.ownedItemId,
+    );
+    const memory = memoriesQuery.data?.find(
+      (candidate) => candidate.furnitureOwnedItemId === ownedItem?.id,
+    );
+    const definition = ownedItem ? ITEM_BY_ID.get(ownedItem.itemDefinitionId) : undefined;
+    return memory && definition ? { memoryId: memory.id, name: definition.nameKo } : undefined;
+  }, [homeQuery.data, memoriesQuery.data]);
 
   if (homeQuery.isPending) {
     return (
@@ -80,7 +97,9 @@ export function HomeScreen() {
         <RoomCanvas
           animals={homeQuery.data.animals}
           isActive={isActive}
+          memoryFurniture={memoryFurniture}
           members={homeQuery.data.members}
+          onOpenMemory={onOpenMemory}
           onSelectAnimal={setSelectedAnimalId}
           selectedAnimalId={effectiveSelectedAnimalId}
         />

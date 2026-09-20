@@ -1,6 +1,6 @@
 import { Canvas, Circle, Rect, RoundedRect } from '@shopify/react-native-skia';
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import type { Animal, Member } from '@/domain/models';
 import { getAnimalAnchors, toViewport } from '@/game/room/roomLayout';
@@ -8,18 +8,23 @@ import { sortRoomActors } from '@/game/room/layers';
 import { colors } from '@/theme/tokens';
 
 import { AnimalActor } from './AnimalActor';
+import { AppText } from '@/components/ui/AppText';
 
 type RoomCanvasProps = {
   animals: Animal[];
   members: Member[];
   selectedAnimalId: string | null;
   isActive: boolean;
+  memoryFurniture?: { name: string; memoryId: string };
+  onOpenMemory: (memoryId: string) => void;
   onSelectAnimal: (animalId: string) => void;
 };
 
 export function RoomCanvas({
   animals,
   isActive,
+  memoryFurniture,
+  onOpenMemory,
   members,
   onSelectAnimal,
   selectedAnimalId,
@@ -44,6 +49,8 @@ export function RoomCanvas({
   const plantLeft = toViewport({ x: 820, y: 410 }, viewport);
   const plantRight = toViewport({ x: 900, y: 395 }, viewport);
   const scale = viewport.width / 1000;
+  const memoryTopLeft = toViewport({ x: 90, y: 445 }, viewport);
+  const memoryBottomRight = toViewport({ x: 270, y: 605 }, viewport);
 
   return (
     <View
@@ -85,6 +92,16 @@ export function RoomCanvas({
         />
         <Circle color={colors.mint} cx={plantLeft.x} cy={plantLeft.y} r={75 * scale} />
         <Circle color="#78B995" cx={plantRight.x} cy={plantRight.y} r={62 * scale} />
+        {memoryFurniture ? (
+          <RoundedRect
+            color={colors.lilac}
+            height={memoryBottomRight.y - memoryTopLeft.y}
+            r={28 * scale}
+            width={memoryBottomRight.x - memoryTopLeft.x}
+            x={memoryTopLeft.x}
+            y={memoryTopLeft.y}
+          />
+        ) : null}
         {actors.map(({ animal, anchor }) => {
           const foot = toViewport(anchor.foot, viewport);
           const member = members.find((candidate) => candidate.userId === animal.ownerId);
@@ -100,6 +117,24 @@ export function RoomCanvas({
           );
         })}
       </Canvas>
+      {memoryFurniture ? (
+        <Pressable
+          accessibilityLabel={`${memoryFurniture.name} 추억 열기`}
+          accessibilityRole="button"
+          onPress={() => onOpenMemory(memoryFurniture.memoryId)}
+          style={[
+            styles.memoryTarget,
+            {
+              left: memoryTopLeft.x,
+              top: memoryTopLeft.y,
+              width: Math.max(memoryBottomRight.x - memoryTopLeft.x, 56),
+              height: Math.max(memoryBottomRight.y - memoryTopLeft.y, 56),
+            },
+          ]}
+        >
+          <AppText variant="heading">♪</AppText>
+        </Pressable>
+      ) : null}
       {actors.map(({ animal, anchor }) => {
         const member = members.find((candidate) => candidate.userId === animal.ownerId);
         if (!member) return null;
@@ -129,5 +164,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderColor: colors.ink,
     backgroundColor: colors.cream,
+  },
+  memoryTarget: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

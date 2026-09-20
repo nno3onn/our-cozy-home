@@ -1,3 +1,8 @@
+import { useRouter } from 'expo-router';
+
 import { HomeScreen } from '@/features/room/screens/HomeScreen';
 
-export default HomeScreen;
+export default function HomeRoute() {
+  const router = useRouter();
+  return <HomeScreen onOpenMemory={(id) => router.push({ pathname: '/memories/[id]', params: { id } })} />;
+}
