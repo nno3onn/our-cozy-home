@@ -7,6 +7,7 @@ import type { AnimalAction } from '@/domain/models';
 import { ITEM_BY_ID } from '@/catalog/items';
 import { useMemories } from '@/features/memories/hooks/useMemories';
 import { colors, spacing } from '@/theme/tokens';
+import { AppButton } from '@/components/ui/AppButton';
 import { AppText } from '@/components/ui/AppText';
 import { EmptyState } from '@/components/ui/EmptyState';
 
@@ -16,7 +17,13 @@ import { RoomCanvas } from '../components/RoomCanvas';
 import { homeSnapshotKey, useAnimalAction, useHomeSnapshot } from '../hooks/useHomeSnapshot';
 import { useAppLifecycle } from '../hooks/useAppLifecycle';
 
-export function HomeScreen({ onOpenMemory }: { onOpenMemory: (memoryId: string) => void }) {
+export function HomeScreen({
+  onOpenMemory,
+  onOpenSettings,
+}: {
+  onOpenMemory: (memoryId: string) => void;
+  onOpenSettings: () => void;
+}) {
   const queryClient = useQueryClient();
   const homeQuery = useHomeSnapshot();
   const actionMutation = useAnimalAction();
@@ -93,6 +100,9 @@ export function HomeScreen({ onOpenMemory }: { onOpenMemory: (memoryId: string) 
             <AppText variant="label">{homeQuery.data.coinBalance.toLocaleString()} 코인</AppText>
           </View>
         </View>
+        <View style={styles.settingsRow}>
+          <AppButton label="설정 열기" onPress={onOpenSettings} tone="quiet" />
+        </View>
         <MemberStrip members={homeQuery.data.members} />
         <RoomCanvas
           animals={homeQuery.data.animals}
@@ -138,4 +148,5 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderColor: colors.ink,
   },
+  settingsRow: { alignItems: 'flex-end', paddingHorizontal: spacing.lg },
 });

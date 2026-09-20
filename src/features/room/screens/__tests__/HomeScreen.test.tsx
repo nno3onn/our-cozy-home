@@ -17,7 +17,7 @@ async function renderHome(onOpenMemory = jest.fn()) {
   const view = await render(
     <QueryClientProvider client={client}>
       <RepositoryProvider repository={repository}>
-        <HomeScreen onOpenMemory={onOpenMemory} />
+        <HomeScreen onOpenMemory={onOpenMemory} onOpenSettings={jest.fn()} />
       </RepositoryProvider>
     </QueryClientProvider>,
   );
