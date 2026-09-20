@@ -83,7 +83,7 @@ export const demoSeed: DemoState = {
       {
         id: 'owned-peach-cushion',
         ownerId: 'user-minjun',
-        itemDefinitionId: 'cushion-peach-shell',
+        itemDefinitionId: 'cushion-shell',
         kind: 'furniture',
         allowedSlotIds: ['floor-accent-left', 'floor-accent-right'],
         quantity: 1,
@@ -91,7 +91,7 @@ export const demoSeed: DemoState = {
       {
         id: 'owned-mint-cushion',
         ownerId: 'user-narae',
-        itemDefinitionId: 'cushion-mint-knot',
+        itemDefinitionId: 'cushion-knot',
         kind: 'furniture',
         allowedSlotIds: ['floor-accent-left', 'floor-accent-right'],
         quantity: 1,
@@ -99,7 +99,7 @@ export const demoSeed: DemoState = {
       {
         id: 'owned-memory-radio',
         ownerId: 'user-narae',
-        itemDefinitionId: 'memory-radio-picnic',
+        itemDefinitionId: 'memory-radio-picnic-radio',
         kind: 'memory',
         allowedSlotIds: ['memory-shelf'],
         quantity: 1,
