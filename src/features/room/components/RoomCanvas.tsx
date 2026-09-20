@@ -158,6 +158,8 @@ export function RoomCanvas({
 const styles = StyleSheet.create({
   room: {
     width: '100%',
+    maxWidth: 720,
+    alignSelf: 'center',
     aspectRatio: 1,
     overflow: 'hidden',
     borderTopWidth: 2,

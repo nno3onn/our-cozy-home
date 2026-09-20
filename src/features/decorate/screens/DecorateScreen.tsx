@@ -121,7 +121,7 @@ export function DecorateScreen() {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.cream },
   centered: { flex: 1, justifyContent: 'center', padding: spacing.lg, backgroundColor: colors.cream },
-  content: { gap: spacing.lg, padding: spacing.lg, paddingBottom: spacing.xxl },
+  content: { width: '100%', maxWidth: 960, alignSelf: 'center', gap: spacing.lg, padding: spacing.lg, paddingBottom: spacing.xxl },
   previewPanel: { gap: spacing.sm, padding: spacing.lg },
   preview: { width: '100%', height: 112, borderWidth: 2, borderColor: colors.ink, borderRadius: radii.lg },
   options: { flexDirection: 'row', gap: spacing.md },

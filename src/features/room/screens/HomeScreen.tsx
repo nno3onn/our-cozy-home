@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { AnimalAction } from '@/domain/models';
@@ -24,6 +24,9 @@ export function HomeScreen({
   onOpenMemory: (memoryId: string) => void;
   onOpenSettings: () => void;
 }) {
+  const { width } = useWindowDimensions();
+  const isWideLayout = width >= 900;
+  const isCompactHeader = width < 560;
   const queryClient = useQueryClient();
   const homeQuery = useHomeSnapshot();
   const actionMutation = useAnimalAction();
@@ -89,37 +92,43 @@ export function HomeScreen({
   return (
     <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.titleRow}>
+        <View style={[styles.titleRow, isCompactHeader && styles.titleRowCompact]}>
           <View>
             <AppText variant="title">{homeQuery.data.house.name}</AppText>
             <AppText tone="muted" variant="caption">
               동물의 상태는 접속 여부가 아니라 지금 하는 행동이에요.
             </AppText>
           </View>
-          <View style={styles.coin}>
-            <AppText variant="label">{homeQuery.data.coinBalance.toLocaleString()} 코인</AppText>
+          <View style={[styles.headerActions, isCompactHeader && styles.headerActionsCompact]}>
+            <View style={styles.coin}>
+              <AppText variant="label">{homeQuery.data.coinBalance.toLocaleString()} 코인</AppText>
+            </View>
+            <AppButton label="설정 열기" onPress={onOpenSettings} tone="quiet" />
           </View>
         </View>
-        <View style={styles.settingsRow}>
-          <AppButton label="설정 열기" onPress={onOpenSettings} tone="quiet" />
-        </View>
         <MemberStrip members={homeQuery.data.members} />
-        <RoomCanvas
-          animals={homeQuery.data.animals}
-          isActive={isActive}
-          memoryFurniture={memoryFurniture}
-          members={homeQuery.data.members}
-          onOpenMemory={onOpenMemory}
-          onSelectAnimal={setSelectedAnimalId}
-          selectedAnimalId={effectiveSelectedAnimalId}
-        />
-        {selectedAnimal ? (
-          <AnimalActions
-            animal={selectedAnimal}
-            disabled={!isActive || actionMutation.isPending}
-            onAction={handleAction}
-          />
-        ) : null}
+        <View style={[styles.stage, isWideLayout && styles.stageWide]}>
+          <View style={styles.roomColumn}>
+            <RoomCanvas
+              animals={homeQuery.data.animals}
+              isActive={isActive}
+              memoryFurniture={memoryFurniture}
+              members={homeQuery.data.members}
+              onOpenMemory={onOpenMemory}
+              onSelectAnimal={setSelectedAnimalId}
+              selectedAnimalId={effectiveSelectedAnimalId}
+            />
+          </View>
+          <View style={[styles.actionColumn, isWideLayout && styles.actionColumnWide]}>
+            {selectedAnimal ? (
+              <AnimalActions
+                animal={selectedAnimal}
+                disabled={!isActive || actionMutation.isPending}
+                onAction={handleAction}
+              />
+            ) : null}
+          </View>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -133,7 +142,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: colors.cream,
   },
-  content: { gap: spacing.lg, paddingBottom: spacing.xl },
+  content: {
+    width: '100%',
+    maxWidth: 1120,
+    alignSelf: 'center',
+    gap: spacing.lg,
+    paddingBottom: spacing.xxl,
+  },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -142,11 +157,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
   },
+  titleRowCompact: { flexDirection: 'column', alignItems: 'stretch' },
   coin: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderBottomWidth: 2,
     borderColor: colors.ink,
   },
-  settingsRow: { alignItems: 'flex-end', paddingHorizontal: spacing.lg },
+  headerActions: { alignItems: 'flex-end', gap: spacing.sm },
+  headerActionsCompact: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  stage: { gap: spacing.lg },
+  stageWide: { flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: spacing.lg },
+  roomColumn: { flex: 1, minWidth: 0 },
+  actionColumn: { flexShrink: 0 },
+  actionColumnWide: { width: 320, paddingTop: spacing.lg },
 });

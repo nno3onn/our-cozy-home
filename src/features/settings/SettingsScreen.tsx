@@ -83,7 +83,7 @@ export function SettingsScreen({
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.cream },
-  content: { gap: spacing.lg, padding: spacing.lg },
+  content: { width: '100%', maxWidth: 720, alignSelf: 'center', gap: spacing.lg, padding: spacing.lg },
   panel: { gap: spacing.md, padding: spacing.lg },
   confirmation: { gap: spacing.sm },
   row: { flexDirection: 'row', gap: spacing.sm },

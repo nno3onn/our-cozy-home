@@ -50,6 +50,6 @@ export function MemoriesScreen({ onOpenMemory }: { onOpenMemory: (memoryId: stri
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.cream },
   centered: { flex: 1, justifyContent: 'center', padding: spacing.lg, backgroundColor: colors.cream },
-  content: { gap: spacing.md, padding: spacing.lg, paddingBottom: spacing.xxl },
+  content: { width: '100%', maxWidth: 840, alignSelf: 'center', gap: spacing.md, padding: spacing.lg, paddingBottom: spacing.xxl },
   card: { gap: spacing.sm, padding: spacing.lg },
 });

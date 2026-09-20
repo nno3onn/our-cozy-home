@@ -45,6 +45,6 @@ export function MemoryDetailScreen({ memoryId }: { memoryId: string }) {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.cream },
   centered: { flex: 1, justifyContent: 'center', padding: spacing.lg, backgroundColor: colors.cream },
-  content: { gap: spacing.md, padding: spacing.lg },
+  content: { width: '100%', maxWidth: 760, alignSelf: 'center', gap: spacing.md, padding: spacing.lg },
   card: { gap: spacing.md, padding: spacing.lg },
 });

@@ -61,7 +61,7 @@ export function AssetGalleryScreen({ enabled }: { enabled: boolean }) {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.cream },
   centered: { flex: 1, justifyContent: 'center', padding: spacing.lg, backgroundColor: colors.cream },
-  content: { gap: spacing.sm, padding: spacing.lg, paddingBottom: spacing.xxl },
+  content: { width: '100%', maxWidth: 1120, alignSelf: 'center', gap: spacing.sm, padding: spacing.lg, paddingBottom: spacing.xxl },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginTop: spacing.md },
   card: { width: '47%', gap: spacing.xs, padding: spacing.md },
   preview: { width: '100%', height: 88, borderRadius: radii.md, borderWidth: 2, borderColor: colors.ink },
