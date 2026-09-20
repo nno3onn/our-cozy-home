@@ -120,4 +120,6 @@ migration으로 관리한다. 적용된 파일을 덮어쓰지 않는다. 앱 �
 - Expo Development Build 기반 딥 링크·푸시·재실행·이미지 검증
 - 실제 Supabase 계정 A/B 기반 입주→추억→탈퇴→접근 차단 시나리오
 
-웹 미리보기, 데모 모드와 실제 iOS·Android 검증 결과를 서로 구분해 기록한다.
+웹 앱, 데모 모드와 실제 iOS·Android 검증 결과를 서로 구분해 기록한다. 웹에서는
+CanvasKit 의존 없이 같은 논리 좌표·터치 계약을 따르는 View 렌더러를 사용하고,
+iOS·Android 방은 Skia를 사용한다.
