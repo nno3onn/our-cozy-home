@@ -1,5 +1,10 @@
--- Domain seed data starts in the next migration Issue.
--- Keeping this transaction intentionally empty makes `supabase db reset`
--- repeatable before domain tables exist.
 begin;
+
+insert into public.app_settings (key, value)
+values
+  ('house_capacity', '4'::jsonb),
+  ('attendance_daily_reward', '100'::jsonb)
+on conflict (key) do update
+set value = excluded.value;
+
 commit;
