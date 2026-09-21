@@ -10,7 +10,7 @@ import { createRepository } from '@/repositories/createRepository';
 
 const runtimeConfig = readRuntimeConfig();
 const repositoryResult = runtimeConfig.ok
-  ? createRepository(runtimeConfig.mode)
+  ? createRepository(runtimeConfig)
   : null;
 
 export default function RootLayout() {
@@ -20,7 +20,7 @@ export default function RootLayout() {
       {!runtimeConfig.ok ? (
         <ModeErrorScreen reason={runtimeConfig.reason} />
       ) : repositoryResult && !repositoryResult.ok ? (
-        <ModeErrorScreen reason="supabase_repository_unavailable" />
+        <ModeErrorScreen reason={repositoryResult.reason} />
       ) : (
         <View style={{ flex: 1 }}>
           {runtimeConfig.mode === 'demo' ? <DemoBanner /> : null}

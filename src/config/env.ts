@@ -20,7 +20,7 @@ export type RuntimeConfig =
         | 'missing_app_mode'
         | 'invalid_app_mode'
         | 'missing_supabase_environment'
-        | 'supabase_repository_unavailable';
+        | 'supabase_client_initialization_failed';
     };
 
 export function resolveRuntimeConfig(environment: RuntimeEnvironment): RuntimeConfig {
