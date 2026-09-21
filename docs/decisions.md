@@ -135,3 +135,13 @@
   React Native View 도형 렌더러를 사용한다.
 - 이유: 웹을 정식 실행 대상으로 제공하면서 CanvasKit 초기화 실패를 피하고, 웹 검증을
   네이티브 Skia 검증으로 잘못 간주하지 않기 위해서다.
+
+## D-016 원격 Supabase 우선 연결
+
+- 상태: 채택
+- 결정: 로컬 Docker daemon을 사용할 수 없는 개발 환경에서는 서울 리전 원격 Supabase
+  프로젝트를 앱·통합 검증의 우선 대상으로 사용한다. 로컬 CLI 설정과 migration 파일은
+  계속 유지하며, Docker가 제공되는 환경에서의 local reset·SQL test는 별도 검증으로
+  남긴다.
+- 이유: 실제 Auth·RLS·Storage·동시성 검증을 Docker 설치에 막히지 않고 진행하되,
+  로컬 재현 가능성 자체를 포기하지 않기 위해서다.

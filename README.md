@@ -116,6 +116,13 @@ EXPO_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
 EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=YOUR_PUBLISHABLE_KEY
 ```
 
+Docker를 사용하지 않는 경우에도 원격 프로젝트로 개발을 진행할 수 있다. Supabase
+Dashboard의 **Connect** 또는 **Project Settings → API Keys**에서 Project URL과
+publishable key를 확인해 위 값에 넣는다. 이 저장소의 원격 프로젝트는 서울 리전에
+생성되어 있으며, 프로젝트 ref는 `cbyikdryogktctskvzzk`이다. 키는 저장소에 커밋하지
+않는다. 원격 연결은 로컬 `supabase start/reset/test`의 대체 검증이 아니므로, 실제로
+검증한 범위는 `docs/progress.md`에 구분해 기록한다.
+
 publishable key만 앱에 둘 수 있다. service role key, 알림 공급자 자격 증명 및 기타
 서버 비밀은 앱 번들에 넣지 않는다. 생성 타입은 local DB가 실행 중일 때 다음 명령으로
 갱신한다.

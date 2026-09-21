@@ -22,6 +22,8 @@
 - 완료: 상점 8개 카테고리 × 5종과 추억 가구 3개 종류 × 5외형의 데이터 카탈로그
 - 완료: Supabase CLI 고정, 로컬 `config.toml`, 추가 전용 migration·seed·SQL test
   디렉터리와 명시적 실행 명령 기반
+- 진행 중: 서울 리전 원격 Supabase 프로젝트(`our-cozy-home`)를 만들었으나, 앱 연결에
+  필요한 publishable key를 대시보드에서 아직 확인하지 못해 원격 앱 연결·검증은 보류
 - 진행 중: 첫 Supabase 스키마와 생성 Database 타입
 - 앱 코드: Expo SDK 57 기반 데모가 실행 가능
 - Supabase 도메인 스키마·함수·정책: 미구현(로컬 CLI 기반만 완료)
@@ -57,6 +59,7 @@
 | 2026-09-20 | 웹 화면·흐름 | 로컬 웹, 1280px·390px 폭 | 방·가구 교체·추억 상세 통과 | 브라우저 수동 검증이며 실기기 아님 |
 | 2026-09-20 | Supabase foundation 파일·명령 | `npm run supabase:check` | 통과 | Docker 없이 구조·환경 변수·명령 계약만 검증 |
 | 2026-09-20 | Supabase CLI 설정 파싱 | `npm run supabase:status` | Docker daemon 연결 단계까지 진행 | Docker가 설치·실행되지 않아 local status/start/reset/test 미수행 |
+| 2026-09-21 | 원격 Supabase 프로젝트 | CLI 프로젝트 목록 | 서울 리전 프로젝트 생성 확인 | publishable key 설정 및 앱·DB 연결 검증은 대시보드 로그인 후 필요 |
 
 ## 실제 환경 완료 시나리오
 
