@@ -76,9 +76,43 @@ npx eas build --profile development --platform android
 계정과 각 플랫폼 서명 설정이 필요하다. 아직 실제 기기에서 알림·딥 링크·앱 재실행을
 검증하지 않았다.
 
-## Supabase 모드 준비
+## Supabase 로컬 개발 환경
 
-향후 실제 모드는 다음 값을 사용한다.
+Supabase CLI는 `npm install`로 개발 의존성에 함께 설치된다. Node.js 20.19.4 이상이
+필요하며, 저장소의 `.nvmrc`는 검증에 사용한 Node.js 22.14.0을 지정한다. 로컬 실행에는
+Docker Desktop 또는 호환 Docker daemon이 필요하다. 앱 시작, 웹 빌드와 테스트는 DB를
+자동으로 시작·초기화·삭제하지 않는다.
+
+`nvm`을 사용한다면 먼저 `nvm use`를 실행한다. 시스템 기본 Node가 낮으면 Expo의 환경
+변수 파서가 실패할 수 있다.
+
+```bash
+npm run supabase:start
+npm run supabase:status
+npm run supabase:db:reset
+npm run supabase:test
+```
+
+`supabase:db:reset`은 명시적으로 실행할 때만 모든 로컬 migration과
+`supabase/seed.sql`을 다시 적용한다. 현재 seed는 도메인 테이블이 추가되기 전의
+빈 반복 가능 transaction이며, 기준 데이터는 이후 migration에서 추가된다.
+
+`npm run supabase:status`가 보여주는 local API URL과 publishable key를 `.env`의
+아래 값에 복사한 뒤 `EXPO_PUBLIC_APP_MODE=supabase`로 변경한다. 실제 repository와
+도메인 기능이 구현되기 전에는 Supabase 모드가 성공 화면을 가장하지 않고 안내를
+표시한다.
+
+```dotenv
+EXPO_PUBLIC_APP_MODE=supabase
+EXPO_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=LOCAL_PUBLISHABLE_KEY_FROM_STATUS
+```
+
+Docker daemon을 찾지 못하면 Docker Desktop을 시작한 뒤 `npm run supabase:start`를
+다시 실행한다. 이미 실행 중인 컨테이너와 포트가 충돌하면 `npm run supabase:status`로
+확인한 뒤 필요한 경우에만 `npm run supabase:stop`을 실행한다.
+
+실제 원격 프로젝트는 다음 값을 사용한다.
 
 ```dotenv
 EXPO_PUBLIC_APP_MODE=supabase
@@ -86,14 +120,24 @@ EXPO_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
 EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=YOUR_PUBLISHABLE_KEY
 ```
 
-publishable key만 앱에 둘 수 있다. service role key, 알림 공급자 자격 증명 및 기타
-서버 비밀은 앱 번들에 넣지 않는다. 현재 `supabase` 마이그레이션·RLS·RPC·Storage
-정책과 실제 repository는 다음 구현 단계이므로 위 값을 넣어도 서버 기능이 활성화되지
-않고 정직한 미구현 안내가 표시된다.
+Docker를 사용하지 않는 경우에도 원격 프로젝트로 개발을 진행할 수 있다. Supabase
+Dashboard의 **Connect** 또는 **Project Settings → API Keys**에서 Project URL과
+publishable key를 확인해 위 값에 넣는다. 이 저장소의 원격 프로젝트는 서울 리전에
+생성되어 있으며, 프로젝트 ref는 `cbyikdryogktctskvzzk`이다. 키는 저장소에 커밋하지
+않는다. 원격 연결은 로컬 `supabase start/reset/test`의 대체 검증이 아니므로, 실제로
+검증한 범위는 `docs/progress.md`에 구분해 기록한다.
 
-실제 연결 단계에서는 Supabase CLI로 새 프로젝트에 마이그레이션과 seed를 적용하고,
-생성된 데이터베이스 타입을 `src/types/database.generated.ts`에 반영해야 한다. 구체적인
-명령은 마이그레이션이 추가되는 단계에서 이 문서에 갱신한다.
+publishable key만 앱에 둘 수 있다. service role key, 알림 공급자 자격 증명 및 기타
+서버 비밀은 앱 번들에 넣지 않는다. 생성 타입은 local DB가 실행 중일 때 다음 명령으로
+갱신한다.
+
+```bash
+npm run supabase:types
+```
+
+모든 schema 변경은 `supabase/migrations`에 새 파일로 추가하며 적용한 migration을
+수정하지 않는다. `npm run supabase:check`는 local Docker 없이 파일 구조와 명령 계약을
+검사한다.
 
 ## 에셋 상태
 
