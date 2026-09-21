@@ -46,10 +46,10 @@
 
 ## 완료 조건
 
-- [ ] Supabase 모드가 실제 typed client를 구성한다.
-- [ ] 연결 실패가 Demo 성공으로 바뀌지 않는다.
-- [ ] repository와 Query key가 사용자/집 경계를 표현한다.
-- [ ] 기존 Demo 테스트와 앱 빌드가 유지된다.
+- [x] Supabase 모드가 실제 typed client를 구성한다.
+- [x] 연결 실패가 Demo 성공으로 바뀌지 않는다.
+- [x] repository와 Query key가 사용자/집 경계를 표현한다.
+- [x] 기존 Demo 테스트와 앱 빌드가 유지된다.
 
 ## Codex 작업 지침
 
