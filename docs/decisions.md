@@ -145,3 +145,14 @@
   남긴다.
 - 이유: 실제 Auth·RLS·Storage·동시성 검증을 Docker 설치에 막히지 않고 진행하되,
   로컬 재현 가능성 자체를 포기하지 않기 위해서다.
+
+## D-017 원격 schema 적용 이력
+
+- 상태: 채택
+- 결정: DB 비밀번호 없이 원격 기반 schema를 검증해야 하는 동안에는 Dashboard SQL
+  Editor로 추가 전용 migration의 동일 SQL을 적용한다. migration은 안전하게 재실행할 수
+  있도록 idempotent guard를 갖추고, DB 비밀번호를 준비한 뒤에는 `supabase link`와
+  migration history 정합 확인을 선행한다.
+- 이유: 실제 RLS·생성 타입 검증을 진행하면서 DB 비밀번호를 저장소·앱에 노출하지 않기
+  위해서다.
+- 비용: CLI가 적용 이력을 자동 기록하기 전까지 원격 배포 자동화는 진행하지 않는다.

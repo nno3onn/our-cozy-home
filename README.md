@@ -128,12 +128,18 @@ publishable key를 확인해 위 값에 넣는다. 이 저장소의 원격 프�
 검증한 범위는 `docs/progress.md`에 구분해 기록한다.
 
 publishable key만 앱에 둘 수 있다. service role key, 알림 공급자 자격 증명 및 기타
-서버 비밀은 앱 번들에 넣지 않는다. 생성 타입은 local DB가 실행 중일 때 다음 명령으로
-갱신한다.
+서버 비밀은 앱 번들에 넣지 않는다. 생성 타입은 현재 원격 프로젝트의 CLI 인증으로 다음
+명령을 실행해 갱신한다.
 
 ```bash
 npm run supabase:types
 ```
+
+Docker local DB가 실행 중인 경우에는 `npm run supabase:types:local`을 사용한다.
+원격 migration을 CLI로 적용하려면 별도의 DB 비밀번호로 프로젝트를 link해야 하며, 그
+비밀번호를 `.env`나 저장소에 넣지 않는다. 현재 기반 스키마는 DB 비밀번호가 없는 환경에서
+Dashboard SQL Editor로 적용됐으므로, 자동 배포를 시작하기 전에 `supabase link`와 migration
+history 정합을 한 번 확인해야 한다.
 
 모든 schema 변경은 `supabase/migrations`에 새 파일로 추가하며 적용한 migration을
 수정하지 않는다. `npm run supabase:check`는 local Docker 없이 파일 구조와 명령 계약을
