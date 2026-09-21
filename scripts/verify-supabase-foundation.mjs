@@ -18,6 +18,7 @@ const requiredPackageScripts = [
   'supabase:db:reset',
   'supabase:test',
   'supabase:types',
+  'supabase:types:local',
 ];
 
 const missingPaths = requiredPaths.filter(
@@ -68,6 +69,26 @@ for (const variable of [
 ]) {
   if (!environmentExample.includes(variable)) {
     throw new Error(`.env.example must document ${variable}.`);
+  }
+}
+
+const databaseTypes = readFileSync(
+  resolve(repositoryRoot, 'src/types/database.generated.ts'),
+  'utf8',
+);
+if (databaseTypes.includes('Record<string, never>')) {
+  throw new Error('Database types are still the empty placeholder.');
+}
+
+for (const tableName of [
+  'app_settings',
+  'profiles',
+  'houses',
+  'house_memberships',
+  'animals',
+]) {
+  if (!new RegExp(`\\b${tableName}:\\s*\\{`).test(databaseTypes)) {
+    throw new Error(`Generated database types are missing ${tableName}.`);
   }
 }
 
