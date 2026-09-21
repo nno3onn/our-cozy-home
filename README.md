@@ -78,9 +78,13 @@ npx eas build --profile development --platform android
 
 ## Supabase 로컬 개발 환경
 
-Supabase CLI는 `npm install`로 개발 의존성에 함께 설치된다. 로컬 실행에는 Docker
-Desktop 또는 호환 Docker daemon이 필요하다. 앱 시작, 웹 빌드와 테스트는 DB를
+Supabase CLI는 `npm install`로 개발 의존성에 함께 설치된다. Node.js 20.19.4 이상이
+필요하며, 저장소의 `.nvmrc`는 검증에 사용한 Node.js 22.14.0을 지정한다. 로컬 실행에는
+Docker Desktop 또는 호환 Docker daemon이 필요하다. 앱 시작, 웹 빌드와 테스트는 DB를
 자동으로 시작·초기화·삭제하지 않는다.
+
+`nvm`을 사용한다면 먼저 `nvm use`를 실행한다. 시스템 기본 Node가 낮으면 Expo의 환경
+변수 파서가 실패할 수 있다.
 
 ```bash
 npm run supabase:start

@@ -2,6 +2,9 @@
   "name": "our-cozy-home",
   "main": "expo-router/entry",
   "version": "1.0.0",
+  "engines": {
+    "node": ">=20.19.4"
+  },
   "dependencies": {
     "@expo/ui": "~57.0.19",
     "@shopify/react-native-skia": "2.6.2",

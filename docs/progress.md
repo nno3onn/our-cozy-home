@@ -22,8 +22,8 @@
 - 완료: 상점 8개 카테고리 × 5종과 추억 가구 3개 종류 × 5외형의 데이터 카탈로그
 - 완료: Supabase CLI 고정, 로컬 `config.toml`, 추가 전용 migration·seed·SQL test
   디렉터리와 명시적 실행 명령 기반
-- 진행 중: 서울 리전 원격 Supabase 프로젝트(`our-cozy-home`)를 만들었으나, 앱 연결에
-  필요한 publishable key를 대시보드에서 아직 확인하지 못해 원격 앱 연결·검증은 보류
+- 완료: 서울 리전 원격 Supabase 프로젝트(`our-cozy-home`) 생성, publishable key의
+  로컬 `.env` 설정(비추적), Auth health 및 publishable-key Data API 요청 확인
 - 진행 중: 첫 Supabase 스키마와 생성 Database 타입
 - 앱 코드: Expo SDK 57 기반 데모가 실행 가능
 - Supabase 도메인 스키마·함수·정책: 미구현(로컬 CLI 기반만 완료)
@@ -38,7 +38,7 @@
 | --- | --- | --- | --- | --- |
 | 1 | Expo 초기화, 디자인 토큰, 데모 데이터, 방 | 완료 | 통과 | 웹 1280px·390px 확인 |
 | 2 | 동물 터치, 기본 애니메이션, 파일럿 에셋 | 터치 반응 완료, 본체 애니메이션 일부 | 통과 | 실기기 미수행 |
-| 2.5 | Supabase 로컬 CLI·migration/test 기반 | 완료, 도메인 schema 전 | 정적 검사 통과 | Docker daemon 부재로 local start/reset/test 미수행 |
+| 2.5 | Supabase CLI·migration/test 기반 | 완료, 도메인 schema 전 | 정적 검사·타입·lint·Jest 통과 | 원격 health·publishable key 확인, Docker local start/reset/test는 미수행 |
 | 3 | 로그인, 집 생성, 초대·입장·퇴장·승계 | 시작 전 | 시작 전 | 미수행 |
 | 4 | 출석, 구매, 인벤토리, 공동 배치 | 데모 배치만 완료 | 배치 버전 통과 | 서버 미수행 |
 | 5 | 추억 작성, 접근 범위, 추억 가구 | 데모 열람만 완료 | 목록·상세 통과 | 서버 권한 미수행 |
@@ -60,6 +60,9 @@
 | 2026-09-20 | Supabase foundation 파일·명령 | `npm run supabase:check` | 통과 | Docker 없이 구조·환경 변수·명령 계약만 검증 |
 | 2026-09-20 | Supabase CLI 설정 파싱 | `npm run supabase:status` | Docker daemon 연결 단계까지 진행 | Docker가 설치·실행되지 않아 local status/start/reset/test 미수행 |
 | 2026-09-21 | 원격 Supabase 프로젝트 | CLI 프로젝트 목록 | 서울 리전 프로젝트 생성 확인 | publishable key 설정 및 앱·DB 연결 검증은 대시보드 로그인 후 필요 |
+| 2026-09-21 | 원격 Supabase 연결 | Dashboard API Keys, `/auth/v1/health`, Data API 미존재 테이블 요청 | Auth health 200, publishable key로 Data API가 `PGRST205` 404 응답 | 도메인 schema는 다음 Issue에서 추가 |
+| 2026-09-21 | Node 런타임·정적 검사 | Node 22.14.0, `npm run lint && npm run typecheck` | 통과 | 기본 셸 Node 19.6.0에서는 Expo lint가 지원되지 않음 |
+| 2026-09-21 | 회귀·웹 번들 | Node 22.14.0, `npm test -- --runInBand`, Supabase 환경 `npm run build:web` | 15 suites·43 tests 통과, 웹 export 통과 | Supabase repository는 다음 Issue 전까지 의도적으로 unavailable 화면 |
 
 ## 실제 환경 완료 시나리오
 
@@ -95,4 +98,4 @@ placeholder를 방에서 확인한 것과 최종 에셋 확인을 별도로 기�
 
 아직 자동 검증하지 못한 핵심 규칙은 출석·구매 동시성, 활성 집 하나, 정원 초과,
 탈퇴 후 RLS 차단, 추억 가구 멱등 생성, 같은 날짜 학습 중복 방지와 타 사용자 비공개
-데이터 차단이다. PostgreSQL 마이그레이션과 로컬 Supabase 환경이 추가된 뒤 검증한다.
+데이터 차단이다. PostgreSQL 마이그레이션과 원격 Supabase 환경이 추가된 뒤 검증한다.

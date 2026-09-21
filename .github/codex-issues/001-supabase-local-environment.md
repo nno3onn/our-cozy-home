@@ -2,7 +2,8 @@
 
 ## 목적
 
-Supabase 스키마·RPC·RLS를 누구나 같은 방식으로 재현하고 검증할 수 있는 로컬 개발 기반을 만든다.
+Supabase 스키마·RPC·RLS를 재현하고 검증할 수 있는 CLI·migration 기반을 만들고, Docker를
+사용할 수 없는 개발 환경에서는 원격 프로젝트 연결로 다음 단계의 실제 통합 검증을 시작한다.
 
 ## 배경 / 현재 상태
 
@@ -18,6 +19,8 @@ Supabase 스키마·RPC·RLS를 누구나 같은 방식으로 재현하고 검�
 - 추가 전용 migration, 멱등 seed, SQL/pgTAP 테스트 디렉터리 규칙을 정한다.
 - 로컬 start/reset/status, migration 적용, seed, 테스트 명령을 npm script와 README에 연결한다.
 - `.env.example`에 로컬/원격 연결 값을 구분해 문서화한다.
+- 원격 프로젝트의 URL·publishable key는 추적하지 않는 `.env`로만 설정하고, health와
+  publishable-key 요청으로 연결을 확인한다.
 
 ## 상세 요구사항
 
@@ -25,6 +28,8 @@ Supabase 스키마·RPC·RLS를 누구나 같은 방식으로 재현하고 검�
 - 로컬 reset은 명시적 개발 명령에서만 수행한다.
 - Node/CLI/Docker 요구사항과 실패 복구 절차를 기록한다.
 - 이후 migration은 이미 적용한 파일을 수정하지 않고 새 파일로 추가한다.
+- Docker가 없는 환경에서는 local start/reset/test를 실행하지 않고, 그 미검증 사실을
+  `docs/progress.md`에 남긴다. 이는 원격 연결 검증과 구분한다.
 
 ## 보안 / 권한
 
@@ -36,19 +41,22 @@ seed는 반복 실행해도 기준 데이터가 중복되지 않아야 한다. �
 
 ## 제외 범위
 
-도메인 테이블, 게임 RPC, 원격 Supabase 프로젝트 생성은 구현하지 않는다.
+도메인 테이블, 게임 RPC, 실제 Supabase repository, 로컬 Docker daemon 설치는 구현하지 않는다.
 
 ## 테스트
 
-- 자동화: config 유효성 검사, 로컬 reset 후 seed 재실행, 빈 SQL 테스트 스위트 실행을 확인한다.
-- 실제 환경: Docker가 있는 개발 환경에서 `supabase start`, reset, test를 실행한다. 원격 프로젝트는 검증 대상이 아니다.
+- 자동화: config 유효성 검사와 앱의 타입·lint·회귀 테스트를 실행한다.
+- 실제 환경: 원격 Supabase Auth health와 publishable key Data API 요청을 확인한다.
+- 보류 검증: Docker가 제공되는 환경에서의 `supabase start`, reset, seed 재실행, SQL test는
+  별도 운영 검증으로 남긴다.
 
 ## 완료 조건
 
-- [ ] 새 clone에서 문서의 명령만으로 로컬 Supabase가 시작된다.
-- [ ] migration과 seed가 반복 가능하다.
-- [ ] SQL 테스트 명령이 CI 친화적인 종료 코드를 반환한다.
-- [ ] README와 `docs/progress.md`에 실제 검증 결과가 기록된다.
+- [x] Supabase CLI, `config.toml`, 추가 전용 migration·seed·SQL test 디렉터리와 명령이 있다.
+- [x] 원격 프로젝트 URL·publishable key를 로컬 `.env`에만 설정하고, Auth health와
+  publishable key Data API 요청을 확인했다.
+- [x] Node 20.19.4 이상 요구사항과 Docker local 검증의 보류 상태를 README·진행 문서에 기록했다.
+- [x] 타입 검사, Node 22.14.0 lint, 43개 Jest 회귀 테스트와 Supabase 환경 웹 export를 실행했다.
 
 ## Codex 작업 지침
 
