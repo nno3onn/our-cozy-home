@@ -11,6 +11,7 @@ import { Panel } from '@/components/ui/Panel';
 import { useDecorateStore } from '@/features/decorate/store/useDecorateStore';
 import { useRepository } from '@/repositories/RepositoryContext';
 import { colors, spacing } from '@/theme/tokens';
+import { useOptionalAuth } from '@/auth/AuthProvider';
 
 type ResettableRepository = HomeRepository & { resetDemo: () => Promise<void> };
 
@@ -30,6 +31,7 @@ export function SettingsScreen({
   const clearDecorateSelection = useDecorateStore((state) => state.clearSelection);
   const [confirming, setConfirming] = useState(false);
   const [resetting, setResetting] = useState(false);
+  const auth = useOptionalAuth();
 
   const resetDemo = async () => {
     if (mode !== 'demo' || !canResetDemo(repository)) return;
@@ -55,6 +57,14 @@ export function SettingsScreen({
             연결 실패 시 다른 모드로 자동 전환하지 않아요.
           </AppText>
         </Panel>
+
+        {mode === 'supabase' && auth ? (
+          <Panel style={styles.panel}>
+            <AppText variant="heading">계정</AppText>
+            <AppText tone="muted" variant="caption">로그아웃하면 이전 사용자 캐시가 기기에서 제거돼요.</AppText>
+            <AppButton label="로그아웃" onPress={() => void auth.signOut()} tone="danger" />
+          </Panel>
+        ) : null}
 
         {mode === 'demo' && canResetDemo(repository) ? (
           <Panel style={styles.panel}>

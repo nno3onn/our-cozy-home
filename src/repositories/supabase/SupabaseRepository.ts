@@ -19,6 +19,10 @@ import { mapAnimalRow, mapHouseRow, mapProfileRow } from './mappers';
 export class SupabaseRepository implements HomeRepository {
   constructor(private readonly client: SupabaseClient<Database>) {}
 
+  getClient(): SupabaseClient<Database> {
+    return this.client;
+  }
+
   dispose(): void {
     this.client.auth.stopAutoRefresh();
   }
