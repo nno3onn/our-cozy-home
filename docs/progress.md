@@ -39,6 +39,8 @@
   적용 및 실제 동시 수락 검증 전
 - 진행: 탈퇴·집장 승계·마지막 멤버 archive·활성 초대 취소 RPC와 확인 UI를 추가했으나,
   원격 DB 적용 및 실제 다계정 검증 전
+- 진행: 활성 멤버 기반 RLS helper·공유 read 정책·직접 history 접근 차단을 추가했으나,
+  local/remote SQL 권한 검증 전
 - 앱 코드: Expo SDK 57 기반 데모가 실행 가능
 - Supabase 도메인 스키마·함수·정책: 미구현(로컬 CLI 기반만 완료)
 - 데모 모드: 구현됨(메모리 기반이며 앱 재실행 시 초기화)
@@ -61,6 +63,7 @@
 | 3.1 | 24시간 초대 생성·미리보기 | 코드·migration 작성 완료, 원격 적용 대기 | 초대 생성·재발급 화면, 안전한 preview mapping, 로그인 후 초대 복귀 Jest 통과 | DB 비밀번호 또는 Dashboard SQL 실행 권한이 없어 RPC·권한·만료·실제 링크 검증 미수행 |
 | 3.2 | 초대 수락·정원·멱등성 | 코드·migration 작성 완료, 원격 적용 대기 | 수락 화면·request key·repository mapping Jest 통과 | Docker 부재로 SQL 동시성 test 미실행, 실제 다계정 수락 미검증 |
 | 3.3 | 집 나가기·승계·archive | 코드·migration 작성 완료, 원격 적용 대기 | 탈퇴 확인 UI·repository mapping Jest 통과 | Docker 부재로 `006_house_leave_and_succession_test.sql` 미실행, 실제 다계정 탈퇴·RLS 미검증 |
+| 4.0 | RLS/RPC hardening | 코드·migration 작성 완료, 원격 적용 대기 | 정책 checklist·pgTAP 파일 추가 | local Supabase 부재로 다중 JWT RLS test 미실행 |
 | 3 | 로그인, 집 생성, 초대·입장·퇴장·승계 | 시작 전 | 시작 전 | 미수행 |
 | 4 | 출석, 구매, 인벤토리, 공동 배치 | 데모 배치만 완료 | 배치 버전 통과 | 서버 미수행 |
 | 5 | 추억 작성, 접근 범위, 추억 가구 | 데모 열람만 완료 | 목록·상세 통과 | 서버 권한 미수행 |
