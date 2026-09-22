@@ -22,10 +22,12 @@ export function HomeScreen({
   onOpenMemory,
   onOpenSettings,
   onCreateHouse,
+  onOpenInvite,
 }: {
   onOpenMemory: (memoryId: string) => void;
   onOpenSettings: () => void;
   onCreateHouse?: () => void;
+  onOpenInvite?: () => void;
 }) {
   const { width } = useWindowDimensions();
   const isWideLayout = width >= 900;
@@ -50,6 +52,9 @@ export function HomeScreen({
   const selectedAnimal = useMemo(
     () => homeQuery.data?.animals.find((animal) => animal.id === effectiveSelectedAnimalId),
     [effectiveSelectedAnimalId, homeQuery.data],
+  );
+  const currentMember = homeQuery.data?.members.find(
+    (member) => member.userId === homeQuery.data?.currentUserId,
   );
 
   const memoryFurniture = useMemo(() => {
@@ -126,6 +131,7 @@ export function HomeScreen({
             <View style={styles.coin}>
               <AppText variant="label">{homeQuery.data.coinBalance.toLocaleString()} 코인</AppText>
             </View>
+            {currentMember?.role === 'admin' && onOpenInvite ? <AppButton label="친구 초대" onPress={onOpenInvite} tone="secondary" /> : null}
             <AppButton label="설정 열기" onPress={onOpenSettings} tone="quiet" />
           </View>
         </View>

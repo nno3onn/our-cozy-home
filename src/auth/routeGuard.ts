@@ -12,3 +12,8 @@ export function getAuthRedirect(state: RouteGuardState, segments: readonly strin
   if (state.onboarding === 'required') return segments[0] === 'onboarding' ? null : '/onboarding';
   return segments[0] === 'auth' || segments[0] === 'onboarding' ? '/' : null;
 }
+
+export function getPendingInviteRedirect(pendingInvite: string | null, segments: readonly string[]): Href | null {
+  if (!pendingInvite || segments[0] === 'invite') return null;
+  return `/invite/${pendingInvite}` as Href;
+}

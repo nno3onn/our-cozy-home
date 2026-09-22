@@ -57,6 +57,12 @@ Supabase 모드의 `AuthProvider`는 세션을 복구한 뒤 현재 사용자의
 확정 결과를 먼저 반환한다. 새 요청에서 활성 멤버십이 이미 있으면
 `already_in_house`를 반환하며, 집·admin 멤버십·요청 이력은 같은 트랜잭션에서 만든다.
 
+초대 생성은 admin 전용 `create_house_invite(reissue)` RPC가 집과 현재 멤버십을 잠근
+뒤 수행한다. 토큰 원문은 이 RPC 응답에서 한 번만 반환하고 DB에는 SHA-256 hash만
+저장한다. `preview_house_invite(token)`은 집 이름·초대한 사람·현재 활성 인원과
+상태만 반환하며, 추억·사진·기여 내용은 반환하지 않는다. 초대 링크는 만료·취소·재발급
+상태를 UI에 명확히 보이며, 실제 입주 멤버십 생성은 다음 RPC에서 최종 검증한다.
+
 ## 데이터 영역
 
 - 사용자: `profiles`, `animals`, `push_tokens`, `account_deletion_requests`

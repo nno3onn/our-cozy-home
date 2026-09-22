@@ -9,7 +9,7 @@ import { ModeErrorScreen } from '@/components/ModeErrorScreen';
 import { readRuntimeConfig } from '@/config/env';
 import { createRepository } from '@/repositories/createRepository';
 import { SupabaseRepository } from '@/repositories/supabase/SupabaseRepository';
-import { getAuthRedirect } from '@/auth/routeGuard';
+import { getAuthRedirect, getPendingInviteRedirect } from '@/auth/routeGuard';
 import { AppText } from '@/components/ui/AppText';
 import { colors, spacing } from '@/theme/tokens';
 
@@ -49,6 +49,10 @@ function AuthenticatedRoutes() {
     return <View style={styles.loading}><AppText tone="danger">프로필을 확인하지 못했어요.</AppText><AppText tone="muted">{onboardingError ?? '네트워크 상태를 확인한 뒤 다시 시도해 주세요.'}</AppText><Pressable accessibilityRole="button" accessibilityLabel="프로필 다시 확인" onPress={() => void refreshOnboarding()}><AppText variant="label">다시 시도</AppText></Pressable></View>;
   }
   if (redirect) return <Redirect href={redirect} />;
+  if (state.status === 'signed_in') {
+    const inviteRedirect = getPendingInviteRedirect(state.pendingInvite, segments);
+    if (inviteRedirect) return <Redirect href={inviteRedirect} />;
+  }
   return <Stack screenOptions={{ headerShown: false }} />;
 }
 

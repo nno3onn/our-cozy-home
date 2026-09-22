@@ -1,4 +1,4 @@
-import { getAuthRedirect } from '../routeGuard';
+import { getAuthRedirect, getPendingInviteRedirect } from '../routeGuard';
 
 describe('auth route guard', () => {
   it('sends signed-in users without onboarding to the onboarding screen', () => {
@@ -16,5 +16,10 @@ describe('auth route guard', () => {
 
   it('allows a signed-out user to inspect an invite without entering the app', () => {
     expect(getAuthRedirect({ status: 'signed_out', onboarding: 'loading' }, ['invite', 'token'])).toBeNull();
+  });
+
+  it('returns an authenticated user to their pending invite after onboarding', () => {
+    expect(getPendingInviteRedirect('invite-token', [])).toBe('/invite/invite-token');
+    expect(getPendingInviteRedirect('invite-token', ['invite', 'invite-token'])).toBeNull();
   });
 });
