@@ -1,11 +1,13 @@
 import type {
   Animal,
   AnimalAction,
+  AcceptInviteInput,
   CreateHouseInput,
   CreatedInvite,
   HabitLearningSummary,
   HouseCreation,
   InvitePreview,
+  InviteAcceptance,
   HomeSnapshot,
   MemorySummary,
   PlaceItemInput,
@@ -32,6 +34,10 @@ export class DemoRepository implements HomeRepository {
 
   async previewInvite(_token: string): Promise<InvitePreview> {
     return { houseName: this.state.home.house.name, inviterName: '나래', currentMemberCount: 4, state: 'active' };
+  }
+
+  async acceptInvite(_input: AcceptInviteInput): Promise<InviteAcceptance> {
+    throw new Error('demo_invite_acceptance_not_available');
   }
 
   async getHomeSnapshot(): Promise<HomeSnapshot> {

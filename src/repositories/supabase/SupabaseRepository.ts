@@ -4,12 +4,14 @@ import { DomainError } from '@/domain/errors';
 import type {
   Animal,
   AnimalAction,
+  AcceptInviteInput,
   CreateHouseInput,
   CreatedInvite,
   HabitLearningSummary,
   HouseCreation,
   HomeSnapshot,
   InvitePreview,
+  InviteAcceptance,
   MemorySummary,
   PlaceItemInput,
   RoomPlacement,
@@ -65,6 +67,26 @@ export class SupabaseRepository implements HomeRepository {
     const result = (data as unknown as { house_name: string | null; inviter_name: string | null; current_member_count: number | null; state: InvitePreview['state'] }[] | null)?.[0];
     if (!result) throw new DomainError('unknown', 'invite_preview_result_missing');
     return { houseName: result.house_name, inviterName: result.inviter_name, currentMemberCount: result.current_member_count, state: result.state };
+  }
+
+  async acceptInvite(input: AcceptInviteInput): Promise<InviteAcceptance> {
+    const { data, error } = await this.client.rpc('accept_house_invite' as never, {
+      p_token: input.token,
+      p_request_key: input.requestId,
+    } as never);
+    if (error) {
+      if (error.code === 'P0001' && ['house_full', 'already_in_house', 'invite_expired', 'invite_cancelled', 'invite_invalid'].includes(error.message)) {
+        throw new DomainError('conflict', error.message);
+      }
+      throw mapSupabaseError(error);
+    }
+    const result = (data as unknown as { house_id: string; house_name: string; membership_id: string; result: InviteAcceptance['result'] }[] | null)?.[0];
+    if (!result) throw new DomainError('unknown', 'invite_acceptance_result_missing');
+    return {
+      house: { id: result.house_id, name: result.house_name, capacity: 4 },
+      membershipId: result.membership_id,
+      result: result.result,
+    };
   }
 
   async getHomeSnapshot(): Promise<HomeSnapshot> {

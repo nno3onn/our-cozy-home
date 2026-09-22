@@ -81,6 +81,7 @@ describe('HomeScreen', () => {
       createHouse: jest.fn(),
       createInvite: jest.fn(),
       previewInvite: jest.fn(),
+      acceptInvite: jest.fn(),
       getHomeSnapshot: jest.fn().mockRejectedValue(new DomainError('not_found', 'active_house_not_found')),
       performAnimalAction: jest.fn(),
       placeItem: jest.fn(),

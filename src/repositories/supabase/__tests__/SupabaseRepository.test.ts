@@ -81,4 +81,22 @@ describe('SupabaseRepository', () => {
     await expect(repository.createInvite(true)).resolves.toEqual({ token: 'token-once', code: 'AB12CD34', expiresAt: '2026-09-23T00:00:00Z' });
     expect(rpc).toHaveBeenCalledWith('create_house_invite', { p_reissue: true });
   });
+
+  it('maps an idempotent invite acceptance into a joined house result', async () => {
+    const rpc = jest.fn().mockResolvedValue({
+      data: [{ house_id: 'house-2', house_name: '포근한 집', membership_id: 'membership-2', result: 'joined' }],
+      error: null,
+    });
+    const repository = new SupabaseRepository({ rpc } as unknown as SupabaseClient<Database>);
+
+    await expect(repository.acceptInvite({ token: 'invite-token', requestId: 'accept-request-1' })).resolves.toEqual({
+      house: { id: 'house-2', name: '포근한 집', capacity: 4 },
+      membershipId: 'membership-2',
+      result: 'joined',
+    });
+    expect(rpc).toHaveBeenCalledWith('accept_house_invite', {
+      p_token: 'invite-token',
+      p_request_key: 'accept-request-1',
+    });
+  });
 });

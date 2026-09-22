@@ -27,6 +27,17 @@ export type InvitePreview = {
 
 export type CreatedInvite = { token: string; code: string; expiresAt: string };
 
+export type AcceptInviteInput = {
+  token: string;
+  requestId: string;
+};
+
+export type InviteAcceptance = {
+  house: House;
+  membershipId: string;
+  result: 'joined' | 'already_joined';
+};
+
 export type Member = {
   id: string;
   userId: string;

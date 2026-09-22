@@ -63,6 +63,13 @@ Supabase 모드의 `AuthProvider`는 세션을 복구한 뒤 현재 사용자의
 상태만 반환하며, 추억·사진·기여 내용은 반환하지 않는다. 초대 링크는 만료·취소·재발급
 상태를 UI에 명확히 보이며, 실제 입주 멤버십 생성은 다음 RPC에서 최종 검증한다.
 
+`accept_house_invite(token, request_key)`는 먼저 사용자 advisory lock을 얻고, 그 뒤
+집 행·초대 행·사용자 활성 멤버십을 고정 순서로 잠근다. 요청 키가 이미 확정되면
+동일한 멤버십 결과를 반환한다. 새 요청은 서버가 현재 활성 멤버 수와 공통 정원 4를
+확인한 뒤에만 membership과 사용자별 acceptance 이력을 함께 만들며, 네 번째 멤버가
+입주하면 초대를 `full`로 종료한다. 클라이언트의 집 ID·인원·사용자 ID는 입력으로
+받지 않는다.
+
 ## 데이터 영역
 
 - 사용자: `profiles`, `animals`, `push_tokens`, `account_deletion_requests`
