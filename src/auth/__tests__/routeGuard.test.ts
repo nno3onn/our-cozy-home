@@ -13,4 +13,8 @@ describe('auth route guard', () => {
   it('keeps a signed-in user on the current screen while onboarding status is loading', () => {
     expect(getAuthRedirect({ status: 'signed_in', onboarding: 'loading' }, ['onboarding'])).toBeNull();
   });
+
+  it('allows a signed-out user to inspect an invite without entering the app', () => {
+    expect(getAuthRedirect({ status: 'signed_out', onboarding: 'loading' }, ['invite', 'token'])).toBeNull();
+  });
 });
