@@ -1,6 +1,6 @@
 # 우리집 기술 아키텍처
 
-최종 수정일: 2026-09-19
+최종 수정일: 2026-09-22
 
 제품 규칙은 [`product-spec.md`](product-spec.md), 상세 설계와 테스트 행렬은
 [`superpowers/specs/2026-09-19-woorijip-design.md`](superpowers/specs/2026-09-19-woorijip-design.md),
@@ -46,6 +46,12 @@ Skia 장면은 저장된 동물 상태와 행동 이벤트를 입력으로 받�
 보상이나 아이템 지급 사건이 아니다. 일상 이동·표정은 기기에서 처리하고 먹이,
 배치, 추억, 학습 결과처럼 영속적인 사건만 서버에 기록한다.
 
+Supabase 모드의 `AuthProvider`는 세션을 복구한 뒤 현재 사용자의 `profiles`와
+`animals`를 함께 확인한다. 둘 중 하나라도 없으면 온보딩 화면만 열 수 있고,
+둘 다 있을 때에만 이후 집 흐름으로 이동한다. 이 확인이 실패하면 빈 프로필로
+진행시키지 않고 재시도 화면을 보여준다. `complete_onboarding` RPC의 성공 결과는
+클라이언트가 아닌 DB가 소유자와 최초 동물 생성을 확정한 결과다.
+
 ## 데이터 영역
 
 - 사용자: `profiles`, `animals`, `push_tokens`, `account_deletion_requests`
@@ -86,6 +92,13 @@ Skia 장면은 저장된 동물 상태와 행동 이벤트를 입력으로 받�
 RLS는 활성 집 소속, 아이템 소유자와 추억 viewer grant를 기준으로 한다. 앱은
 잔액, 아이템 소유권과 집장 권한을 직접 갱신할 수 없다. `security definer` 함수는
 `auth.uid()`, 고정 `search_path`와 제한된 실행 권한을 사용한다.
+
+초기 프로필·동물 생성은 `complete_onboarding(display_name, point_color,
+animal_name, species)` RPC 하나로 수행한다. 함수는 `auth.uid()`만 소유자로 쓰고,
+한 사용자당 하나인 `animals.profile_id` 제약을 upsert로 사용해 네트워크 재시도에도
+두 번째 동물을 만들지 않는다. 프로필과 동물의 직접 insert는 허용하지 않으며,
+현재 단계의 RLS는 자기 행 조회·수정만 허용한다. 같은 집 구성원 간 읽기 권한은
+집·초대 보안 단계에서 추가한다.
 
 추억 viewer grant는 공유 당시 멤버십에 연결된다. 탈퇴한 직접 기여자는
 `access_ended_at` 이전 revision과 사진만 읽는다. 원본 삭제는 모든 viewer에게

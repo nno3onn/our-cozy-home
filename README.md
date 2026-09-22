@@ -3,9 +3,9 @@
 친구 최대 4명이 한 집에서 각자의 동물을 키우고, 공동 방을 꾸미며, 함께한 추억을
 가구로 남기는 Expo 기반 웹·모바일 앱이다. 웹은 데스크톱과 모바일 폭에 대응하는
 정식 실행 대상이며, iOS·Android도 같은 코드베이스에서 유지한다. 현재 저장소는
-**명시적 데모 모드의 실행 가능한 기반**까지 구현되어 있다. Supabase 모드는 환경
-검증까지만 하며 서버 repository는 아직 연결하지 않았으므로 연동 완료로 간주하면
-안 된다.
+**명시적 데모 모드의 실행 가능한 기반**과 Supabase 이메일 세션·프로필/동물
+온보딩 코드를 포함한다. 집·초대·경제·추억·버릇의 실제 서버 기능은 아직 단계별로
+구현 중이므로 전체 연동 완료로 간주하면 안 된다.
 
 제품 규칙은 [`docs/product-spec.md`](docs/product-spec.md), 기술 책임은
 [`docs/architecture.md`](docs/architecture.md), 현재 구현 범위는
@@ -94,13 +94,15 @@ npm run supabase:test
 ```
 
 `supabase:db:reset`은 명시적으로 실행할 때만 모든 로컬 migration과
-`supabase/seed.sql`을 다시 적용한다. 현재 seed는 도메인 테이블이 추가되기 전의
-빈 반복 가능 transaction이며, 기준 데이터는 이후 migration에서 추가된다.
+`supabase/seed.sql`을 다시 적용한다. 현재 seed는 공통 집 정원 `4`와 한국 날짜
+출석 보상 `100`을 반복 가능하게 넣는다. 상점·추억 가구·버릇의 실제 서버 seed는
+후속 이슈에서 추가한다.
 
 `npm run supabase:status`가 보여주는 local API URL과 publishable key를 `.env`의
-아래 값에 복사한 뒤 `EXPO_PUBLIC_APP_MODE=supabase`로 변경한다. 실제 repository와
-도메인 기능이 구현되기 전에는 Supabase 모드가 성공 화면을 가장하지 않고 안내를
-표시한다.
+아래 값에 복사한 뒤 `EXPO_PUBLIC_APP_MODE=supabase`로 변경한다. 이메일 로그인 후
+프로필·동물 온보딩을 사용하려면 `20260921000200_profile_animal_onboarding.sql`까지
+적용되어 있어야 한다. 아직 집 생성 RPC가 없으므로 온보딩 뒤 실제 집 흐름은
+다음 이슈에서 연결한다.
 
 ```dotenv
 EXPO_PUBLIC_APP_MODE=supabase
