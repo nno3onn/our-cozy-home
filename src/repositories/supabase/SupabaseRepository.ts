@@ -3,6 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { DomainError } from '@/domain/errors';
 import type {
   Animal,
+  AttendanceReward,
   AnimalAction,
   AcceptInviteInput,
   CreateHouseInput,
@@ -101,6 +102,13 @@ export class SupabaseRepository implements HomeRepository {
       successorProfileId: result.successor_profile_id,
       result: result.result,
     };
+  }
+  async claimAttendance(): Promise<AttendanceReward> {
+    const { data, error } = await this.client.rpc('claim_attendance_reward' as never, {} as never);
+    if (error) throw mapSupabaseError(error);
+    const row = (data as unknown as { balance: number; game_date: string; granted: boolean }[] | null)?.[0];
+    if (!row) throw new DomainError('unknown', 'attendance_result_missing');
+    return { balance: row.balance, gameDate: row.game_date, granted: row.granted };
   }
 
   async getHomeSnapshot(): Promise<HomeSnapshot> {

@@ -115,4 +115,9 @@ describe('SupabaseRepository', () => {
     });
     expect(rpc).toHaveBeenCalledWith('leave_house', {});
   });
+  it('maps the server-confirmed attendance balance', async () => {
+    const rpc = jest.fn().mockResolvedValue({ data: [{ balance: 100, game_date: '2026-09-23', granted: true }], error: null });
+    const repository = new SupabaseRepository({ rpc } as unknown as SupabaseClient<Database>);
+    await expect(repository.claimAttendance()).resolves.toEqual({ balance: 100, gameDate: '2026-09-23', granted: true });
+  });
 });

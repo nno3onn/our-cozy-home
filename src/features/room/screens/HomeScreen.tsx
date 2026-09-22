@@ -17,6 +17,7 @@ import { MemberStrip } from '../components/MemberStrip';
 import { RoomCanvas } from '../components/RoomCanvas';
 import { homeSnapshotKey, useAnimalAction, useHomeSnapshot } from '../hooks/useHomeSnapshot';
 import { useAppLifecycle } from '../hooks/useAppLifecycle';
+import { useRepository } from '@/repositories/RepositoryContext';
 
 export function HomeScreen({
   onOpenMemory,
@@ -33,10 +34,13 @@ export function HomeScreen({
   const isWideLayout = width >= 900;
   const isCompactHeader = width < 560;
   const queryClient = useQueryClient();
+  const repository = useRepository();
   const homeQuery = useHomeSnapshot();
   const actionMutation = useAnimalAction();
   const memoriesQuery = useMemories();
   const [selectedAnimalId, setSelectedAnimalId] = useState<string | null>(null);
+  const [attendanceMessage, setAttendanceMessage] = useState<string | null>(null);
+  const [claimingAttendance, setClaimingAttendance] = useState(false);
   const isActive = useAppLifecycle({
     onActive: () => {
       void queryClient.invalidateQueries({ queryKey: homeSnapshotKey });
@@ -116,6 +120,12 @@ export function HomeScreen({
       actionMutation.mutate({ animalId, action: 'reacting' });
     }
   };
+  const claimAttendance = async () => {
+    setClaimingAttendance(true);
+    try { const result = await repository.claimAttendance(); setAttendanceMessage(result.granted ? '오늘의 100코인을 받았어요.' : '오늘 출석은 이미 받았어요.'); await queryClient.invalidateQueries({ queryKey: homeSnapshotKey }); }
+    catch { setAttendanceMessage('출석을 확인하지 못했어요. 연결을 확인해 주세요.'); }
+    finally { setClaimingAttendance(false); }
+  };
 
   return (
     <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
@@ -131,10 +141,12 @@ export function HomeScreen({
             <View style={styles.coin}>
               <AppText variant="label">{homeQuery.data.coinBalance.toLocaleString()} 코인</AppText>
             </View>
+            <AppButton disabled={claimingAttendance} label={claimingAttendance ? '출석 확인 중…' : '오늘 출석'} onPress={() => void claimAttendance()} tone="quiet" />
             {currentMember?.role === 'admin' && onOpenInvite ? <AppButton label="친구 초대" onPress={onOpenInvite} tone="secondary" /> : null}
             <AppButton label="설정 열기" onPress={onOpenSettings} tone="quiet" />
           </View>
         </View>
+        {attendanceMessage ? <AppText style={styles.attendanceMessage} tone="muted" variant="caption">{attendanceMessage}</AppText> : null}
         <MemberStrip members={homeQuery.data.members} />
         <View style={[styles.stage, isWideLayout && styles.stageWide]}>
           <View style={styles.roomColumn}>
@@ -201,6 +213,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  attendanceMessage: { paddingHorizontal: spacing.lg },
   stage: { gap: spacing.lg },
   stageWide: { flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: spacing.lg },
   roomColumn: { flex: 1, minWidth: 0 },

@@ -44,6 +44,7 @@ export type HouseLeaveResult = {
   successorProfileId: string | null;
   result: 'left' | 'already_left';
 };
+export type AttendanceReward = { balance: number; gameDate: string; granted: boolean };
 
 export type Member = {
   id: string;

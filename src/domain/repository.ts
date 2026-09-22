@@ -1,5 +1,6 @@
 import type {
   Animal,
+  AttendanceReward,
   AnimalAction,
   AcceptInviteInput,
   CreateHouseInput,
@@ -21,6 +22,7 @@ export interface HomeRepository {
   previewInvite(token: string): Promise<InvitePreview>;
   acceptInvite(input: AcceptInviteInput): Promise<InviteAcceptance>;
   leaveHouse(): Promise<HouseLeaveResult>;
+  claimAttendance(): Promise<AttendanceReward>;
   getHomeSnapshot(): Promise<HomeSnapshot>;
   performAnimalAction(animalId: string, action: AnimalAction): Promise<Animal>;
   placeItem(input: PlaceItemInput): Promise<RoomPlacement>;

@@ -43,6 +43,8 @@
   local/remote SQL 권한 검증 전
 - 진행: private `memory-photos` bucket과 기본 거부 Storage 기반을 추가했으나,
   local/remote Storage API 검증 및 추억 viewer grant 연결 전
+- 진행: 개인 wallet·거래 원장·KST 하루 100코인 출석 RPC와 홈 실행 UI를 추가했으나,
+  local/remote DB 적용 및 동시 호출 검증 전
 - 앱 코드: Expo SDK 57 기반 데모가 실행 가능
 - Supabase 도메인 스키마·함수·정책: 미구현(로컬 CLI 기반만 완료)
 - 데모 모드: 구현됨(메모리 기반이며 앱 재실행 시 초기화)
@@ -67,6 +69,7 @@
 | 3.3 | 집 나가기·승계·archive | 코드·migration 작성 완료, 원격 적용 대기 | 탈퇴 확인 UI·repository mapping Jest 통과 | Docker 부재로 `006_house_leave_and_succession_test.sql` 미실행, 실제 다계정 탈퇴·RLS 미검증 |
 | 4.0 | RLS/RPC hardening | 코드·migration 작성 완료, 원격 적용 대기 | 정책 checklist·pgTAP 파일 추가 | local Supabase 부재로 다중 JWT RLS test 미실행 |
 | 4.1 | 비공개 추억 Storage 기반 | 코드·migration 작성 완료, 원격 적용 대기 | private bucket·deny-by-default·정책 문서 추가 | local Supabase 부재로 Storage API 테스트 미실행; viewer grant는 추억 schema 이후 구현 |
+| 5.0 | wallet·출석 | 코드·migration 작성 완료, 원격 적용 대기 | RPC mapping·홈 출석 UI Jest 통과 | local Supabase 부재로 KST·동시 출석 SQL test 미실행 |
 | 3 | 로그인, 집 생성, 초대·입장·퇴장·승계 | 시작 전 | 시작 전 | 미수행 |
 | 4 | 출석, 구매, 인벤토리, 공동 배치 | 데모 배치만 완료 | 배치 버전 통과 | 서버 미수행 |
 | 5 | 추억 작성, 접근 범위, 추억 가구 | 데모 열람만 완료 | 목록·상세 통과 | 서버 권한 미수행 |

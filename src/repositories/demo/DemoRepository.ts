@@ -1,5 +1,6 @@
 import type {
   Animal,
+  AttendanceReward,
   AnimalAction,
   AcceptInviteInput,
   CreateHouseInput,
@@ -44,6 +45,7 @@ export class DemoRepository implements HomeRepository {
   async leaveHouse(): Promise<HouseLeaveResult> {
     throw new Error('demo_house_leave_not_available');
   }
+  async claimAttendance(): Promise<AttendanceReward> { throw new Error('demo_attendance_not_available'); }
 
   async getHomeSnapshot(): Promise<HomeSnapshot> {
     return clone(this.state.home);
