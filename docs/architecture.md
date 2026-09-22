@@ -70,6 +70,13 @@ Supabase 모드의 `AuthProvider`는 세션을 복구한 뒤 현재 사용자의
 입주하면 초대를 `full`로 종료한다. 클라이언트의 집 ID·인원·사용자 ID는 입력으로
 받지 않는다.
 
+`leave_house()`는 인증된 본인의 active membership을 사용자 잠금 뒤 집 행 잠금으로
+확정한다. 활성 초대는 취소하고, 일반 멤버는 자신의 membership만 종료한다. 집장이
+나가면 남은 active membership 중 `joined_at`, ID 오름차순 첫 행을 새 admin으로
+승계한다. 남은 멤버가 없을 때만 집을 archive한다. item·room placement 테이블이
+도입되는 migration에서 탈퇴자 소유 가구의 배치를 회수하는 잠금 단계를 이 함수에
+추가한다.
+
 ## 데이터 영역
 
 - 사용자: `profiles`, `animals`, `push_tokens`, `account_deletion_requests`

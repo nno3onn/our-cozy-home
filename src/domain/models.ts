@@ -38,6 +38,13 @@ export type InviteAcceptance = {
   result: 'joined' | 'already_joined';
 };
 
+export type HouseLeaveResult = {
+  houseId: string | null;
+  houseArchived: boolean;
+  successorProfileId: string | null;
+  result: 'left' | 'already_left';
+};
+
 export type Member = {
   id: string;
   userId: string;

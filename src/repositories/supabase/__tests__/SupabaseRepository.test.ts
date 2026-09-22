@@ -99,4 +99,20 @@ describe('SupabaseRepository', () => {
       p_request_key: 'accept-request-1',
     });
   });
+
+  it('maps a leave command result without trusting a client-side role', async () => {
+    const rpc = jest.fn().mockResolvedValue({
+      data: [{ house_id: 'house-2', house_archived: false, successor_profile_id: 'profile-3', result: 'left' }],
+      error: null,
+    });
+    const repository = new SupabaseRepository({ rpc } as unknown as SupabaseClient<Database>);
+
+    await expect(repository.leaveHouse()).resolves.toEqual({
+      houseId: 'house-2',
+      houseArchived: false,
+      successorProfileId: 'profile-3',
+      result: 'left',
+    });
+    expect(rpc).toHaveBeenCalledWith('leave_house', {});
+  });
 });

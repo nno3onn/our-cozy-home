@@ -6,6 +6,7 @@ import type {
   CreatedInvite,
   HabitLearningSummary,
   HouseCreation,
+  HouseLeaveResult,
   InvitePreview,
   InviteAcceptance,
   HomeSnapshot,
@@ -38,6 +39,10 @@ export class DemoRepository implements HomeRepository {
 
   async acceptInvite(_input: AcceptInviteInput): Promise<InviteAcceptance> {
     throw new Error('demo_invite_acceptance_not_available');
+  }
+
+  async leaveHouse(): Promise<HouseLeaveResult> {
+    throw new Error('demo_house_leave_not_available');
   }
 
   async getHomeSnapshot(): Promise<HomeSnapshot> {

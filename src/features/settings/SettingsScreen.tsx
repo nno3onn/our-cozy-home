@@ -12,6 +12,7 @@ import { useDecorateStore } from '@/features/decorate/store/useDecorateStore';
 import { useRepository } from '@/repositories/RepositoryContext';
 import { colors, spacing } from '@/theme/tokens';
 import { useOptionalAuth } from '@/auth/AuthProvider';
+import { HouseLeaveControls } from '@/features/house/screens/HouseLeaveControls';
 
 type ResettableRepository = HomeRepository & { resetDemo: () => Promise<void> };
 
@@ -63,6 +64,7 @@ export function SettingsScreen({
             <AppText variant="heading">계정</AppText>
             <AppText tone="muted" variant="caption">로그아웃하면 이전 사용자 캐시가 기기에서 제거돼요.</AppText>
             <AppButton label="로그아웃" onPress={() => void auth.signOut()} tone="danger" />
+            <HouseLeaveControls onLeave={() => repository.leaveHouse()} onLeft={() => void queryClient.resetQueries()} />
           </Panel>
         ) : null}
 

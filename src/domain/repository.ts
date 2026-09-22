@@ -6,6 +6,7 @@ import type {
   CreatedInvite,
   HabitLearningSummary,
   HouseCreation,
+  HouseLeaveResult,
   HomeSnapshot,
   InvitePreview,
   InviteAcceptance,
@@ -19,6 +20,7 @@ export interface HomeRepository {
   createInvite(reissue: boolean): Promise<CreatedInvite>;
   previewInvite(token: string): Promise<InvitePreview>;
   acceptInvite(input: AcceptInviteInput): Promise<InviteAcceptance>;
+  leaveHouse(): Promise<HouseLeaveResult>;
   getHomeSnapshot(): Promise<HomeSnapshot>;
   performAnimalAction(animalId: string, action: AnimalAction): Promise<Animal>;
   placeItem(input: PlaceItemInput): Promise<RoomPlacement>;

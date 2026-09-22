@@ -9,6 +9,7 @@ import type {
   CreatedInvite,
   HabitLearningSummary,
   HouseCreation,
+  HouseLeaveResult,
   HomeSnapshot,
   InvitePreview,
   InviteAcceptance,
@@ -85,6 +86,19 @@ export class SupabaseRepository implements HomeRepository {
     return {
       house: { id: result.house_id, name: result.house_name, capacity: 4 },
       membershipId: result.membership_id,
+      result: result.result,
+    };
+  }
+
+  async leaveHouse(): Promise<HouseLeaveResult> {
+    const { data, error } = await this.client.rpc('leave_house' as never, {} as never);
+    if (error) throw mapSupabaseError(error);
+    const result = (data as unknown as { house_id: string | null; house_archived: boolean; successor_profile_id: string | null; result: HouseLeaveResult['result'] }[] | null)?.[0];
+    if (!result) throw new DomainError('unknown', 'house_leave_result_missing');
+    return {
+      houseId: result.house_id,
+      houseArchived: result.house_archived,
+      successorProfileId: result.successor_profile_id,
       result: result.result,
     };
   }
