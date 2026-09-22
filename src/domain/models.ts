@@ -25,6 +25,8 @@ export type InvitePreview = {
   state: 'active' | 'invalid' | 'cancelled' | 'expired' | 'full' | 'reissued';
 };
 
+export type CreatedInvite = { token: string; code: string; expiresAt: string };
+
 export type Member = {
   id: string;
   userId: string;

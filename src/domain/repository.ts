@@ -2,6 +2,7 @@ import type {
   Animal,
   AnimalAction,
   CreateHouseInput,
+  CreatedInvite,
   HabitLearningSummary,
   HouseCreation,
   HomeSnapshot,
@@ -13,6 +14,7 @@ import type {
 
 export interface HomeRepository {
   createHouse(input: CreateHouseInput): Promise<HouseCreation>;
+  createInvite(reissue: boolean): Promise<CreatedInvite>;
   previewInvite(token: string): Promise<InvitePreview>;
   getHomeSnapshot(): Promise<HomeSnapshot>;
   performAnimalAction(animalId: string, action: AnimalAction): Promise<Animal>;

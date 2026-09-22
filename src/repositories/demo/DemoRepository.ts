@@ -2,6 +2,7 @@ import type {
   Animal,
   AnimalAction,
   CreateHouseInput,
+  CreatedInvite,
   HabitLearningSummary,
   HouseCreation,
   InvitePreview,
@@ -23,6 +24,10 @@ export class DemoRepository implements HomeRepository {
 
   async createHouse(_input: CreateHouseInput): Promise<HouseCreation> {
     throw new Error('demo_house_creation_not_available');
+  }
+
+  async createInvite(_reissue: boolean): Promise<CreatedInvite> {
+    return { token: 'demo-invite-token', code: 'DEMO2026', expiresAt: new Date(Date.now() + 86_400_000).toISOString() };
   }
 
   async previewInvite(_token: string): Promise<InvitePreview> {

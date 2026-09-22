@@ -68,6 +68,7 @@ describe('HomeScreen', () => {
   it('guides an onboarded user without a house to the creation flow', async () => {
     const repository: HomeRepository = {
       createHouse: jest.fn(),
+      createInvite: jest.fn(),
       previewInvite: jest.fn(),
       getHomeSnapshot: jest.fn().mockRejectedValue(new DomainError('not_found', 'active_house_not_found')),
       performAnimalAction: jest.fn(),

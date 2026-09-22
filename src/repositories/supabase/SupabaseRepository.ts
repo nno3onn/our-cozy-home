@@ -5,6 +5,7 @@ import type {
   Animal,
   AnimalAction,
   CreateHouseInput,
+  CreatedInvite,
   HabitLearningSummary,
   HouseCreation,
   HomeSnapshot,
@@ -48,6 +49,14 @@ export class SupabaseRepository implements HomeRepository {
       house: { id: result.house_id, name: input.name, capacity: 4 },
       membershipId: result.membership_id,
     };
+  }
+
+  async createInvite(reissue: boolean): Promise<CreatedInvite> {
+    const { data, error } = await this.client.rpc('create_house_invite' as never, { p_reissue: reissue } as never);
+    if (error) throw mapSupabaseError(error);
+    const result = (data as unknown as { invite_token: string; invite_code: string; expires_at: string }[] | null)?.[0];
+    if (!result) throw new DomainError('unknown', 'invite_creation_result_missing');
+    return { token: result.invite_token, code: result.invite_code, expiresAt: result.expires_at };
   }
 
   async previewInvite(token: string): Promise<InvitePreview> {

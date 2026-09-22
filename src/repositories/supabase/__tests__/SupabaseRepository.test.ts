@@ -74,4 +74,11 @@ describe('SupabaseRepository', () => {
     });
     expect(rpc).toHaveBeenCalledWith('preview_house_invite', { p_token: 'untrusted-link-token' });
   });
+
+  it('returns a newly issued plaintext token only from the create command', async () => {
+    const rpc = jest.fn().mockResolvedValue({ data: [{ invite_token: 'token-once', invite_code: 'AB12CD34', expires_at: '2026-09-23T00:00:00Z' }], error: null });
+    const repository = new SupabaseRepository({ rpc } as unknown as SupabaseClient<Database>);
+    await expect(repository.createInvite(true)).resolves.toEqual({ token: 'token-once', code: 'AB12CD34', expiresAt: '2026-09-23T00:00:00Z' });
+    expect(rpc).toHaveBeenCalledWith('create_house_invite', { p_reissue: true });
+  });
 });
