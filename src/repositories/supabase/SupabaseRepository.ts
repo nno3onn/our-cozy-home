@@ -4,7 +4,9 @@ import { DomainError } from '@/domain/errors';
 import type {
   Animal,
   AnimalAction,
+  CreateHouseInput,
   HabitLearningSummary,
+  HouseCreation,
   HomeSnapshot,
   MemorySummary,
   PlaceItemInput,
@@ -25,6 +27,26 @@ export class SupabaseRepository implements HomeRepository {
 
   dispose(): void {
     this.client.auth.stopAutoRefresh();
+  }
+
+  async createHouse(input: CreateHouseInput): Promise<HouseCreation> {
+    const { data, error } = await this.client.rpc('create_house' as never, {
+      p_name: input.name,
+      p_request_key: input.requestId,
+    } as never);
+    if (error) {
+      if (error.code === 'P0001' && error.message === 'already_in_house') {
+        throw new DomainError('conflict', 'already_in_house');
+      }
+      throw mapSupabaseError(error);
+    }
+
+    const result = (data as unknown as { house_id: string; membership_id: string }[] | null)?.[0];
+    if (!result) throw new DomainError('unknown', 'house_creation_result_missing');
+    return {
+      house: { id: result.house_id, name: input.name, capacity: 4 },
+      membershipId: result.membership_id,
+    };
   }
 
   async getHomeSnapshot(): Promise<HomeSnapshot> {

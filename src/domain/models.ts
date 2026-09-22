@@ -8,6 +8,16 @@ export type House = {
   capacity: 4;
 };
 
+export type CreateHouseInput = {
+  name: string;
+  requestId: string;
+};
+
+export type HouseCreation = {
+  house: House;
+  membershipId: string;
+};
+
 export type Member = {
   id: string;
   userId: string;

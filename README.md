@@ -101,8 +101,9 @@ npm run supabase:test
 `npm run supabase:status`가 보여주는 local API URL과 publishable key를 `.env`의
 아래 값에 복사한 뒤 `EXPO_PUBLIC_APP_MODE=supabase`로 변경한다. 이메일 로그인 후
 프로필·동물 온보딩을 사용하려면 `20260921000200_profile_animal_onboarding.sql`까지
-적용되어 있어야 한다. 아직 집 생성 RPC가 없으므로 온보딩 뒤 실제 집 흐름은
-다음 이슈에서 연결한다.
+적용되어 있어야 한다. 이어서 혼자 집을 만들려면
+`20260921000300_house_creation.sql`까지 순서대로 적용한다. 이 RPC는 활성 집이 없는
+인증 사용자에게만 집과 최초 admin 멤버십을 원자적으로 만든다.
 
 ```dotenv
 EXPO_PUBLIC_APP_MODE=supabase

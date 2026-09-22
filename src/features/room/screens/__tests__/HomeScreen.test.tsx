@@ -3,6 +3,8 @@ import { fireEvent, render, userEvent, waitFor } from '@testing-library/react-na
 
 import { RepositoryProvider } from '@/repositories/RepositoryContext';
 import { DemoRepository } from '@/repositories/demo/DemoRepository';
+import { DomainError } from '@/domain/errors';
+import type { HomeRepository } from '@/domain/repository';
 
 import { HomeScreen } from '../HomeScreen';
 
@@ -61,5 +63,29 @@ describe('HomeScreen', () => {
     const furniture = await view.findByRole('button', { name: '소풍 라디오 추억 열기' });
     fireEvent.press(furniture);
     expect(onOpenMemory).toHaveBeenCalledWith('memory-river-picnic');
+  });
+
+  it('guides an onboarded user without a house to the creation flow', async () => {
+    const repository: HomeRepository = {
+      createHouse: jest.fn(),
+      getHomeSnapshot: jest.fn().mockRejectedValue(new DomainError('not_found', 'active_house_not_found')),
+      performAnimalAction: jest.fn(),
+      placeItem: jest.fn(),
+      listMemories: jest.fn().mockResolvedValue([]),
+      listHabitLearning: jest.fn().mockResolvedValue([]),
+    };
+    const onCreateHouse = jest.fn();
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const view = await render(
+      <QueryClientProvider client={client}>
+        <RepositoryProvider repository={repository}>
+          <HomeScreen onCreateHouse={onCreateHouse} onOpenMemory={jest.fn()} onOpenSettings={jest.fn()} />
+        </RepositoryProvider>
+      </QueryClientProvider>,
+    );
+
+    expect(await view.findByText('아직 우리집이 없어요')).toBeOnTheScreen();
+    await userEvent.setup().press(view.getByRole('button', { name: '새 집 만들기' }));
+    expect(onCreateHouse).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,5 +1,7 @@
 import { createSupabaseClient } from '../client';
 import { SupabaseRepository } from '../SupabaseRepository';
+import type { Database } from '@/types/database.generated';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 describe('SupabaseRepository', () => {
   beforeEach(() => jest.useFakeTimers());
@@ -28,5 +30,35 @@ describe('SupabaseRepository', () => {
     repository.dispose();
 
     expect(stopAutoRefresh).toHaveBeenCalledTimes(1);
+  });
+
+  it('maps an idempotent house creation RPC result into the domain result', async () => {
+    const rpc = jest.fn().mockResolvedValue({
+      data: [{ house_id: 'house-1', membership_id: 'membership-1' }],
+      error: null,
+    });
+    const repository = new SupabaseRepository({ rpc } as unknown as SupabaseClient<Database>);
+
+    await expect(repository.createHouse({ name: '도란도란 우리집', requestId: 'request-1' })).resolves.toEqual({
+      house: { id: 'house-1', name: '도란도란 우리집', capacity: 4 },
+      membershipId: 'membership-1',
+    });
+    expect(rpc).toHaveBeenCalledWith('create_house', {
+      p_name: '도란도란 우리집',
+      p_request_key: 'request-1',
+    });
+  });
+
+  it('exposes an existing active house as a recoverable conflict', async () => {
+    const rpc = jest.fn().mockResolvedValue({
+      data: null,
+      error: { code: 'P0001', message: 'already_in_house' },
+    });
+    const repository = new SupabaseRepository({ rpc } as unknown as SupabaseClient<Database>);
+
+    await expect(repository.createHouse({ name: '다른 집', requestId: 'request-2' })).rejects.toMatchObject({
+      code: 'conflict',
+      message: 'already_in_house',
+    });
   });
 });

@@ -52,10 +52,16 @@ Supabase 모드의 `AuthProvider`는 세션을 복구한 뒤 현재 사용자의
 진행시키지 않고 재시도 화면을 보여준다. `complete_onboarding` RPC의 성공 결과는
 클라이언트가 아닌 DB가 소유자와 최초 동물 생성을 확정한 결과다.
 
+온보딩을 마친 사용자가 아직 활성 집을 갖지 않으면 집 생성 화면으로 안내한다.
+`create_house(name, request_key)`는 사용자별 advisory lock 아래에서 동일 요청 키의
+확정 결과를 먼저 반환한다. 새 요청에서 활성 멤버십이 이미 있으면
+`already_in_house`를 반환하며, 집·admin 멤버십·요청 이력은 같은 트랜잭션에서 만든다.
+
 ## 데이터 영역
 
 - 사용자: `profiles`, `animals`, `push_tokens`, `account_deletion_requests`
 - 집: `houses`, `house_memberships`, `house_invites`, `invite_acceptances`
+- 집 생성 멱등성: `house_create_requests`
 - 경제: `attendance_rewards`, `purchase_requests`, `item_definitions`, `owned_items`
 - 방: `room_slots`, `room_placements`
 - 추억: `memories`, `memory_viewers`, `memory_contributions`,

@@ -4,6 +4,7 @@ import { ActivityIndicator, ScrollView, StyleSheet, useWindowDimensions, View } 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { AnimalAction } from '@/domain/models';
+import { DomainError } from '@/domain/errors';
 import { ITEM_BY_ID } from '@/catalog/items';
 import { useMemories } from '@/features/memories/hooks/useMemories';
 import { colors, spacing } from '@/theme/tokens';
@@ -20,9 +21,11 @@ import { useAppLifecycle } from '../hooks/useAppLifecycle';
 export function HomeScreen({
   onOpenMemory,
   onOpenSettings,
+  onCreateHouse,
 }: {
   onOpenMemory: (memoryId: string) => void;
   onOpenSettings: () => void;
+  onCreateHouse?: () => void;
 }) {
   const { width } = useWindowDimensions();
   const isWideLayout = width >= 900;
@@ -83,13 +86,15 @@ export function HomeScreen({
   }
 
   if (homeQuery.isError || !homeQuery.data) {
+    const missingActiveHouse = homeQuery.error instanceof DomainError
+      && homeQuery.error.message === 'active_house_not_found';
     return (
       <SafeAreaView style={styles.safeArea}>
         <EmptyState
-          actionLabel="다시 불러오기"
-          description="마지막으로 저장된 집을 불러오지 못했어요. 연결을 확인해 주세요."
-          onAction={() => void homeQuery.refetch()}
-          title="집 문이 잠시 닫혔어요"
+          actionLabel={missingActiveHouse ? '새 집 만들기' : '다시 불러오기'}
+          description={missingActiveHouse ? '혼자서 먼저 시작하고, 친구는 나중에 초대할 수 있어요.' : '마지막으로 저장된 집을 불러오지 못했어요. 연결을 확인해 주세요.'}
+          onAction={missingActiveHouse ? onCreateHouse : () => void homeQuery.refetch()}
+          title={missingActiveHouse ? '아직 우리집이 없어요' : '집 문이 잠시 닫혔어요'}
         />
       </SafeAreaView>
     );

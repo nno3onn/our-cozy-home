@@ -30,6 +30,8 @@
 - 완료: Supabase Auth 이메일 세션, 로그인/가입 화면, 로그아웃과 세션 기반 route guard
 - 진행: 프로필·개인 동물 온보딩 RPC와 화면·route guard·RLS migration을 추가했으나,
   원격 DB 적용 및 실제 계정 검증 전
+- 진행: 집 생성·최초 admin 멤버십·request-key 멱등성 migration과 화면을 추가했으나,
+  원격 DB 적용 및 실제 동시 요청 검증 전
 - 앱 코드: Expo SDK 57 기반 데모가 실행 가능
 - Supabase 도메인 스키마·함수·정책: 미구현(로컬 CLI 기반만 완료)
 - 데모 모드: 구현됨(메모리 기반이며 앱 재실행 시 초기화)
@@ -48,6 +50,7 @@
 | 2.7 | Supabase client·repository 기반 | 완료 | 48 Jest tests·typecheck·lint 통과 | 실제 세션/계정 데이터 read는 다음 Auth Issue에서 검증 |
 | 2.8 | Supabase Auth 세션·route guard | 완료 | 50 Jest tests·typecheck·lint·웹 export 통과 | 실제 계정 가입/로그인·네이티브 secure storage는 미수행 |
 | 2.9 | 프로필·개인 동물 온보딩 | 코드·migration 작성 완료, 원격 적용 대기 | 입력·온보딩 상태·route guard Jest 통과 | DB 비밀번호 또는 Dashboard SQL 실행 권한이 없어 RPC·RLS 실제 검증 미수행 |
+| 3.0 | 집 생성·최초 admin 멤버십 | 코드·migration 작성 완료, 원격 적용 대기 | 집 이름·repository RPC mapping·집 없음 UI Jest 통과 | DB 비밀번호 또는 Dashboard SQL 실행 권한이 없어 RPC·RLS·동시 요청 실제 검증 미수행 |
 | 3 | 로그인, 집 생성, 초대·입장·퇴장·승계 | 시작 전 | 시작 전 | 미수행 |
 | 4 | 출석, 구매, 인벤토리, 공동 배치 | 데모 배치만 완료 | 배치 버전 통과 | 서버 미수행 |
 | 5 | 추억 작성, 접근 범위, 추억 가구 | 데모 열람만 완료 | 목록·상세 통과 | 서버 권한 미수행 |
@@ -76,6 +79,7 @@
 | 2026-09-21 | 활성 집 하나 제약 | 원격 SQL Editor rollback transaction | 같은 profile의 두 번째 활성 멤버십은 `unique_violation`, 첫 멤버십 퇴장 뒤 다른 집 입주는 허용됨 | transaction은 rollback했고 Docker pgTAP SQL 파일은 미실행 |
 | 2026-09-21 | 생성 Database 타입 | `supabase gen types typescript --project-id cbyikdryogktctskvzzk` | 원격 schema 기반 `database.generated.ts` 생성 | project ref 변경 시 npm script 갱신 필요 |
 | 2026-09-22 | 온보딩 클라이언트 규칙 | `npm test -- src/auth/__tests__/onboardingValidation.test.ts src/auth/__tests__/onboardingStatus.test.ts src/auth/__tests__/routeGuard.test.ts --runInBand` | 3 suites·8 tests 통과 | RPC·RLS가 아직 원격 DB에 적용되지 않아 실제 사용자 저장은 미검증 |
+| 2026-09-22 | 집 생성 클라이언트 규칙 | House validation·screen·repository·home empty-state Jest | request key 재사용, 이미 집이 있는 사용자 안내, `1/4` 표시 기반 확인 | 실제 PostgreSQL advisory lock·RLS와 concurrent RPC는 미검증 |
 
 ## 실제 환경 완료 시나리오
 
@@ -103,10 +107,10 @@ placeholder를 방에서 확인한 것과 최종 에셋 확인을 별도로 기�
 
 ## 다음 작업
 
-1. `20260921000200_profile_animal_onboarding.sql`을 원격에 적용하고 생성 타입·실제
-   이메일 계정 온보딩을 검증한다.
-2. 집 생성과 최초 멤버십 RPC·집 선택 화면을 연결한다.
-3. 24시간 다중 사용 초대와 동시 마지막 자리 수락 RPC를 구현한다.
+1. `20260921000200_profile_animal_onboarding.sql`,
+   `20260921000300_house_creation.sql`을 원격에 순서대로 적용하고 생성 타입·실제
+   이메일 계정 온보딩·집 생성을 검증한다.
+2. 24시간 다중 사용 초대와 동시 마지막 자리 수락 RPC를 구현한다.
 4. 탈퇴·집장 승계·가구 회수를 같은 잠금 순서와 트랜잭션으로 구현한다.
 5. 이후 출석·구매, 추억 권한 스냅샷, 2인 완성, 쌍별 버릇 학습 순서로 연결한다.
 

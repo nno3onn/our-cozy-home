@@ -1,7 +1,9 @@
 import type {
   Animal,
   AnimalAction,
+  CreateHouseInput,
   HabitLearningSummary,
+  HouseCreation,
   HomeSnapshot,
   MemorySummary,
   PlaceItemInput,
@@ -17,6 +19,10 @@ function clone<T>(value: T): T {
 
 export class DemoRepository implements HomeRepository {
   private state: DemoState = clone(demoSeed);
+
+  async createHouse(_input: CreateHouseInput): Promise<HouseCreation> {
+    throw new Error('demo_house_creation_not_available');
+  }
 
   async getHomeSnapshot(): Promise<HomeSnapshot> {
     return clone(this.state.home);
