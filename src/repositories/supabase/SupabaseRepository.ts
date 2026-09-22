@@ -8,6 +8,7 @@ import type {
   HabitLearningSummary,
   HouseCreation,
   HomeSnapshot,
+  InvitePreview,
   MemorySummary,
   PlaceItemInput,
   RoomPlacement,
@@ -47,6 +48,14 @@ export class SupabaseRepository implements HomeRepository {
       house: { id: result.house_id, name: input.name, capacity: 4 },
       membershipId: result.membership_id,
     };
+  }
+
+  async previewInvite(token: string): Promise<InvitePreview> {
+    const { data, error } = await this.client.rpc('preview_house_invite' as never, { p_token: token } as never);
+    if (error) throw mapSupabaseError(error);
+    const result = (data as unknown as { house_name: string | null; inviter_name: string | null; current_member_count: number | null; state: InvitePreview['state'] }[] | null)?.[0];
+    if (!result) throw new DomainError('unknown', 'invite_preview_result_missing');
+    return { houseName: result.house_name, inviterName: result.inviter_name, currentMemberCount: result.current_member_count, state: result.state };
   }
 
   async getHomeSnapshot(): Promise<HomeSnapshot> {

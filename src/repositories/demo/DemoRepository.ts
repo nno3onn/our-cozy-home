@@ -4,6 +4,7 @@ import type {
   CreateHouseInput,
   HabitLearningSummary,
   HouseCreation,
+  InvitePreview,
   HomeSnapshot,
   MemorySummary,
   PlaceItemInput,
@@ -22,6 +23,10 @@ export class DemoRepository implements HomeRepository {
 
   async createHouse(_input: CreateHouseInput): Promise<HouseCreation> {
     throw new Error('demo_house_creation_not_available');
+  }
+
+  async previewInvite(_token: string): Promise<InvitePreview> {
+    return { houseName: this.state.home.house.name, inviterName: '나래', currentMemberCount: 4, state: 'active' };
   }
 
   async getHomeSnapshot(): Promise<HomeSnapshot> {

@@ -18,6 +18,13 @@ export type HouseCreation = {
   membershipId: string;
 };
 
+export type InvitePreview = {
+  houseName: string | null;
+  inviterName: string | null;
+  currentMemberCount: number | null;
+  state: 'active' | 'invalid' | 'cancelled' | 'expired' | 'full' | 'reissued';
+};
+
 export type Member = {
   id: string;
   userId: string;

@@ -61,4 +61,17 @@ describe('SupabaseRepository', () => {
       message: 'already_in_house',
     });
   });
+
+  it('maps only the safe invite preview fields returned by the server', async () => {
+    const rpc = jest.fn().mockResolvedValue({
+      data: [{ house_name: '도란도란 우리집', inviter_name: '모모', current_member_count: 2, state: 'active' }],
+      error: null,
+    });
+    const repository = new SupabaseRepository({ rpc } as unknown as SupabaseClient<Database>);
+
+    await expect(repository.previewInvite('untrusted-link-token')).resolves.toEqual({
+      houseName: '도란도란 우리집', inviterName: '모모', currentMemberCount: 2, state: 'active',
+    });
+    expect(rpc).toHaveBeenCalledWith('preview_house_invite', { p_token: 'untrusted-link-token' });
+  });
 });
