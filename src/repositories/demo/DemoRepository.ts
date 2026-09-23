@@ -16,6 +16,7 @@ import type {
   RoomPlacement,
 } from '@/domain/models';
 import type { HomeRepository } from '@/domain/repository';
+import { ITEM_CATALOG } from '@/catalog/items';
 
 import { demoSeed, type DemoState } from './demoSeed';
 
@@ -46,6 +47,9 @@ export class DemoRepository implements HomeRepository {
     throw new Error('demo_house_leave_not_available');
   }
   async claimAttendance(): Promise<AttendanceReward> { throw new Error('demo_attendance_not_available'); }
+  async listShopItems() {
+    return clone(ITEM_CATALOG.filter((item) => item.source === 'shop'));
+  }
 
   async getHomeSnapshot(): Promise<HomeSnapshot> {
     return clone(this.state.home);

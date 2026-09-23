@@ -1,3 +1,5 @@
+\ir seed/001_item_definitions.sql
+
 begin;
 
 insert into public.app_settings (key, value)

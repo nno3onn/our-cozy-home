@@ -120,4 +120,31 @@ describe('SupabaseRepository', () => {
     const repository = new SupabaseRepository({ rpc } as unknown as SupabaseClient<Database>);
     await expect(repository.claimAttendance()).resolves.toEqual({ balance: 100, gameDate: '2026-09-23', granted: true });
   });
+
+  it('reads active shop catalog entries and treats database prices as authoritative', async () => {
+    const queryResult = {
+      data: [{
+        id: 'cushion-shell', source: 'shop', category: 'cushion', theme: 'sunny', name_ko: '복숭아 조개 쿠션',
+        price: 180, consumable: false, thumbnail_key: 'placeholder:thumb:cushion-shell',
+        room_asset_key: 'placeholder:room:cushion-shell', silhouette: 'shell', size: { width: 140, height: 90 },
+        anchor: { x: 70, y: 82 }, allowed_slot_ids: ['floor-accent-left'], layer_bias: 2,
+        interaction: 'rest', asset_status: 'placeholder', preview_color: '#F2A98C', active: true,
+      }],
+      error: null,
+    };
+    const order: jest.Mock = jest.fn();
+    order.mockImplementationOnce(() => ({ order })).mockResolvedValueOnce(queryResult);
+    const eq: jest.Mock = jest.fn();
+    eq.mockReturnValue({ eq, order });
+    const select = jest.fn(() => ({ eq }));
+    const from = jest.fn(() => ({ select }));
+    const repository = new SupabaseRepository({ from } as unknown as SupabaseClient<Database>);
+
+    await expect(repository.listShopItems()).resolves.toEqual([
+      expect.objectContaining({ id: 'cushion-shell', price: 180, nameKo: '복숭아 조개 쿠션' }),
+    ]);
+    expect(from).toHaveBeenCalledWith('item_definitions');
+    expect(eq).toHaveBeenCalledWith('source', 'shop');
+    expect(eq).toHaveBeenCalledWith('active', true);
+  });
 });

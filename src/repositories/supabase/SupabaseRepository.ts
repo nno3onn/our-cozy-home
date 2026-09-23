@@ -4,6 +4,7 @@ import { DomainError } from '@/domain/errors';
 import type {
   Animal,
   AttendanceReward,
+  CatalogItem,
   AnimalAction,
   AcceptInviteInput,
   CreateHouseInput,
@@ -109,6 +110,36 @@ export class SupabaseRepository implements HomeRepository {
     const row = (data as unknown as { balance: number; game_date: string; granted: boolean }[] | null)?.[0];
     if (!row) throw new DomainError('unknown', 'attendance_result_missing');
     return { balance: row.balance, gameDate: row.game_date, granted: row.granted };
+  }
+
+  async listShopItems(): Promise<CatalogItem[]> {
+    const { data, error } = await this.client
+      .from('item_definitions')
+      .select('*')
+      .eq('source', 'shop')
+      .eq('active', true)
+      .order('category')
+      .order('id');
+    if (error) throw mapSupabaseError(error);
+    return data.map((row) => ({
+      id: row.id,
+      source: row.source as CatalogItem['source'],
+      category: row.category,
+      theme: row.theme,
+      nameKo: row.name_ko,
+      price: row.price,
+      consumable: row.consumable,
+      thumbnailKey: row.thumbnail_key,
+      roomAssetKey: row.room_asset_key,
+      silhouette: row.silhouette,
+      size: row.size as CatalogItem['size'],
+      anchor: row.anchor as CatalogItem['anchor'],
+      allowedSlotIds: row.allowed_slot_ids as CatalogItem['allowedSlotIds'],
+      layerBias: row.layer_bias,
+      interaction: row.interaction,
+      assetStatus: row.asset_status as CatalogItem['assetStatus'],
+      previewColor: row.preview_color,
+    }));
   }
 
   async getHomeSnapshot(): Promise<HomeSnapshot> {

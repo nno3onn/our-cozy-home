@@ -94,9 +94,10 @@ npm run supabase:test
 ```
 
 `supabase:db:reset`은 명시적으로 실행할 때만 모든 로컬 migration과
-`supabase/seed.sql`을 다시 적용한다. 현재 seed는 공통 집 정원 `4`와 한국 날짜
-출석 보상 `100`을 반복 가능하게 넣는다. 상점·추억 가구·버릇의 실제 서버 seed는
-후속 이슈에서 추가한다.
+`supabase/seed.sql`을 다시 적용한다. 공통 집 정원 `4`, 한국 날짜 출석 보상 `100`,
+40종 상점·15종 추억 가구와 고정 방 슬롯을 반복 가능하게 넣는다. 카탈로그를 바꾼 뒤에는
+`npm run catalog:seed`로 `supabase/seed/001_item_definitions.sql`을 재생성하고 drift
+테스트를 실행한다.
 
 `npm run supabase:status`가 보여주는 local API URL과 publishable key를 `.env`의
 아래 값에 복사한 뒤 `EXPO_PUBLIC_APP_MODE=supabase`로 변경한다. 이메일 로그인 후
@@ -150,6 +151,7 @@ history 정합을 한 번 확인해야 한다.
 
 ## 에셋 상태
 
-상점 40종과 추억 가구 15종의 카탈로그·크기·기준점·슬롯·상호작용 데이터는 있다.
+상점 40종과 추억 가구 15종의 카탈로그·크기·기준점·슬롯·상호작용 데이터와 DB seed는
+있다. 실제 Supabase에 migration·seed를 적용하기 전에는 실제 계정 상점이 동작하지 않는다.
 현재 시각물은 모두 코드로 그린 `placeholder`이며 최종 제작 에셋이 아니다. 데모에서
 설정 → `55종 임시 에셋 보기`로 한 번에 확인할 수 있다.

@@ -147,8 +147,9 @@ listener, Realtime, 사용자 범위 캐시와 서명 URL을 제거한다.
 migration으로 관리한다. 적용된 파일을 덮어쓰지 않는다. 앱 시작이나 배포 과정은
 원격 데이터를 자동 초기화하지 않는다.
 
-시드는 공통 설정, 40개 상점 아이템, 15개 추억 가구, 기본 버릇과 방 슬롯을
-멱등하게 생성한다. 생성 DB 타입은 `src/types/database.generated.ts`로 관리한다.
+현재 시드는 공통 설정, 40개 상점 아이템, 15개 추억 가구와 방 슬롯을 멱등하게
+생성한다. 기본 버릇 seed는 버릇 학습 schema Issue에서 추가한다. 생성 DB 타입은
+`src/types/database.generated.ts`로 관리한다.
 
 ## 검증 계층
 

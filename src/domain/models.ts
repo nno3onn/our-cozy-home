@@ -46,6 +46,26 @@ export type HouseLeaveResult = {
 };
 export type AttendanceReward = { balance: number; gameDate: string; granted: boolean };
 
+export type CatalogItem = {
+  id: string;
+  source: 'shop' | 'memory';
+  category: string;
+  theme: string;
+  nameKo: string;
+  price: number;
+  consumable: boolean;
+  thumbnailKey: string;
+  roomAssetKey: string;
+  silhouette: string;
+  size: { width: number; height: number };
+  anchor: { x: number; y: number };
+  allowedSlotIds: string[];
+  layerBias: number;
+  interaction: string;
+  assetStatus: 'placeholder' | 'final';
+  previewColor: string;
+};
+
 export type Member = {
   id: string;
   userId: string;

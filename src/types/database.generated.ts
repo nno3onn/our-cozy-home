@@ -73,6 +73,69 @@ export type Database = {
         }
         Relationships: []
       }
+      item_definitions: {
+        Row: {
+          active: boolean
+          allowed_slot_ids: Json
+          anchor: Json
+          asset_status: string
+          category: string
+          consumable: boolean
+          id: string
+          interaction: string
+          layer_bias: number
+          name_ko: string
+          preview_color: string
+          price: number
+          room_asset_key: string
+          silhouette: string
+          size: Json
+          source: string
+          theme: string
+          thumbnail_key: string
+        }
+        Insert: {
+          active?: boolean
+          allowed_slot_ids: Json
+          anchor: Json
+          asset_status: string
+          category: string
+          consumable: boolean
+          id: string
+          interaction: string
+          layer_bias: number
+          name_ko: string
+          preview_color: string
+          price: number
+          room_asset_key: string
+          silhouette: string
+          size: Json
+          source: string
+          theme: string
+          thumbnail_key: string
+        }
+        Update: {
+          active?: boolean
+          allowed_slot_ids?: Json
+          anchor?: Json
+          asset_status?: string
+          category?: string
+          consumable?: boolean
+          id?: string
+          interaction?: string
+          layer_bias?: number
+          name_ko?: string
+          preview_color?: string
+          price?: number
+          room_asset_key?: string
+          silhouette?: string
+          size?: Json
+          source?: string
+          theme?: string
+          thumbnail_key?: string
+        }
+        Relationships: []
+      }
       house_memberships: {
         Row: {
           created_at: string
@@ -183,6 +246,30 @@ export type Database = {
           id?: string
           point_color?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      room_slots: {
+        Row: {
+          created_at: string
+          id: string
+          name_ko: string
+          updated_at: string
+          zone: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          name_ko: string
+          updated_at?: string
+          zone: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name_ko?: string
+          updated_at?: string
+          zone?: string
         }
         Relationships: []
       }
