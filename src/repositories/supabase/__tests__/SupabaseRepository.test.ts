@@ -157,4 +157,11 @@ describe('SupabaseRepository', () => {
     });
     expect(rpc).toHaveBeenCalledWith('purchase_item', { p_item_definition_id: 'cushion-shell', p_request_key: '00000000-0000-4000-8000-000000000001' });
   });
+
+  it('sends the expected placement version to the server placement RPC', async () => {
+    const rpc = jest.fn().mockResolvedValue({ data: [{ placement_id: 'placement-1', owned_item_id: 'owned-1', slot_id: 'floor-accent-left', version: 2 }], error: null });
+    const repository = new SupabaseRepository({ rpc } as unknown as SupabaseClient<Database>);
+    await expect(repository.placeItem({ ownedItemId: 'owned-1', slotId: 'floor-accent-left', expectedVersion: 1 })).resolves.toEqual({ id: 'placement-1', ownedItemId: 'owned-1', slotId: 'floor-accent-left', version: 2 });
+    expect(rpc).toHaveBeenCalledWith('place_owned_item', { p_owned_item_id: 'owned-1', p_slot_id: 'floor-accent-left', p_expected_version: 1 });
+  });
 });

@@ -72,6 +72,7 @@
 | 5.0 | wallet·출석 | 코드·migration 작성 완료, 원격 적용 대기 | RPC mapping·홈 출석 UI Jest 통과 | local Supabase 부재로 KST·동시 출석 SQL test 미실행 |
 | 5.1 | 서버 카탈로그 | `item_definitions`·`room_slots`, 55종 결정적 seed, 실제 repository 상점 조회·8개 필터 화면 작성 완료 | seed drift·repository mapping·상점 UI Jest 통과 | local/remote migration·seed와 실제 Supabase 상점 조회 미검증 |
 | 5.2 | 구매·인벤토리 | 구매 요청·개인 소유 schema, 멱등 구매/결과 RPC, 상점 구매·보관함 화면 작성 완료 | demo 재시도·repository mapping·상점 조정 UI Jest 통과 | local/remote 동시 구매·RLS·새 세션 inventory 미검증 |
+| 6.0 | 공동 방 배치 | placement schema·예상 버전 RPC·탈퇴 배치 회수·실제 snapshot 조회 작성 완료 | repository RPC mapping Jest·typecheck 통과 | local/remote 동시 이동·슬롯 점유·탈퇴 경쟁·RLS 미검증 |
 | 3 | 로그인, 집 생성, 초대·입장·퇴장·승계 | 시작 전 | 시작 전 | 미수행 |
 | 4 | 출석, 구매, 인벤토리, 공동 배치 | 데모 배치만 완료 | 배치 버전 통과 | 서버 미수행 |
 | 5 | 추억 작성, 접근 범위, 추억 가구 | 데모 열람만 완료 | 목록·상세 통과 | 서버 권한 미수행 |
