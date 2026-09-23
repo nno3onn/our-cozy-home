@@ -238,6 +238,10 @@ export class SupabaseRepository implements HomeRepository {
       .eq('profile_id', authData.user.id)
       .is('recovered_at', null);
     if (ownedItemsResult.error) throw mapSupabaseError(ownedItemsResult.error);
+    const placementsResult = await (this.client.from('room_placements' as never) as any)
+      .select('*')
+      .eq('house_id', houseResult.data.id);
+    if (placementsResult.error) throw mapSupabaseError(placementsResult.error);
 
     return {
       currentUserId: authData.user.id,
@@ -262,7 +266,9 @@ export class SupabaseRepository implements HomeRepository {
         id: item.id, ownerId: item.profile_id, itemDefinitionId: item.item_definition_id, kind: item.kind,
         allowedSlotIds: [], quantity: item.quantity,
       })),
-      placements: [],
+      placements: placementsResult.data.map((placement: { id: string; owned_item_id: string; slot_id: string; version: number }) => ({
+        id: placement.id, ownedItemId: placement.owned_item_id, slotId: placement.slot_id, version: placement.version,
+      })),
     };
   }
 
@@ -270,8 +276,14 @@ export class SupabaseRepository implements HomeRepository {
     throw new DomainError('not_implemented', 'animal_action_rpc_not_implemented');
   }
 
-  async placeItem(_input: PlaceItemInput): Promise<RoomPlacement> {
-    throw new DomainError('not_implemented', 'placement_rpc_not_implemented');
+  async placeItem(input: PlaceItemInput): Promise<RoomPlacement> {
+    const { data, error } = await this.client.rpc('place_owned_item' as never, {
+      p_owned_item_id: input.ownedItemId, p_slot_id: input.slotId, p_expected_version: input.expectedVersion,
+    } as never);
+    if (error) throw mapSupabaseError(error);
+    const row = (data as { placement_id: string; owned_item_id: string; slot_id: string; version: number }[] | null)?.[0];
+    if (!row) throw new DomainError('unknown', 'placement_result_missing');
+    return { id: row.placement_id, ownedItemId: row.owned_item_id, slotId: row.slot_id, version: row.version };
   }
 
   async listMemories(): Promise<MemorySummary[]> {
