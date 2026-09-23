@@ -13,6 +13,8 @@ import type {
   HomeSnapshot,
   MemorySummary,
   PlaceItemInput,
+  PurchaseItemInput,
+  PurchaseResult,
   RoomPlacement,
 } from '@/domain/models';
 import type { HomeRepository } from '@/domain/repository';
@@ -26,6 +28,7 @@ function clone<T>(value: T): T {
 
 export class DemoRepository implements HomeRepository {
   private state: DemoState = clone(demoSeed);
+  private purchaseResults = new Map<string, PurchaseResult>();
 
   async createHouse(_input: CreateHouseInput): Promise<HouseCreation> {
     throw new Error('demo_house_creation_not_available');
@@ -49,6 +52,33 @@ export class DemoRepository implements HomeRepository {
   async claimAttendance(): Promise<AttendanceReward> { throw new Error('demo_attendance_not_available'); }
   async listShopItems() {
     return clone(ITEM_CATALOG.filter((item) => item.source === 'shop'));
+  }
+
+  async purchaseItem(input: PurchaseItemInput): Promise<PurchaseResult> {
+    const existing = this.purchaseResults.get(input.requestId);
+    if (existing) return clone(existing);
+    const definition = ITEM_CATALOG.find((item) => item.id === input.itemDefinitionId && item.source === 'shop');
+    if (!definition) throw new Error('shop_item_not_found');
+    if (this.state.home.coinBalance < definition.price) throw new Error('insufficient_coins');
+    const ownerId = this.state.home.currentUserId;
+    const ownedItemId = `owned-${input.requestId}`;
+    const existingItem = definition.consumable
+      ? this.state.home.ownedItems.find((item) => item.ownerId === ownerId && item.itemDefinitionId === definition.id)
+      : undefined;
+    if (existingItem) existingItem.quantity += 1;
+    else this.state.home.ownedItems.push({
+      id: ownedItemId, ownerId, itemDefinitionId: definition.id,
+      kind: definition.consumable ? 'consumable' : 'furniture', allowedSlotIds: definition.allowedSlotIds, quantity: 1,
+    });
+    this.state.home.coinBalance -= definition.price;
+    const item = existingItem ?? this.state.home.ownedItems[this.state.home.ownedItems.length - 1];
+    const result: PurchaseResult = { requestId: input.requestId, itemDefinitionId: definition.id, ownedItemId: item.id, balance: this.state.home.coinBalance, quantity: item.quantity, result: 'purchased' };
+    this.purchaseResults.set(input.requestId, result);
+    return clone(result);
+  }
+
+  async getPurchaseResult(requestId: string): Promise<PurchaseResult | null> {
+    return clone(this.purchaseResults.get(requestId) ?? null);
   }
 
   async getHomeSnapshot(): Promise<HomeSnapshot> {
@@ -115,5 +145,6 @@ export class DemoRepository implements HomeRepository {
 
   async resetDemo(): Promise<void> {
     this.state = clone(demoSeed);
+    this.purchaseResults.clear();
   }
 }

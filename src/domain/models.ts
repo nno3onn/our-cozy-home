@@ -66,6 +66,16 @@ export type CatalogItem = {
   previewColor: string;
 };
 
+export type PurchaseItemInput = { itemDefinitionId: string; requestId: string };
+export type PurchaseResult = {
+  requestId: string;
+  itemDefinitionId: string;
+  ownedItemId: string;
+  balance: number;
+  quantity: number;
+  result: 'purchased' | 'already_purchased';
+};
+
 export type Member = {
   id: string;
   userId: string;

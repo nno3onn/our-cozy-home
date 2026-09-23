@@ -147,4 +147,14 @@ describe('SupabaseRepository', () => {
     expect(eq).toHaveBeenCalledWith('source', 'shop');
     expect(eq).toHaveBeenCalledWith('active', true);
   });
+
+  it('sends only a definition id and request key to the purchase RPC', async () => {
+    const rpc = jest.fn().mockResolvedValue({ data: [{ item_definition_id: 'cushion-shell', owned_item_id: 'owned-1', balance: 1100, quantity: 1, result: 'purchased' }], error: null });
+    const repository = new SupabaseRepository({ rpc } as unknown as SupabaseClient<Database>);
+
+    await expect(repository.purchaseItem({ itemDefinitionId: 'cushion-shell', requestId: '00000000-0000-4000-8000-000000000001' })).resolves.toEqual({
+      itemDefinitionId: 'cushion-shell', ownedItemId: 'owned-1', balance: 1100, quantity: 1, result: 'purchased', requestId: '00000000-0000-4000-8000-000000000001',
+    });
+    expect(rpc).toHaveBeenCalledWith('purchase_item', { p_item_definition_id: 'cushion-shell', p_request_key: '00000000-0000-4000-8000-000000000001' });
+  });
 });

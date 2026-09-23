@@ -72,4 +72,15 @@ describe('DemoRepository', () => {
       'idle',
     );
   });
+
+  it('purchases a catalog item once per request key and keeps ownership personal', async () => {
+    const repository = new DemoRepository();
+    const first = await repository.purchaseItem({ itemDefinitionId: 'cushion-shell', requestId: 'purchase-1' });
+    const retried = await repository.purchaseItem({ itemDefinitionId: 'cushion-shell', requestId: 'purchase-1' });
+
+    expect(first).toMatchObject({ result: 'purchased', balance: 1100, quantity: 1 });
+    expect(retried).toEqual(first);
+    const snapshot = await repository.getHomeSnapshot();
+    expect(snapshot.ownedItems.filter((item) => item.itemDefinitionId === 'cushion-shell' && item.ownerId === 'user-narae')).toHaveLength(1);
+  });
 });

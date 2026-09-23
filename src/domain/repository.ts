@@ -14,6 +14,8 @@ import type {
   InviteAcceptance,
   MemorySummary,
   PlaceItemInput,
+  PurchaseItemInput,
+  PurchaseResult,
   RoomPlacement,
 } from './models';
 
@@ -25,6 +27,8 @@ export interface HomeRepository {
   leaveHouse(): Promise<HouseLeaveResult>;
   claimAttendance(): Promise<AttendanceReward>;
   listShopItems(): Promise<CatalogItem[]>;
+  purchaseItem(input: PurchaseItemInput): Promise<PurchaseResult>;
+  getPurchaseResult(requestId: string): Promise<PurchaseResult | null>;
   getHomeSnapshot(): Promise<HomeSnapshot>;
   performAnimalAction(animalId: string, action: AnimalAction): Promise<Animal>;
   placeItem(input: PlaceItemInput): Promise<RoomPlacement>;
