@@ -17,6 +17,8 @@ import type {
   InviteAcceptance,
   MemorySummary,
   PlaceItemInput,
+  PurchaseItemInput,
+  PurchaseResult,
   RoomPlacement,
 } from '@/domain/models';
 import type { HomeRepository } from '@/domain/repository';
@@ -142,6 +144,27 @@ export class SupabaseRepository implements HomeRepository {
     }));
   }
 
+  async purchaseItem(input: PurchaseItemInput): Promise<PurchaseResult> {
+    const { data, error } = await this.client.rpc('purchase_item' as never, {
+      p_item_definition_id: input.itemDefinitionId, p_request_key: input.requestId,
+    } as never);
+    if (error) throw mapSupabaseError(error);
+    return this.mapPurchaseResult(data, input.requestId);
+  }
+
+  async getPurchaseResult(requestId: string): Promise<PurchaseResult | null> {
+    const { data, error } = await this.client.rpc('get_purchase_result' as never, { p_request_key: requestId } as never);
+    if (error) throw mapSupabaseError(error);
+    if (!(data as unknown[] | null)?.[0]) return null;
+    return this.mapPurchaseResult(data, requestId);
+  }
+
+  private mapPurchaseResult(data: unknown, requestId: string): PurchaseResult {
+    const row = (data as { item_definition_id: string; owned_item_id: string; balance: number; quantity: number; result: PurchaseResult['result'] }[] | null)?.[0];
+    if (!row) throw new DomainError('unknown', 'purchase_result_missing');
+    return { requestId, itemDefinitionId: row.item_definition_id, ownedItemId: row.owned_item_id, balance: row.balance, quantity: row.quantity, result: row.result };
+  }
+
   async getHomeSnapshot(): Promise<HomeSnapshot> {
     const { data: authData, error: authError } = await this.client.auth.getUser();
     if (authError || !authData.user) {
@@ -210,6 +233,11 @@ export class SupabaseRepository implements HomeRepository {
     if (animalsResult.error) {
       throw mapSupabaseError(animalsResult.error);
     }
+    const ownedItemsResult = await (this.client.from('owned_items' as never) as any)
+      .select('*')
+      .eq('profile_id', authData.user.id)
+      .is('recovered_at', null);
+    if (ownedItemsResult.error) throw mapSupabaseError(ownedItemsResult.error);
 
     return {
       currentUserId: authData.user.id,
@@ -230,7 +258,10 @@ export class SupabaseRepository implements HomeRepository {
           : [];
       }),
       animals: animalsResult.data.map(mapAnimalRow),
-      ownedItems: [],
+      ownedItems: ownedItemsResult.data.map((item: { id: string; profile_id: string; item_definition_id: string; kind: 'furniture' | 'consumable' | 'memory'; quantity: number }) => ({
+        id: item.id, ownerId: item.profile_id, itemDefinitionId: item.item_definition_id, kind: item.kind,
+        allowedSlotIds: [], quantity: item.quantity,
+      })),
       placements: [],
     };
   }
