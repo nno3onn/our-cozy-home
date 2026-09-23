@@ -1,5 +1,8 @@
+import { readFileSync } from 'node:fs';
+
 import { ITEM_CATALOG } from '../items';
 import { validateCatalog } from '../catalogValidation';
+import { renderCatalogSeed } from '../catalogSeed';
 
 const shopCategories = [
   'curtain',
@@ -52,5 +55,22 @@ describe('ITEM_CATALOG', () => {
       expect(item.assetStatus).toBe('placeholder');
       if (item.source === 'shop') expect(item.price).toBeGreaterThan(0);
     }
+  });
+
+  it('renders an idempotent SQL seed for every catalog definition and the fixed room slots', () => {
+    const sql = renderCatalogSeed(ITEM_CATALOG);
+    const itemSection = sql.split('insert into public.item_definitions')[1];
+
+    expect(sql).toContain("'curtain-ribbon-pair'");
+    expect(sql).toContain("'memory-frame-stamp-frame'");
+    expect((itemSection.match(/\n  \('/g) ?? [])).toHaveLength(55);
+    expect(sql).toContain("'floor-accent-left'");
+    expect(sql).toContain('on conflict (id) do update');
+  });
+
+  it('keeps the committed database seed in sync with the catalog source', () => {
+    expect(readFileSync('supabase/seed/001_item_definitions.sql', 'utf8')).toBe(
+      renderCatalogSeed(ITEM_CATALOG),
+    );
   });
 });

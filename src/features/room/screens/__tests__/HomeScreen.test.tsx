@@ -3,10 +3,12 @@ import { fireEvent, render, userEvent, waitFor } from '@testing-library/react-na
 
 import { RepositoryProvider } from '@/repositories/RepositoryContext';
 import { DemoRepository } from '@/repositories/demo/DemoRepository';
+import { DomainError } from '@/domain/errors';
+import type { HomeRepository } from '@/domain/repository';
 
 import { HomeScreen } from '../HomeScreen';
 
-async function renderHome(onOpenMemory = jest.fn()) {
+async function renderHome(options: { onOpenMemory?: jest.Mock; onOpenInvite?: jest.Mock } = {}) {
   const repository = new DemoRepository();
   const client = new QueryClient({
     defaultOptions: {
@@ -17,7 +19,7 @@ async function renderHome(onOpenMemory = jest.fn()) {
   const view = await render(
     <QueryClientProvider client={client}>
       <RepositoryProvider repository={repository}>
-        <HomeScreen onOpenMemory={onOpenMemory} onOpenSettings={jest.fn()} />
+        <HomeScreen onOpenInvite={options.onOpenInvite} onOpenMemory={options.onOpenMemory ?? jest.fn()} onOpenSettings={jest.fn()} />
       </RepositoryProvider>
     </QueryClientProvider>,
   );
@@ -56,10 +58,51 @@ describe('HomeScreen', () => {
 
   it('opens the memory detail from its room furniture', async () => {
     const onOpenMemory = jest.fn();
-    const { view } = await renderHome(onOpenMemory);
+    const { view } = await renderHome({ onOpenMemory });
 
     const furniture = await view.findByRole('button', { name: '소풍 라디오 추억 열기' });
     fireEvent.press(furniture);
     expect(onOpenMemory).toHaveBeenCalledWith('memory-river-picnic');
+  });
+
+  it('opens invite management from the current admin home', async () => {
+    const onOpenInvite = jest.fn();
+    const { view } = await renderHome({ onOpenInvite });
+    const user = userEvent.setup();
+
+    await view.findByText('4/4');
+    await user.press(view.getByRole('button', { name: '친구 초대' }));
+
+    expect(onOpenInvite).toHaveBeenCalledTimes(1);
+  });
+
+  it('guides an onboarded user without a house to the creation flow', async () => {
+    const repository: HomeRepository = {
+      createHouse: jest.fn(),
+      createInvite: jest.fn(),
+      previewInvite: jest.fn(),
+      acceptInvite: jest.fn(),
+      leaveHouse: jest.fn(),
+      claimAttendance: jest.fn(),
+      listShopItems: jest.fn().mockResolvedValue([]),
+      getHomeSnapshot: jest.fn().mockRejectedValue(new DomainError('not_found', 'active_house_not_found')),
+      performAnimalAction: jest.fn(),
+      placeItem: jest.fn(),
+      listMemories: jest.fn().mockResolvedValue([]),
+      listHabitLearning: jest.fn().mockResolvedValue([]),
+    };
+    const onCreateHouse = jest.fn();
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const view = await render(
+      <QueryClientProvider client={client}>
+        <RepositoryProvider repository={repository}>
+          <HomeScreen onCreateHouse={onCreateHouse} onOpenMemory={jest.fn()} onOpenSettings={jest.fn()} />
+        </RepositoryProvider>
+      </QueryClientProvider>,
+    );
+
+    expect(await view.findByText('아직 우리집이 없어요')).toBeOnTheScreen();
+    await userEvent.setup().press(view.getByRole('button', { name: '새 집 만들기' }));
+    expect(onCreateHouse).toHaveBeenCalledTimes(1);
   });
 });

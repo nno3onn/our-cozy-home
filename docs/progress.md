@@ -1,6 +1,6 @@
 # 우리집 구현·검증 현황
 
-최종 수정일: 2026-09-20
+최종 수정일: 2026-09-22
 
 기능을 완료할 때 코드 경로, 검증 명령과 결과를 함께 갱신한다. 자동화 검증,
 로컬 Supabase 검증, 실제 계정·실기기 검증은 서로 대체하지 않는다.
@@ -27,10 +27,28 @@
 - 완료: 핵심 `app_settings`·프로필·집·멤버십·동물 schema, 활성 멤버십 부분 고유 인덱스,
   기본 RLS와 실제 원격 생성 Database 타입
 - 완료: typed Supabase client·세션 저장소·repository 주입·사용자/집 cache key 기반
+- 완료: Supabase Auth 이메일 세션, 로그인/가입 화면, 로그아웃과 세션 기반 route guard
+- 진행: 프로필·개인 동물 온보딩 RPC와 화면·route guard·RLS migration을 추가했으나,
+  원격 DB 적용 및 실제 계정 검증 전
+- 진행: 집 생성·최초 admin 멤버십·request-key 멱등성 migration과 화면을 추가했으나,
+  원격 DB 적용 및 실제 동시 요청 검증 전
+- 진행: 24시간 초대 lifecycle migration, 안전한 초대 미리보기 RPC, 집장 초대
+  생성·재발급 화면과 로그인 후 초대 복귀를 추가했으나, 원격 DB 적용 및 실제
+  링크·권한 검증 전
+- 진행: 초대 수락 이력·요청 키·집 정원 잠금 RPC와 수락 화면을 추가했으나, 원격 DB
+  적용 및 실제 동시 수락 검증 전
+- 진행: 탈퇴·집장 승계·마지막 멤버 archive·활성 초대 취소 RPC와 확인 UI를 추가했으나,
+  원격 DB 적용 및 실제 다계정 검증 전
+- 진행: 활성 멤버 기반 RLS helper·공유 read 정책·직접 history 접근 차단을 추가했으나,
+  local/remote SQL 권한 검증 전
+- 진행: private `memory-photos` bucket과 기본 거부 Storage 기반을 추가했으나,
+  local/remote Storage API 검증 및 추억 viewer grant 연결 전
+- 진행: 개인 wallet·거래 원장·KST 하루 100코인 출석 RPC와 홈 실행 UI를 추가했으나,
+  local/remote DB 적용 및 동시 호출 검증 전
 - 앱 코드: Expo SDK 57 기반 데모가 실행 가능
 - Supabase 도메인 스키마·함수·정책: 미구현(로컬 CLI 기반만 완료)
 - 데모 모드: 구현됨(메모리 기반이며 앱 재실행 시 초기화)
-- 자동화 테스트: 카탈로그·repository·배치·UI 흐름 43개 통과(아래 검증 원장 참고)
+- 자동화 테스트: 카탈로그·repository·배치·UI 흐름 82개 통과(아래 검증 원장 참고)
 - 실제 Supabase 계정 검증: 미수행
 - 실제 iOS·Android 기기 검증: 미수행
 
@@ -44,6 +62,15 @@
 | 2.6 | 핵심 DB schema·생성 타입 | 완료 | 타입 경계·SQL test 파일 추가 | 원격 SQL Editor schema query와 활성 소속 제약 transaction 확인, Docker pgTAP 실행은 미수행 |
 | 2.7 | Supabase client·repository 기반 | 완료 | 48 Jest tests·typecheck·lint 통과 | 실제 세션/계정 데이터 read는 다음 Auth Issue에서 검증 |
 | 2.8 | Supabase Auth 세션·route guard | 완료 | 50 Jest tests·typecheck·lint·웹 export 통과 | 실제 계정 가입/로그인·네이티브 secure storage는 미수행 |
+| 2.9 | 프로필·개인 동물 온보딩 | 코드·migration 작성 완료, 원격 적용 대기 | 입력·온보딩 상태·route guard Jest 통과 | DB 비밀번호 또는 Dashboard SQL 실행 권한이 없어 RPC·RLS 실제 검증 미수행 |
+| 3.0 | 집 생성·최초 admin 멤버십 | 코드·migration 작성 완료, 원격 적용 대기 | 집 이름·repository RPC mapping·집 없음 UI Jest 통과 | DB 비밀번호 또는 Dashboard SQL 실행 권한이 없어 RPC·RLS·동시 요청 실제 검증 미수행 |
+| 3.1 | 24시간 초대 생성·미리보기 | 코드·migration 작성 완료, 원격 적용 대기 | 초대 생성·재발급 화면, 안전한 preview mapping, 로그인 후 초대 복귀 Jest 통과 | DB 비밀번호 또는 Dashboard SQL 실행 권한이 없어 RPC·권한·만료·실제 링크 검증 미수행 |
+| 3.2 | 초대 수락·정원·멱등성 | 코드·migration 작성 완료, 원격 적용 대기 | 수락 화면·request key·repository mapping Jest 통과 | Docker 부재로 SQL 동시성 test 미실행, 실제 다계정 수락 미검증 |
+| 3.3 | 집 나가기·승계·archive | 코드·migration 작성 완료, 원격 적용 대기 | 탈퇴 확인 UI·repository mapping Jest 통과 | Docker 부재로 `006_house_leave_and_succession_test.sql` 미실행, 실제 다계정 탈퇴·RLS 미검증 |
+| 4.0 | RLS/RPC hardening | 코드·migration 작성 완료, 원격 적용 대기 | 정책 checklist·pgTAP 파일 추가 | local Supabase 부재로 다중 JWT RLS test 미실행 |
+| 4.1 | 비공개 추억 Storage 기반 | 코드·migration 작성 완료, 원격 적용 대기 | private bucket·deny-by-default·정책 문서 추가 | local Supabase 부재로 Storage API 테스트 미실행; viewer grant는 추억 schema 이후 구현 |
+| 5.0 | wallet·출석 | 코드·migration 작성 완료, 원격 적용 대기 | RPC mapping·홈 출석 UI Jest 통과 | local Supabase 부재로 KST·동시 출석 SQL test 미실행 |
+| 5.1 | 서버 카탈로그 | `item_definitions`·`room_slots`, 55종 결정적 seed, 실제 repository 상점 조회·8개 필터 화면 작성 완료 | seed drift·repository mapping·상점 UI Jest 통과 | local/remote migration·seed와 실제 Supabase 상점 조회 미검증 |
 | 3 | 로그인, 집 생성, 초대·입장·퇴장·승계 | 시작 전 | 시작 전 | 미수행 |
 | 4 | 출석, 구매, 인벤토리, 공동 배치 | 데모 배치만 완료 | 배치 버전 통과 | 서버 미수행 |
 | 5 | 추억 작성, 접근 범위, 추억 가구 | 데모 열람만 완료 | 목록·상세 통과 | 서버 권한 미수행 |
@@ -71,6 +98,13 @@
 | 2026-09-21 | 핵심 schema | 원격 SQL Editor | 5개 테이블, `house_capacity=4`, `attendance_daily_reward=100`, RLS와 활성 멤버십 index 확인 | DB 비밀번호 부재로 CLI migration history 기록·Docker pgTAP는 미수행 |
 | 2026-09-21 | 활성 집 하나 제약 | 원격 SQL Editor rollback transaction | 같은 profile의 두 번째 활성 멤버십은 `unique_violation`, 첫 멤버십 퇴장 뒤 다른 집 입주는 허용됨 | transaction은 rollback했고 Docker pgTAP SQL 파일은 미실행 |
 | 2026-09-21 | 생성 Database 타입 | `supabase gen types typescript --project-id cbyikdryogktctskvzzk` | 원격 schema 기반 `database.generated.ts` 생성 | project ref 변경 시 npm script 갱신 필요 |
+| 2026-09-22 | 온보딩 클라이언트 규칙 | `npm test -- src/auth/__tests__/onboardingValidation.test.ts src/auth/__tests__/onboardingStatus.test.ts src/auth/__tests__/routeGuard.test.ts --runInBand` | 3 suites·8 tests 통과 | RPC·RLS가 아직 원격 DB에 적용되지 않아 실제 사용자 저장은 미검증 |
+| 2026-09-22 | 집 생성 클라이언트 규칙 | House validation·screen·repository·home empty-state Jest | request key 재사용, 이미 집이 있는 사용자 안내, `1/4` 표시 기반 확인 | 실제 PostgreSQL advisory lock·RLS와 concurrent RPC는 미검증 |
+| 2026-09-22 | 초대 클라이언트 흐름 | `InviteManagerScreen`, auth route guard Jest·`npm run lint`·`npm run typecheck` | 2개 초대 관리 UI 테스트와 로그인 후 미리보기 복귀를 확인 | `004_invite_lifecycle_test.sql`은 Docker 부재로 미실행, 실제 Supabase RPC·딥 링크는 미검증 |
+| 2026-09-22 | 전체 회귀·웹 번들 | Node 22.14.0, `npm test -- --runInBand --forceExit`, `npm run lint`, `npm run typecheck`, `EXPO_PUBLIC_APP_MODE=demo npm run build:web` | 27 suites·77 tests 통과, lint·typecheck·웹 export 통과 | Jest는 `--forceExit`가 필요할 정도의 비동기 핸들 경고를 출력함; PostgreSQL SQL tests·실제 링크는 미검증 |
+| 2026-09-22 | 초대 수락 클라이언트 규칙 | 수락 control·repository·홈 화면 Jest, `supabase test db` | 3 suites·14 tests 통과, 요청 키·정원 초과 오류·홈 cache 무효화 경로 확인 | `supabase test db`는 local Supabase가 실행 중이지 않아 `005_invite_acceptance_test.sql`을 실행하지 못함; 실제 PostgreSQL 동시 수락 미검증 |
+| 2026-09-22 | 탈퇴 클라이언트 규칙 | `HouseLeaveControls`·Supabase repository Jest | 탈퇴 확인 뒤 RPC 실행과 캐시 초기화 경로 확인 | `006_house_leave_and_succession_test.sql`은 local Supabase 부재로 미실행; 소유 가구 회수는 item/placement schema가 도입되는 후속 migration에서 같은 RPC에 추가 필요 |
+| 2026-09-23 | 서버 카탈로그 | Node 22 `catalog:seed`, Jest 전체, typecheck·lint·웹 export | 28 suites·82 tests, 55종·고정 슬롯 SQL seed, DB 가격 mapping, 8개 카테고리 filter, `/shop` 웹 번들 확인 | local/remote Supabase migration·seed와 실제 계정 상점 조회는 미검증; Jest는 async handle 경고로 `--forceExit` 사용 |
 
 ## 실제 환경 완료 시나리오
 
@@ -98,11 +132,15 @@ placeholder를 방에서 확인한 것과 최종 에셋 확인을 별도로 기�
 
 ## 다음 작업
 
-1. Supabase client repository와 실제 생성 타입의 domain 경계를 연결한다.
-2. Auth와 집 생성·활성 집 하나 제약을 먼저 연결한다.
-3. 24시간 다중 사용 초대와 동시 마지막 자리 수락 RPC를 구현한다.
-4. 탈퇴·집장 승계·가구 회수를 같은 잠금 순서와 트랜잭션으로 구현한다.
-5. 이후 출석·구매, 추억 권한 스냅샷, 2인 완성, 쌍별 버릇 학습 순서로 연결한다.
+1. `20260921000200_profile_animal_onboarding.sql`,
+   `20260921000300_house_creation.sql`, `20260921000400_invite_lifecycle.sql`을 원격에
+   순서대로 적용하고 생성 타입·실제 이메일 계정 온보딩·집 생성·초대 미리보기를 검증한다.
+2. 유효 초대의 다중 수락, 마지막 자리 동시성, 초대 종료를 처리하는 입주 RPC를 구현한다.
+3. 초대 수락 migration을 원격에 적용하고 생성 타입·실제 다계정 수락·마지막 자리
+   동시성을 검증한다.
+4. 탈퇴 migration을 원격에 적용하고 실제 탈퇴 직후 접근 차단·승계를 검증한다.
+5. item/placement schema 도입 시 탈퇴 RPC에 개인 소유 가구 배치 회수를 추가한다.
+6. 이후 출석·구매, 추억 권한 스냅샷, 2인 완성, 쌍별 버릇 학습 순서로 연결한다.
 
 아직 자동 검증하지 못한 핵심 규칙은 출석·구매 동시성, 활성 집 하나, 정원 초과,
 탈퇴 후 RLS 차단, 추억 가구 멱등 생성, 같은 날짜 학습 중복 방지와 타 사용자 비공개

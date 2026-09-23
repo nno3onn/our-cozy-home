@@ -1,4 +1,5 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ITEM_BY_ID } from '@/catalog/items';
@@ -15,6 +16,7 @@ import { useDecorateStore } from '../store/useDecorateStore';
 const SLOT_ID = 'floor-accent-left';
 
 export function DecorateScreen() {
+  const router = useRouter();
   const homeQuery = useHomeSnapshot();
   const placeMutation = usePlaceItem();
   const selectedOwnedItemId = useDecorateStore((state) => state.selectedOwnedItemId);
@@ -59,6 +61,7 @@ export function DecorateScreen() {
     <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content}>
         <AppText variant="title">꾸미기</AppText>
+        <AppButton label="상점 열기" onPress={() => router.push('/shop')} tone="secondary" />
         <Panel style={styles.previewPanel}>
           <AppText variant="heading">왼쪽 포근 자리</AppText>
           <View

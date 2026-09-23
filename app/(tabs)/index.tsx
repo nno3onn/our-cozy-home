@@ -8,6 +8,8 @@ export default function HomeRoute() {
     <HomeScreen
       onOpenMemory={(id) => router.push({ pathname: '/memories/[id]', params: { id } })}
       onOpenSettings={() => router.push('/settings')}
+      onCreateHouse={() => router.push('/house/create')}
+      onOpenInvite={() => router.push('/house/invite')}
     />
   );
 }

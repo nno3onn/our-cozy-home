@@ -1,6 +1,6 @@
 # 우리집 기술 아키텍처
 
-최종 수정일: 2026-09-19
+최종 수정일: 2026-09-22
 
 제품 규칙은 [`product-spec.md`](product-spec.md), 상세 설계와 테스트 행렬은
 [`superpowers/specs/2026-09-19-woorijip-design.md`](superpowers/specs/2026-09-19-woorijip-design.md),
@@ -46,10 +46,42 @@ Skia 장면은 저장된 동물 상태와 행동 이벤트를 입력으로 받�
 보상이나 아이템 지급 사건이 아니다. 일상 이동·표정은 기기에서 처리하고 먹이,
 배치, 추억, 학습 결과처럼 영속적인 사건만 서버에 기록한다.
 
+Supabase 모드의 `AuthProvider`는 세션을 복구한 뒤 현재 사용자의 `profiles`와
+`animals`를 함께 확인한다. 둘 중 하나라도 없으면 온보딩 화면만 열 수 있고,
+둘 다 있을 때에만 이후 집 흐름으로 이동한다. 이 확인이 실패하면 빈 프로필로
+진행시키지 않고 재시도 화면을 보여준다. `complete_onboarding` RPC의 성공 결과는
+클라이언트가 아닌 DB가 소유자와 최초 동물 생성을 확정한 결과다.
+
+온보딩을 마친 사용자가 아직 활성 집을 갖지 않으면 집 생성 화면으로 안내한다.
+`create_house(name, request_key)`는 사용자별 advisory lock 아래에서 동일 요청 키의
+확정 결과를 먼저 반환한다. 새 요청에서 활성 멤버십이 이미 있으면
+`already_in_house`를 반환하며, 집·admin 멤버십·요청 이력은 같은 트랜잭션에서 만든다.
+
+초대 생성은 admin 전용 `create_house_invite(reissue)` RPC가 집과 현재 멤버십을 잠근
+뒤 수행한다. 토큰 원문은 이 RPC 응답에서 한 번만 반환하고 DB에는 SHA-256 hash만
+저장한다. `preview_house_invite(token)`은 집 이름·초대한 사람·현재 활성 인원과
+상태만 반환하며, 추억·사진·기여 내용은 반환하지 않는다. 초대 링크는 만료·취소·재발급
+상태를 UI에 명확히 보이며, 실제 입주 멤버십 생성은 다음 RPC에서 최종 검증한다.
+
+`accept_house_invite(token, request_key)`는 먼저 사용자 advisory lock을 얻고, 그 뒤
+집 행·초대 행·사용자 활성 멤버십을 고정 순서로 잠근다. 요청 키가 이미 확정되면
+동일한 멤버십 결과를 반환한다. 새 요청은 서버가 현재 활성 멤버 수와 공통 정원 4를
+확인한 뒤에만 membership과 사용자별 acceptance 이력을 함께 만들며, 네 번째 멤버가
+입주하면 초대를 `full`로 종료한다. 클라이언트의 집 ID·인원·사용자 ID는 입력으로
+받지 않는다.
+
+`leave_house()`는 인증된 본인의 active membership을 사용자 잠금 뒤 집 행 잠금으로
+확정한다. 활성 초대는 취소하고, 일반 멤버는 자신의 membership만 종료한다. 집장이
+나가면 남은 active membership 중 `joined_at`, ID 오름차순 첫 행을 새 admin으로
+승계한다. 남은 멤버가 없을 때만 집을 archive한다. item·room placement 테이블이
+도입되는 migration에서 탈퇴자 소유 가구의 배치를 회수하는 잠금 단계를 이 함수에
+추가한다.
+
 ## 데이터 영역
 
 - 사용자: `profiles`, `animals`, `push_tokens`, `account_deletion_requests`
 - 집: `houses`, `house_memberships`, `house_invites`, `invite_acceptances`
+- 집 생성 멱등성: `house_create_requests`
 - 경제: `attendance_rewards`, `purchase_requests`, `item_definitions`, `owned_items`
 - 방: `room_slots`, `room_placements`
 - 추억: `memories`, `memory_viewers`, `memory_contributions`,
@@ -87,6 +119,13 @@ RLS는 활성 집 소속, 아이템 소유자와 추억 viewer grant를 기준�
 잔액, 아이템 소유권과 집장 권한을 직접 갱신할 수 없다. `security definer` 함수는
 `auth.uid()`, 고정 `search_path`와 제한된 실행 권한을 사용한다.
 
+초기 프로필·동물 생성은 `complete_onboarding(display_name, point_color,
+animal_name, species)` RPC 하나로 수행한다. 함수는 `auth.uid()`만 소유자로 쓰고,
+한 사용자당 하나인 `animals.profile_id` 제약을 upsert로 사용해 네트워크 재시도에도
+두 번째 동물을 만들지 않는다. 프로필과 동물의 직접 insert는 허용하지 않으며,
+현재 단계의 RLS는 자기 행 조회·수정만 허용한다. 같은 집 구성원 간 읽기 권한은
+집·초대 보안 단계에서 추가한다.
+
 추억 viewer grant는 공유 당시 멤버십에 연결된다. 탈퇴한 직접 기여자는
 `access_ended_at` 이전 revision과 사진만 읽는다. 원본 삭제는 모든 viewer에게
 적용하고 재입주는 이전 grant를 복원하지 않는다. Storage도 같은 관계를 검사한다.
@@ -108,8 +147,9 @@ listener, Realtime, 사용자 범위 캐시와 서명 URL을 제거한다.
 migration으로 관리한다. 적용된 파일을 덮어쓰지 않는다. 앱 시작이나 배포 과정은
 원격 데이터를 자동 초기화하지 않는다.
 
-시드는 공통 설정, 40개 상점 아이템, 15개 추억 가구, 기본 버릇과 방 슬롯을
-멱등하게 생성한다. 생성 DB 타입은 `src/types/database.generated.ts`로 관리한다.
+현재 시드는 공통 설정, 40개 상점 아이템, 15개 추억 가구와 방 슬롯을 멱등하게
+생성한다. 기본 버릇 seed는 버릇 학습 schema Issue에서 추가한다. 생성 DB 타입은
+`src/types/database.generated.ts`로 관리한다.
 
 ## 검증 계층
 

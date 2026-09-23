@@ -3,9 +3,18 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { DomainError } from '@/domain/errors';
 import type {
   Animal,
+  AttendanceReward,
+  CatalogItem,
   AnimalAction,
+  AcceptInviteInput,
+  CreateHouseInput,
+  CreatedInvite,
   HabitLearningSummary,
+  HouseCreation,
+  HouseLeaveResult,
   HomeSnapshot,
+  InvitePreview,
+  InviteAcceptance,
   MemorySummary,
   PlaceItemInput,
   RoomPlacement,
@@ -25,6 +34,112 @@ export class SupabaseRepository implements HomeRepository {
 
   dispose(): void {
     this.client.auth.stopAutoRefresh();
+  }
+
+  async createHouse(input: CreateHouseInput): Promise<HouseCreation> {
+    const { data, error } = await this.client.rpc('create_house' as never, {
+      p_name: input.name,
+      p_request_key: input.requestId,
+    } as never);
+    if (error) {
+      if (error.code === 'P0001' && error.message === 'already_in_house') {
+        throw new DomainError('conflict', 'already_in_house');
+      }
+      throw mapSupabaseError(error);
+    }
+
+    const result = (data as unknown as { house_id: string; membership_id: string }[] | null)?.[0];
+    if (!result) throw new DomainError('unknown', 'house_creation_result_missing');
+    return {
+      house: { id: result.house_id, name: input.name, capacity: 4 },
+      membershipId: result.membership_id,
+    };
+  }
+
+  async createInvite(reissue: boolean): Promise<CreatedInvite> {
+    const { data, error } = await this.client.rpc('create_house_invite' as never, { p_reissue: reissue } as never);
+    if (error) throw mapSupabaseError(error);
+    const result = (data as unknown as { invite_token: string; invite_code: string; expires_at: string }[] | null)?.[0];
+    if (!result) throw new DomainError('unknown', 'invite_creation_result_missing');
+    return { token: result.invite_token, code: result.invite_code, expiresAt: result.expires_at };
+  }
+
+  async previewInvite(token: string): Promise<InvitePreview> {
+    const { data, error } = await this.client.rpc('preview_house_invite' as never, { p_token: token } as never);
+    if (error) throw mapSupabaseError(error);
+    const result = (data as unknown as { house_name: string | null; inviter_name: string | null; current_member_count: number | null; state: InvitePreview['state'] }[] | null)?.[0];
+    if (!result) throw new DomainError('unknown', 'invite_preview_result_missing');
+    return { houseName: result.house_name, inviterName: result.inviter_name, currentMemberCount: result.current_member_count, state: result.state };
+  }
+
+  async acceptInvite(input: AcceptInviteInput): Promise<InviteAcceptance> {
+    const { data, error } = await this.client.rpc('accept_house_invite' as never, {
+      p_token: input.token,
+      p_request_key: input.requestId,
+    } as never);
+    if (error) {
+      if (error.code === 'P0001' && ['house_full', 'already_in_house', 'invite_expired', 'invite_cancelled', 'invite_invalid'].includes(error.message)) {
+        throw new DomainError('conflict', error.message);
+      }
+      throw mapSupabaseError(error);
+    }
+    const result = (data as unknown as { house_id: string; house_name: string; membership_id: string; result: InviteAcceptance['result'] }[] | null)?.[0];
+    if (!result) throw new DomainError('unknown', 'invite_acceptance_result_missing');
+    return {
+      house: { id: result.house_id, name: result.house_name, capacity: 4 },
+      membershipId: result.membership_id,
+      result: result.result,
+    };
+  }
+
+  async leaveHouse(): Promise<HouseLeaveResult> {
+    const { data, error } = await this.client.rpc('leave_house' as never, {} as never);
+    if (error) throw mapSupabaseError(error);
+    const result = (data as unknown as { house_id: string | null; house_archived: boolean; successor_profile_id: string | null; result: HouseLeaveResult['result'] }[] | null)?.[0];
+    if (!result) throw new DomainError('unknown', 'house_leave_result_missing');
+    return {
+      houseId: result.house_id,
+      houseArchived: result.house_archived,
+      successorProfileId: result.successor_profile_id,
+      result: result.result,
+    };
+  }
+  async claimAttendance(): Promise<AttendanceReward> {
+    const { data, error } = await this.client.rpc('claim_attendance_reward' as never, {} as never);
+    if (error) throw mapSupabaseError(error);
+    const row = (data as unknown as { balance: number; game_date: string; granted: boolean }[] | null)?.[0];
+    if (!row) throw new DomainError('unknown', 'attendance_result_missing');
+    return { balance: row.balance, gameDate: row.game_date, granted: row.granted };
+  }
+
+  async listShopItems(): Promise<CatalogItem[]> {
+    const { data, error } = await this.client
+      .from('item_definitions')
+      .select('*')
+      .eq('source', 'shop')
+      .eq('active', true)
+      .order('category')
+      .order('id');
+    if (error) throw mapSupabaseError(error);
+    return data.map((row) => ({
+      id: row.id,
+      source: row.source as CatalogItem['source'],
+      category: row.category,
+      theme: row.theme,
+      nameKo: row.name_ko,
+      price: row.price,
+      consumable: row.consumable,
+      thumbnailKey: row.thumbnail_key,
+      roomAssetKey: row.room_asset_key,
+      silhouette: row.silhouette,
+      size: row.size as CatalogItem['size'],
+      anchor: row.anchor as CatalogItem['anchor'],
+      allowedSlotIds: row.allowed_slot_ids as CatalogItem['allowedSlotIds'],
+      layerBias: row.layer_bias,
+      interaction: row.interaction,
+      assetStatus: row.asset_status as CatalogItem['assetStatus'],
+      previewColor: row.preview_color,
+    }));
   }
 
   async getHomeSnapshot(): Promise<HomeSnapshot> {

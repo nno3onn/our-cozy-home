@@ -63,6 +63,7 @@
     "supabase:types": "supabase gen types typescript --project-id cbyikdryogktctskvzzk > src/types/database.generated.ts",
     "supabase:types:local": "supabase gen types typescript --local > src/types/database.generated.ts",
     "supabase:check": "node scripts/verify-supabase-foundation.mjs",
+    "catalog:seed": "node scripts/generate-catalog-seed.mjs",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
     "test": "jest",

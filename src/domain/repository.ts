@@ -1,14 +1,30 @@
 import type {
   Animal,
+  AttendanceReward,
+  CatalogItem,
   AnimalAction,
+  AcceptInviteInput,
+  CreateHouseInput,
+  CreatedInvite,
   HabitLearningSummary,
+  HouseCreation,
+  HouseLeaveResult,
   HomeSnapshot,
+  InvitePreview,
+  InviteAcceptance,
   MemorySummary,
   PlaceItemInput,
   RoomPlacement,
 } from './models';
 
 export interface HomeRepository {
+  createHouse(input: CreateHouseInput): Promise<HouseCreation>;
+  createInvite(reissue: boolean): Promise<CreatedInvite>;
+  previewInvite(token: string): Promise<InvitePreview>;
+  acceptInvite(input: AcceptInviteInput): Promise<InviteAcceptance>;
+  leaveHouse(): Promise<HouseLeaveResult>;
+  claimAttendance(): Promise<AttendanceReward>;
+  listShopItems(): Promise<CatalogItem[]>;
   getHomeSnapshot(): Promise<HomeSnapshot>;
   performAnimalAction(animalId: string, action: AnimalAction): Promise<Animal>;
   placeItem(input: PlaceItemInput): Promise<RoomPlacement>;

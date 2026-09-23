@@ -1,13 +1,22 @@
 import type {
   Animal,
+  AttendanceReward,
   AnimalAction,
+  AcceptInviteInput,
+  CreateHouseInput,
+  CreatedInvite,
   HabitLearningSummary,
+  HouseCreation,
+  HouseLeaveResult,
+  InvitePreview,
+  InviteAcceptance,
   HomeSnapshot,
   MemorySummary,
   PlaceItemInput,
   RoomPlacement,
 } from '@/domain/models';
 import type { HomeRepository } from '@/domain/repository';
+import { ITEM_CATALOG } from '@/catalog/items';
 
 import { demoSeed, type DemoState } from './demoSeed';
 
@@ -17,6 +26,30 @@ function clone<T>(value: T): T {
 
 export class DemoRepository implements HomeRepository {
   private state: DemoState = clone(demoSeed);
+
+  async createHouse(_input: CreateHouseInput): Promise<HouseCreation> {
+    throw new Error('demo_house_creation_not_available');
+  }
+
+  async createInvite(_reissue: boolean): Promise<CreatedInvite> {
+    return { token: 'demo-invite-token', code: 'DEMO2026', expiresAt: new Date(Date.now() + 86_400_000).toISOString() };
+  }
+
+  async previewInvite(_token: string): Promise<InvitePreview> {
+    return { houseName: this.state.home.house.name, inviterName: '나래', currentMemberCount: 4, state: 'active' };
+  }
+
+  async acceptInvite(_input: AcceptInviteInput): Promise<InviteAcceptance> {
+    throw new Error('demo_invite_acceptance_not_available');
+  }
+
+  async leaveHouse(): Promise<HouseLeaveResult> {
+    throw new Error('demo_house_leave_not_available');
+  }
+  async claimAttendance(): Promise<AttendanceReward> { throw new Error('demo_attendance_not_available'); }
+  async listShopItems() {
+    return clone(ITEM_CATALOG.filter((item) => item.source === 'shop'));
+  }
 
   async getHomeSnapshot(): Promise<HomeSnapshot> {
     return clone(this.state.home);

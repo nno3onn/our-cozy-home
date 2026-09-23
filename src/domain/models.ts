@@ -8,6 +8,64 @@ export type House = {
   capacity: 4;
 };
 
+export type CreateHouseInput = {
+  name: string;
+  requestId: string;
+};
+
+export type HouseCreation = {
+  house: House;
+  membershipId: string;
+};
+
+export type InvitePreview = {
+  houseName: string | null;
+  inviterName: string | null;
+  currentMemberCount: number | null;
+  state: 'active' | 'invalid' | 'cancelled' | 'expired' | 'full' | 'reissued';
+};
+
+export type CreatedInvite = { token: string; code: string; expiresAt: string };
+
+export type AcceptInviteInput = {
+  token: string;
+  requestId: string;
+};
+
+export type InviteAcceptance = {
+  house: House;
+  membershipId: string;
+  result: 'joined' | 'already_joined';
+};
+
+export type HouseLeaveResult = {
+  houseId: string | null;
+  houseArchived: boolean;
+  successorProfileId: string | null;
+  result: 'left' | 'already_left';
+};
+export type AttendanceReward = { balance: number; gameDate: string; granted: boolean };
+
+export type CatalogItem = {
+  id: string;
+  source: 'shop' | 'memory';
+  category: string;
+  theme: string;
+  nameKo: string;
+  price: number;
+  consumable: boolean;
+  thumbnailKey: string;
+  roomAssetKey: string;
+  silhouette: string;
+  size: { width: number; height: number };
+  anchor: { x: number; y: number };
+  allowedSlotIds: string[];
+  layerBias: number;
+  interaction: string;
+  assetStatus: 'placeholder' | 'final';
+  previewColor: string;
+};
+
 export type Member = {
   id: string;
   userId: string;

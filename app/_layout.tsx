@@ -1,6 +1,6 @@
 import { Redirect, Stack, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
 import { AppProviders } from '@/providers/AppProviders';
 import { AuthProvider, useAuth } from '@/auth/AuthProvider';
@@ -9,6 +9,9 @@ import { ModeErrorScreen } from '@/components/ModeErrorScreen';
 import { readRuntimeConfig } from '@/config/env';
 import { createRepository } from '@/repositories/createRepository';
 import { SupabaseRepository } from '@/repositories/supabase/SupabaseRepository';
+import { getAuthRedirect, getPendingInviteRedirect } from '@/auth/routeGuard';
+import { AppText } from '@/components/ui/AppText';
+import { colors, spacing } from '@/theme/tokens';
 
 const runtimeConfig = readRuntimeConfig();
 const repositoryResult = runtimeConfig.ok
@@ -36,12 +39,23 @@ export default function RootLayout() {
 }
 
 function AuthenticatedRoutes() {
-  const { state } = useAuth();
+  const { state, onboarding, onboardingError, refreshOnboarding } = useAuth();
   const segments = useSegments();
-  if (state.status === 'loading') return <View style={{ flex: 1 }} />;
-  if (state.status === 'signed_out') {
-    return segments[0] === 'auth' ? <Stack screenOptions={{ headerShown: false }} /> : <Redirect href="/auth/sign-in" />;
+  const redirect = getAuthRedirect({ ...state, onboarding }, segments);
+  if (state.status === 'loading' || (state.status === 'signed_in' && onboarding === 'loading')) {
+    return <View style={styles.loading}><ActivityIndicator color={colors.ink} /></View>;
   }
-  if (segments[0] === 'auth') return <Redirect href="/" />;
+  if (state.status === 'signed_in' && onboarding === 'unavailable') {
+    return <View style={styles.loading}><AppText tone="danger">프로필을 확인하지 못했어요.</AppText><AppText tone="muted">{onboardingError ?? '네트워크 상태를 확인한 뒤 다시 시도해 주세요.'}</AppText><Pressable accessibilityRole="button" accessibilityLabel="프로필 다시 확인" onPress={() => void refreshOnboarding()}><AppText variant="label">다시 시도</AppText></Pressable></View>;
+  }
+  if (redirect) return <Redirect href={redirect} />;
+  if (state.status === 'signed_in') {
+    const inviteRedirect = getPendingInviteRedirect(state.pendingInvite, segments);
+    if (inviteRedirect) return <Redirect href={inviteRedirect} />;
+  }
   return <Stack screenOptions={{ headerShown: false }} />;
 }
+
+const styles = StyleSheet.create({
+  loading: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.md, backgroundColor: colors.cream, padding: spacing.xl },
+});
