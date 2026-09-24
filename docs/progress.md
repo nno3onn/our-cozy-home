@@ -71,7 +71,7 @@
 | 2.7 | Supabase client·repository 기반 | 완료 | 48 Jest tests·typecheck·lint 통과 | 실제 세션/계정 데이터 read는 다음 Auth Issue에서 검증 |
 | 2.8 | Supabase Auth 세션·route guard | 완료 | 50 Jest tests·typecheck·lint·웹 export 통과 | 실제 계정 가입/로그인·네이티브 secure storage는 미수행 |
 | 2.9 | 프로필·개인 동물 온보딩 | 코드·migration 작성 완료, 원격 적용 대기 | 입력·온보딩 상태·route guard Jest 통과 | DB 비밀번호 또는 Dashboard SQL 실행 권한이 없어 RPC·RLS 실제 검증 미수행 |
-| 3.0 | 집 생성·최초 admin 멤버십 | 코드·migration 작성 완료, 원격 적용 대기 | 집 이름·repository RPC mapping·집 없음 UI Jest 통과 | DB 비밀번호 또는 Dashboard SQL 실행 권한이 없어 RPC·RLS·동시 요청 실제 검증 미수행 |
+| 3.0 | 집 생성·최초 admin 멤버십 | `create_house` advisory lock/RPC·request key, 최초 admin membership, 집 생성 화면과 `1/4` 멤버 UI 작성 완료 | 집 이름·재시도 request key·repository RPC mapping·집 없음 UI Jest 통과 | DB 비밀번호 또는 Dashboard SQL 실행 권한이 없어 RPC·RLS·동시 요청 실제 검증 미수행 |
 | 3.1 | 24시간 초대 생성·미리보기 | 코드·migration 작성 완료, 원격 적용 대기 | 초대 생성·재발급 화면, 안전한 preview mapping, 로그인 후 초대 복귀 Jest 통과 | DB 비밀번호 또는 Dashboard SQL 실행 권한이 없어 RPC·권한·만료·실제 링크 검증 미수행 |
 | 3.2 | 초대 수락·정원·멱등성 | 코드·migration 작성 완료, 원격 적용 대기 | 수락 화면·request key·repository mapping Jest 통과 | Docker 부재로 SQL 동시성 test 미실행, 실제 다계정 수락 미검증 |
 | 3.3 | 집 나가기·승계·archive | 코드·migration 작성 완료, 원격 적용 대기 | 탈퇴 확인 UI·repository mapping Jest 통과 | Docker 부재로 `006_house_leave_and_succession_test.sql` 미실행, 실제 다계정 탈퇴·RLS 미검증 |
@@ -86,11 +86,6 @@
 | 7.1 | 기여 revision·탈퇴 보관함 | 기여 단일 행+revision, 사진 메타데이터, 직접 기여자 archive·cutoff 서버 조회와 원본 삭제 전파 작성 완료 | repository current/archive mapping·SQL pgTAP 시나리오 파일·Jest 통과 | Docker 부재로 pgTAP 미실행, 원격 migration·A/B 탈퇴 후 cutoff 미검증 |
 | 7.2 | 두 명 기여·추억 가구 | memory row lock, 출처 고유 memory item·완료 event, 현재 viewer 기반 방 노출 정책과 snapshot item 조회 작성 완료 | 22개 pgTAP 시나리오 파일·typecheck 통과 | Docker 부재로 pgTAP 미실행, 원격 migration·동시 두 번째 기여·다계정 방 노출 미검증 |
 | 9.1 | 알림 Outbox·Expo Push | event/delivery/token target, DB lease·권한 재검증·receipt/재시도와 `send-push` Edge Function 작성 완료 | payload·ticket 분류·backoff Jest 통과 | local DB/pgTAP, Edge deploy/scheduler, Expo 실제 기기 수신 미검증 |
-| 3 | 로그인, 집 생성, 초대·입장·퇴장·승계 | 시작 전 | 시작 전 | 미수행 |
-| 4 | 출석, 구매, 인벤토리, 공동 배치 | 데모 배치만 완료 | 배치 버전 통과 | 서버 미수행 |
-| 5 | 추억 작성, 접근 범위, 추억 가구 | 데모 열람만 완료 | 목록·상세 통과 | 서버 권한 미수행 |
-| 6 | 버릇 학습과 동물 행동 | 데모 데이터만 존재 | repository 복제 검증 | 화면·서버 미구현 |
-| 7 | Realtime, 알림, 전체 권한·기기 확인 | 시작 전 | 시작 전 | 미수행 |
 
 ## 검증 원장
 
@@ -125,6 +120,7 @@
 | 2026-09-24 | 추억 기여·개인 보관함 | Node 22 Jest·typecheck·lint | current/archive 분리 RPC mapping, 기여 RPC mapping, 30개 pgTAP 시나리오(직접 기여·revision·탈퇴 cutoff·원본 삭제·재입주)를 코드·정적 파일로 확인 | Docker daemon 부재로 `008_memory_contributions_access_test.sql` 미실행; 원격 migration·실제 A/B 계정 검증 미수행 |
 | 2026-09-24 | 두 명 추억 가구 완료 | Node 22 typecheck·migration/pgTAP 정적 점검 | 두 명 distinct contribution 완료, memory-id 출처 고유, 완료 event, 세 번째 기여와 revision 재시도 비중복, viewer 기반 방 가구 노출 시나리오를 작성 | Docker daemon 부재로 `009_memory_completion_furniture_test.sql` 미실행; 원격 migration·실제 동시 기여 및 방 RLS 미검증 |
 | 2026-09-24 | 알림 Outbox worker | Node 22 `npm run typecheck`, notification helper Jest | 비공개 내용 없는 payload, ticket 분류와 최대 1시간 retry backoff를 확인 | `supabase db lint`는 local Supabase가 실행 중이지 않아 실행 불가; `012_notification_outbox_test.sql`, Edge Function deploy/scheduler, Expo ticket·receipt/실기기 수신은 미검증 |
+| 2026-09-24 | 집 생성·최초 membership 재검증 | Node 22 집 생성 화면·repository·홈 empty-state Jest | request key 재사용, 이미 활성 집 안내, 생성 결과 mapping, `1/4` 멤버 표시 경로를 확인 | `003_house_creation_test.sql`은 Docker daemon 부재로 미실행; 원격 create RPC·RLS·경쟁 요청은 미검증 |
 
 ## 실제 환경 완료 시나리오
 
