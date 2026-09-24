@@ -95,6 +95,7 @@ describe('HomeScreen', () => {
     const repository: HomeRepository = {
       createHouse: jest.fn(),
       createInvite: jest.fn(),
+      cancelInvite: jest.fn(),
       previewInvite: jest.fn(),
       acceptInvite: jest.fn(),
       leaveHouse: jest.fn(),

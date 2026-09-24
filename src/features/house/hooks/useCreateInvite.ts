@@ -6,3 +6,8 @@ export function useCreateInvite() {
   const repository = useRepository();
   return useMutation({ mutationFn: (reissue: boolean) => repository.createInvite(reissue) });
 }
+
+export function useCancelInvite() {
+  const repository = useRepository();
+  return useMutation({ mutationFn: () => repository.cancelInvite() });
+}

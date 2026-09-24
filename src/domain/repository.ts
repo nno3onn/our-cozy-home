@@ -28,6 +28,7 @@ import type {
 export interface HomeRepository {
   createHouse(input: CreateHouseInput): Promise<HouseCreation>;
   createInvite(reissue: boolean): Promise<CreatedInvite>;
+  cancelInvite(): Promise<void>;
   previewInvite(token: string): Promise<InvitePreview>;
   acceptInvite(input: AcceptInviteInput): Promise<InviteAcceptance>;
   leaveHouse(): Promise<HouseLeaveResult>;

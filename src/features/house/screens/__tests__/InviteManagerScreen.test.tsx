@@ -12,6 +12,7 @@ describe('InviteManagerScreen', () => {
     const view = await render(
       <InviteManagerScreen
         createLink={(token) => `https://our-cozy-home.example/invite/${token}`}
+        onCancelInvite={jest.fn().mockResolvedValue(undefined)}
         onCreateInvite={onCreateInvite}
       />,
     );
@@ -31,7 +32,7 @@ describe('InviteManagerScreen', () => {
       .mockResolvedValueOnce({ token: 'first', code: 'FIRST111', expiresAt: '2026-09-23T00:00:00.000Z' })
       .mockResolvedValueOnce({ token: 'second', code: 'SECOND22', expiresAt: '2026-09-24T00:00:00.000Z' });
     const view = await render(
-      <InviteManagerScreen createLink={(token) => `ourcozy://invite/${token}`} onCreateInvite={onCreateInvite} />,
+      <InviteManagerScreen createLink={(token) => `ourcozy://invite/${token}`} onCancelInvite={jest.fn().mockResolvedValue(undefined)} onCreateInvite={onCreateInvite} />,
     );
     const user = userEvent.setup();
 
@@ -42,5 +43,25 @@ describe('InviteManagerScreen', () => {
     expect(onCreateInvite).toHaveBeenNthCalledWith(1, false);
     expect(onCreateInvite).toHaveBeenNthCalledWith(2, true);
     expect(await view.findByText('SECOND22')).toBeOnTheScreen();
+  });
+
+  it('cancels the visible invite and removes its shareable token from the screen', async () => {
+    const onCancelInvite = jest.fn().mockResolvedValue(undefined);
+    const view = await render(
+      <InviteManagerScreen
+        createLink={(token) => `ourcozy://invite/${token}`}
+        onCancelInvite={onCancelInvite}
+        onCreateInvite={jest.fn().mockResolvedValue({ token: 'active-token', code: 'ACTIVE12', expiresAt: '2026-09-23T00:00:00.000Z' })}
+      />,
+    );
+    const user = userEvent.setup();
+
+    await user.press(view.getByRole('button', { name: '초대 만들기' }));
+    await view.findByText('ACTIVE12');
+    await user.press(view.getByRole('button', { name: '초대 취소' }));
+
+    expect(onCancelInvite).toHaveBeenCalledTimes(1);
+    expect(await view.findByText('초대를 취소했어요. 기존 링크는 더 이상 사용할 수 없어요.')).toBeOnTheScreen();
+    expect(view.queryByText('ACTIVE12')).not.toBeOnTheScreen();
   });
 });
