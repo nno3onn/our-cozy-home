@@ -26,6 +26,7 @@ export class OnlineGuardedHomeRepository implements HomeRepository {
 
   createHouse(input: Parameters<HomeRepository['createHouse']>[0]) { return this.runCommand(() => this.repository.createHouse(input)); }
   createInvite(reissue: Parameters<HomeRepository['createInvite']>[0]) { return this.runCommand(() => this.repository.createInvite(reissue)); }
+  cancelInvite() { return this.runCommand(() => this.repository.cancelInvite()); }
   previewInvite(token: Parameters<HomeRepository['previewInvite']>[0]) { return this.repository.previewInvite(token); }
   acceptInvite(input: Parameters<HomeRepository['acceptInvite']>[0]) { return this.runCommand(() => this.repository.acceptInvite(input)); }
   leaveHouse() { return this.runCommand(() => this.repository.leaveHouse()); }

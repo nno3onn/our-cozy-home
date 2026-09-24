@@ -7,6 +7,7 @@ function createRepository(): jest.Mocked<HomeRepository> {
   return {
     createHouse: jest.fn(),
     createInvite: jest.fn(),
+    cancelInvite: jest.fn(),
     previewInvite: jest.fn().mockResolvedValue({}),
     acceptInvite: jest.fn(),
     leaveHouse: jest.fn(),

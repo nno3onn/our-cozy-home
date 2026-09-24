@@ -45,6 +45,8 @@ export class DemoRepository implements HomeRepository {
     return { token: 'demo-invite-token', code: 'DEMO2026', expiresAt: new Date(Date.now() + 86_400_000).toISOString() };
   }
 
+  async cancelInvite(): Promise<void> {}
+
   async previewInvite(_token: string): Promise<InvitePreview> {
     return { houseName: this.state.home.house.name, inviterName: '나래', currentMemberCount: 4, state: 'active' };
   }

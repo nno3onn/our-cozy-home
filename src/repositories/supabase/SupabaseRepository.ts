@@ -72,6 +72,11 @@ export class SupabaseRepository implements HomeRepository {
     return { token: result.invite_token, code: result.invite_code, expiresAt: result.expires_at };
   }
 
+  async cancelInvite(): Promise<void> {
+    const { error } = await this.client.rpc('cancel_house_invite' as never, {} as never);
+    if (error) throw mapSupabaseError(error);
+  }
+
   async previewInvite(token: string): Promise<InvitePreview> {
     const { data, error } = await this.client.rpc('preview_house_invite' as never, { p_token: token } as never);
     if (error) throw mapSupabaseError(error);

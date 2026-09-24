@@ -9,10 +9,11 @@ import { colors, spacing } from '@/theme/tokens';
 
 type InviteManagerScreenProps = {
   createLink: (token: string) => string;
+  onCancelInvite: () => Promise<void>;
   onCreateInvite: (reissue: boolean) => Promise<CreatedInvite>;
 };
 
-export function InviteManagerScreen({ createLink, onCreateInvite }: InviteManagerScreenProps) {
+export function InviteManagerScreen({ createLink, onCancelInvite, onCreateInvite }: InviteManagerScreenProps) {
   const [invite, setInvite] = useState<CreatedInvite | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -24,6 +25,20 @@ export function InviteManagerScreen({ createLink, onCreateInvite }: InviteManage
       setInvite(await onCreateInvite(reissue));
     } catch {
       setError('초대를 만들지 못했어요. 연결을 확인한 뒤 다시 시도해 주세요.');
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function cancelInvite() {
+    setSubmitting(true);
+    setError(null);
+    try {
+      await onCancelInvite();
+      setInvite(null);
+      setError('초대를 취소했어요. 기존 링크는 더 이상 사용할 수 없어요.');
+    } catch {
+      setError('초대를 취소하지 못했어요. 연결을 확인한 뒤 다시 시도해 주세요.');
     } finally {
       setSubmitting(false);
     }
@@ -55,6 +70,7 @@ export function InviteManagerScreen({ createLink, onCreateInvite }: InviteManage
             label={submitting ? '초대 만드는 중…' : invite ? '새 초대 재발급' : '초대 만들기'}
             onPress={() => void createInvite(Boolean(invite))}
           />
+          {invite ? <AppButton disabled={submitting} label="초대 취소" onPress={() => void cancelInvite()} tone="quiet" /> : null}
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
