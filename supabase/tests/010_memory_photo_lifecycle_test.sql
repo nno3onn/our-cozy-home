@@ -1,0 +1,11 @@
+begin;
+select plan(7);
+select has_function('public', 'prepare_memory_photo_upload', array['uuid','uuid','text']);
+select has_function('public', 'complete_memory_photo_upload', array['uuid']);
+select has_function('public', 'delete_memory_photo', array['uuid']);
+select has_column('public', 'memory_photos', 'upload_request_key');
+select has_column('public', 'memory_photos', 'mime_type');
+select has_column('public', 'memory_photos', 'status');
+select policy_exists('storage', 'objects', 'memory_photos_read_authorized_viewer');
+select * from finish();
+rollback;

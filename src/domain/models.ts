@@ -129,6 +129,7 @@ export type MemoryContribution = {
   body: string;
   publishedAt: string;
 };
+export type MemoryPhotoUploadInput = { contributionId: string; requestId: string; mimeType: string; body: ArrayBuffer };
 
 export type HabitLearningSummary = {
   id: string;

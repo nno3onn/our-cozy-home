@@ -17,6 +17,7 @@ import type {
   MemoryShareResult,
   MemoryContributionInput,
   MemoryContribution,
+  MemoryPhotoUploadInput,
   PlaceItemInput,
   PurchaseItemInput,
   PurchaseResult,
@@ -162,6 +163,8 @@ export class DemoRepository implements HomeRepository {
   async addMemoryContribution(_input: MemoryContributionInput): Promise<string> { return `contribution-${Date.now()}`; }
 
   async getMemoryContributions(_memoryId: string): Promise<MemoryContribution[]> { return []; }
+  async uploadMemoryPhoto(_input: MemoryPhotoUploadInput): Promise<string> { return `photo-${Date.now()}`; }
+  async getOwnMemoryContribution(memoryId: string): Promise<string> { return `contribution-${memoryId}`; }
 
   async listHabitLearning(): Promise<HabitLearningSummary[]> {
     return clone(this.state.habitLearning);

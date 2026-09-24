@@ -25,6 +25,7 @@ import type {
   MemoryShareResult,
   MemoryContributionInput,
   MemoryContribution,
+  MemoryPhotoUploadInput,
 } from '@/domain/models';
 import type { HomeRepository } from '@/domain/repository';
 import type { Database } from '@/types/database.generated';
@@ -341,6 +342,25 @@ export class SupabaseRepository implements HomeRepository {
         id: row.contribution_id, authorProfileId: row.author_profile_id, displayName: row.display_name,
         body: row.body, publishedAt: row.published_at,
       }));
+  }
+
+  async uploadMemoryPhoto(input: MemoryPhotoUploadInput): Promise<string> {
+    const { data, error } = await this.client.rpc('prepare_memory_photo_upload' as never, { p_contribution_id: input.contributionId, p_request_key: input.requestId, p_mime_type: input.mimeType } as never);
+    if (error) throw mapSupabaseError(error);
+    const row = (data as { photo_id: string; storage_path: string }[] | null)?.[0];
+    if (!row) throw new DomainError('unknown', 'memory_photo_prepare_missing');
+    const upload = await this.client.storage.from('memory-photos').upload(row.storage_path, input.body, { contentType: input.mimeType, upsert: true });
+    if (upload.error) throw new DomainError('unknown', 'memory_photo_upload_failed');
+    const completed = await this.client.rpc('complete_memory_photo_upload' as never, { p_photo_id: row.photo_id } as never);
+    if (completed.error) throw mapSupabaseError(completed.error);
+    return row.photo_id;
+  }
+
+  async getOwnMemoryContribution(memoryId: string): Promise<string> {
+    const { data, error } = await this.client.rpc('get_own_memory_contribution' as never, { p_memory_id: memoryId } as never);
+    if (error) throw mapSupabaseError(error);
+    if (typeof data !== 'string') throw new DomainError('not_found', 'memory_contribution_not_found');
+    return data;
   }
 
   async listHabitLearning(): Promise<HabitLearningSummary[]> {

@@ -42,5 +42,7 @@ export class OnlineGuardedHomeRepository implements HomeRepository {
   shareMemoryDraft(memoryId: Parameters<HomeRepository['shareMemoryDraft']>[0]) { return this.runCommand(() => this.repository.shareMemoryDraft(memoryId)); }
   addMemoryContribution(input: Parameters<HomeRepository['addMemoryContribution']>[0]) { return this.runCommand(() => this.repository.addMemoryContribution(input)); }
   getMemoryContributions(memoryId: string) { return this.repository.getMemoryContributions(memoryId); }
+  uploadMemoryPhoto(input: Parameters<HomeRepository['uploadMemoryPhoto']>[0]) { return this.runCommand(() => this.repository.uploadMemoryPhoto(input)); }
+  getOwnMemoryContribution(memoryId: string) { return this.repository.getOwnMemoryContribution(memoryId); }
   listHabitLearning() { return this.repository.listHabitLearning(); }
 }

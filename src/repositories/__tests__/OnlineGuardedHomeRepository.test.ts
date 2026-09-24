@@ -23,6 +23,8 @@ function createRepository(): jest.Mocked<HomeRepository> {
     shareMemoryDraft: jest.fn(),
     addMemoryContribution: jest.fn(),
     getMemoryContributions: jest.fn().mockResolvedValue([]),
+    uploadMemoryPhoto: jest.fn(),
+    getOwnMemoryContribution: jest.fn(),
     listHabitLearning: jest.fn().mockResolvedValue([]),
   };
 }
