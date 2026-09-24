@@ -77,7 +77,7 @@
 | 3.3 | 집 나가기·승계·archive | `leave_house` lock/RPC, 배치 회수 trigger, admin 승계/archive·초대 취소와 탈퇴 뒤 캐시 초기화·집 선택 이동 작성 완료 | 탈퇴 확인 UI·repository mapping Jest 통과 | Docker 부재로 `006_house_leave_and_succession_test.sql` 미실행, 실제 다계정 탈퇴·RLS 미검증 |
 | 4.0 | RLS/RPC hardening | active membership helper, direct write revoke, RPC execute 제한과 전체 table 권한 매트릭스 작성 완료 | 정책 checklist·pgTAP 파일 추가 | local Supabase 부재로 다중 JWT RLS test 미실행 |
 | 4.1 | 비공개 추억 Storage 기반 | private bucket, 무작위 photo key, uploader/viewer/archive cutoff RLS와 lifecycle 경계 문서화 완료 | private bucket·deny-by-default·정책 문서 추가 | local Supabase 부재로 Storage API 테스트 미실행; signed URL 실제 발급·viewer grant 다계정 검증은 후속 photo flow에서 필요 |
-| 5.0 | wallet·출석 | 코드·migration 작성 완료, 원격 적용 대기 | RPC mapping·홈 출석 UI Jest 통과 | local Supabase 부재로 KST·동시 출석 SQL test 미실행 |
+| 5.0 | wallet·출석 | 개인 wallet·ledger, KST 하루 100코인 RPC와 홈 UI 작성 완료 | RPC mapping·홈 출석 UI Jest, 첫 지급/동일 일자 재시도·원장 SQL 시나리오 작성 | local Supabase 부재로 KST·동시 출석 SQL test 미실행 |
 | 5.1 | 서버 카탈로그 | `item_definitions`·`room_slots`, 55종 결정적 seed, 실제 repository 상점 조회·8개 필터 화면 작성 완료 | seed drift·repository mapping·상점 UI Jest 통과 | local/remote migration·seed와 실제 Supabase 상점 조회 미검증 |
 | 5.2 | 구매·인벤토리 | 구매 요청·개인 소유 schema, 멱등 구매/결과 RPC, 상점 구매·보관함 화면 작성 완료 | demo 재시도·repository mapping·상점 조정 UI Jest 통과 | local/remote 동시 구매·RLS·새 세션 inventory 미검증 |
 | 6.0 | 공동 방 배치 | placement schema·예상 버전 RPC·탈퇴 배치 회수·실제 snapshot 조회 작성 완료 | repository RPC mapping Jest·typecheck 통과 | local/remote 동시 이동·슬롯 점유·탈퇴 경쟁·RLS 미검증 |
