@@ -1,6 +1,6 @@
 # 우리집 결정 기록
 
-최종 수정일: 2026-09-22
+최종 수정일: 2026-09-24
 
 제품 명세가 정하지 않은 되돌리기 쉬운 기본값과 선택 이유를 기록한다. 제품 규칙을
 바꾸는 결정은 이 문서만 수정하지 않고 `product-spec.md`도 함께 갱신한다.
@@ -206,3 +206,13 @@
   캐시된 집 정보가 현재 권한을 증명하지 않기 때문이다.
 - 비용: 현재 감지는 웹 browser event에 기반한다. 네이티브 reachability는 실제 기기
   검증과 함께 보강해야 하며, 이 단계에서 완료로 주장하지 않는다.
+
+## D-023 Push Outbox 실행자
+
+- 상태: 채택
+- 결정: 알림은 DB outbox event → 수신자 delivery → Expo token target으로 기록하고,
+  Edge Function은 worker secret을 가진 scheduler만 호출한다.
+- 이유: 성공한 게임 규칙 트랜잭션과 알림 발생을 분리하지 않으면서도 여러 기기 token,
+  Expo receipt, 재시도 및 탈퇴 직전 권한 재검증을 안전하게 처리할 수 있다.
+- 비용: scheduler와 `NOTIFICATION_WORKER_SECRET`은 프로젝트 운영 설정이므로 저장소가
+  자동 생성하지 않는다. 원격 배포와 실제 기기 검증을 별도로 기록해야 한다.

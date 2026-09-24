@@ -88,7 +88,8 @@ Supabase 모드의 `AuthProvider`는 세션을 복구한 뒤 현재 사용자의
   `memory_contribution_revisions`, `memory_photos`
 - 버릇: `habit_definitions`, `habit_learning`, `habit_activity_days`,
   `habit_activity_participants`, `learned_habits`
-- 알림: `notification_events`, `notification_deliveries`
+- 알림: `notification_preferences`, `notification_events`, 수신자 단위
+  `notification_deliveries`, 토큰 단위 `notification_delivery_targets`
 - 설정: `app_settings`
 
 활성 멤버십과 활성 초대는 부분 고유 인덱스로 각각 사용자당 하나, 집당 하나를
@@ -148,6 +149,21 @@ reachability 검증은 Development Build 단계에서 별도 확인한다.
 추억 내용을 포함하지 않는다. 계정 삭제는 탈퇴와 별도 흐름이며 본인의 프로필,
 초안, 기여 원본, 사진, 소유 데이터와 토큰을 정리하되 다른 사용자의 기여와 확정된
 공동 추억 사건을 삭제하지 않는다.
+
+## 알림 Outbox
+
+집 입주, 추억 가구 완성, 버릇 습득을 확정하는 DB 트랜잭션은 고유 event key의
+`notification_events`와 수신자별 delivery를 함께 만든다. 같은 사건을 재시도해도
+event key와 `(event_id, recipient_profile_id)` 고유 제약이 중복 알림을 막는다.
+`send-push` Edge Function은 서버 secret으로만 호출되며, `FOR UPDATE SKIP LOCKED`
+lease로 token target을 가져온다. 발송 직전에는 활성 집 소속, 추억 viewer grant,
+버릇의 두 동물 소유자, 알림 허용 및 활성 Expo token을 다시 확인한다.
+
+Expo ticket은 target별로 보관하고 receipt 확인 전까지 재발송하지 않는다. 일시
+실패는 최대 한 시간 지수 backoff로 재시도하고 `DeviceNotRegistered`는 해당 token을
+비활성화한다. 본문은 일반적인 사건 안내만 포함하며, 추억 글·사진·Storage 경로는
+넣지 않는다. 배포 환경은 외부 scheduler가 worker를 주기적으로 호출해야 하며,
+worker가 클라이언트 요청으로 실행되지는 않는다.
 
 ## 마이그레이션과 초기 데이터
 

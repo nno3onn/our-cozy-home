@@ -26,3 +26,8 @@ enable_signup = true
 
 [storage]
 file_size_limit = "50MiB"
+
+# The scheduler has no end-user JWT. The Function enforces a separate
+# NOTIFICATION_WORKER_SECRET before it creates a service-role client.
+[functions.send-push]
+verify_jwt = false

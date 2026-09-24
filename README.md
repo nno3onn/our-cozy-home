@@ -154,6 +154,38 @@ history 정합을 한 번 확인해야 한다.
 수정하지 않는다. `npm run supabase:check`는 local Docker 없이 파일 구조와 명령 계약을
 검사한다.
 
+## Push Outbox 배포
+
+`20260921002000_notification_outbox.sql`은 입주·추억 가구 완성·버릇 습득을 멱등
+outbox event로 기록한다. `supabase/functions/send-push`는 대기 target을 Expo Push
+Service에 배치 발송하고 ticket/receipt, 재시도 및 무효 token을 처리한다. 이 Function은
+앱에서 직접 호출하지 않는다. scheduler 요청을 받기 위해 JWT 검증은 끄되,
+`NOTIFICATION_WORKER_SECRET` 검증 없이는 worker를 실행하지 않는다.
+
+원격 migration 적용 뒤 프로젝트 관리자만 다음처럼 Edge Function secret을 설정하고
+배포한다. `NOTIFICATION_WORKER_SECRET`과 service-role key를 앱의 `.env`나 Git에
+넣지 않는다. Expo의 APNs/FCM 자격 증명은 Expo/EAS 프로젝트 설정에서 별도로
+완성해야 한다.
+
+```bash
+npx supabase secrets set --project-ref cbyikdryogktctskvzzk \
+  NOTIFICATION_WORKER_SECRET='long-random-secret'
+npx supabase functions deploy send-push --project-ref cbyikdryogktctskvzzk
+```
+
+외부 scheduler(예: 신뢰할 수 있는 cron 서비스)는 1분 간격으로 아래 endpoint를
+호출한다. secret을 브라우저, 앱 또는 공개 CI 로그에 넣지 않는다.
+
+```bash
+curl --fail-with-body \
+  -H "x-notification-worker-secret: $NOTIFICATION_WORKER_SECRET" \
+  "https://cbyikdryogktctskvzzk.functions.supabase.co/send-push"
+```
+
+로컬 Docker가 실행 중이면 migration과 pgTAP test를 적용해 worker RPC를 검증한다.
+Edge Function은 Deno runtime용이므로 앱의 `npm run typecheck` 범위에서 제외되고,
+배포 전 `supabase functions serve send-push` 또는 deploy 환경에서 별도로 확인한다.
+
 ## 에셋 상태
 
 상점 40종과 추억 가구 15종의 카탈로그·크기·기준점·슬롯·상호작용 데이터와 DB seed는

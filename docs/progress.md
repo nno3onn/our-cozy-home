@@ -50,6 +50,9 @@
 - 진행: 실제 Supabase repository를 온라인 가드로 감싸고, 방·꾸미기·상점·입주 화면의
   오프라인 읽기 전용 표시 및 마지막 snapshot 유지·foreground/reconnect refetch를
   추가했으나, 웹 네트워크 토글·로컬 Supabase 중단/복구의 실제 환경 검증 전
+- 진행: DB outbox event/delivery/target, worker lease·receipt·재시도 Edge Function과
+  private-content-free payload를 작성했으나, 원격 migration/Function 배포·scheduler와
+  실제 기기 push 검증 전
 - 앱 코드: Expo SDK 57 기반 데모가 실행 가능
 - Supabase 도메인 스키마·함수·정책: 미구현(로컬 CLI 기반만 완료)
 - 데모 모드: 구현됨(메모리 기반이며 앱 재실행 시 초기화)
@@ -82,6 +85,7 @@
 | 7.0 | 추억 초안·공유 대상 snapshot | private draft·명시적 share RPC, `memory_viewers` snapshot RLS, 작성 화면·공유 대상 표시 작성 완료 | repository mapping·작성 UI Jest 통과 | local/remote SQL RLS·다계정 공유 검증 미실행 |
 | 7.1 | 기여 revision·탈퇴 보관함 | 기여 단일 행+revision, 사진 메타데이터, 직접 기여자 archive·cutoff 서버 조회와 원본 삭제 전파 작성 완료 | repository current/archive mapping·SQL pgTAP 시나리오 파일·Jest 통과 | Docker 부재로 pgTAP 미실행, 원격 migration·A/B 탈퇴 후 cutoff 미검증 |
 | 7.2 | 두 명 기여·추억 가구 | memory row lock, 출처 고유 memory item·완료 event, 현재 viewer 기반 방 노출 정책과 snapshot item 조회 작성 완료 | 22개 pgTAP 시나리오 파일·typecheck 통과 | Docker 부재로 pgTAP 미실행, 원격 migration·동시 두 번째 기여·다계정 방 노출 미검증 |
+| 9.1 | 알림 Outbox·Expo Push | event/delivery/token target, DB lease·권한 재검증·receipt/재시도와 `send-push` Edge Function 작성 완료 | payload·ticket 분류·backoff Jest 통과 | local DB/pgTAP, Edge deploy/scheduler, Expo 실제 기기 수신 미검증 |
 | 3 | 로그인, 집 생성, 초대·입장·퇴장·승계 | 시작 전 | 시작 전 | 미수행 |
 | 4 | 출석, 구매, 인벤토리, 공동 배치 | 데모 배치만 완료 | 배치 버전 통과 | 서버 미수행 |
 | 5 | 추억 작성, 접근 범위, 추억 가구 | 데모 열람만 완료 | 목록·상세 통과 | 서버 권한 미수행 |
@@ -120,6 +124,7 @@
 | 2026-09-24 | 오프라인 방 복구 | Node 22 connection state·repository guard·room/shop/decorate/invite UI Jest, typecheck | offline 상태에서 마지막 방·카탈로그·배치 정보가 보이고 출석·입주·구매·배치·동물 행동 명령이 제한되는 경로, 로그아웃 시 active snapshot 제거, foreground/reconnect invalidate 경로를 코드·Jest로 확인 | 실제 browser network toggle, local/remote Supabase 중단/복구와 iOS·Android reachability는 미검증 |
 | 2026-09-24 | 추억 기여·개인 보관함 | Node 22 Jest·typecheck·lint | current/archive 분리 RPC mapping, 기여 RPC mapping, 30개 pgTAP 시나리오(직접 기여·revision·탈퇴 cutoff·원본 삭제·재입주)를 코드·정적 파일로 확인 | Docker daemon 부재로 `008_memory_contributions_access_test.sql` 미실행; 원격 migration·실제 A/B 계정 검증 미수행 |
 | 2026-09-24 | 두 명 추억 가구 완료 | Node 22 typecheck·migration/pgTAP 정적 점검 | 두 명 distinct contribution 완료, memory-id 출처 고유, 완료 event, 세 번째 기여와 revision 재시도 비중복, viewer 기반 방 가구 노출 시나리오를 작성 | Docker daemon 부재로 `009_memory_completion_furniture_test.sql` 미실행; 원격 migration·실제 동시 기여 및 방 RLS 미검증 |
+| 2026-09-24 | 알림 Outbox worker | Node 22 `npm run typecheck`, notification helper Jest | 비공개 내용 없는 payload, ticket 분류와 최대 1시간 retry backoff를 확인 | `supabase db lint`는 local Supabase가 실행 중이지 않아 실행 불가; `012_notification_outbox_test.sql`, Edge Function deploy/scheduler, Expo ticket·receipt/실기기 수신은 미검증 |
 
 ## 실제 환경 완료 시나리오
 
