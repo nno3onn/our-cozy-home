@@ -9,7 +9,7 @@ import { colors, spacing } from '@/theme/tokens';
 
 import { useMemories } from '../hooks/useMemories';
 
-export function MemoriesScreen({ onOpenMemory }: { onOpenMemory: (memoryId: string) => void }) {
+export function MemoriesScreen({ onOpenMemory, onCreateMemory }: { onOpenMemory: (memoryId: string) => void; onCreateMemory?: () => void }) {
   const memoriesQuery = useMemories();
 
   if (!memoriesQuery.data?.length) {
@@ -18,6 +18,8 @@ export function MemoriesScreen({ onOpenMemory }: { onOpenMemory: (memoryId: stri
         <EmptyState
           description="사진이나 글을 남기면 초안이 생기고, 서로 다른 두 사람이 기여하면 가구가 완성돼요."
           title="첫 추억을 만들어 보세요"
+          actionLabel="첫 추억 기록하기"
+          onAction={onCreateMemory}
         />
       </SafeAreaView>
     );
@@ -27,6 +29,7 @@ export function MemoriesScreen({ onOpenMemory }: { onOpenMemory: (memoryId: stri
     <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content}>
         <AppText variant="title">추억</AppText>
+        {onCreateMemory ? <AppButton label="새 추억 기록" onPress={onCreateMemory} /> : null}
         <AppText tone="muted">공유 당시 대상이었던 멤버만 볼 수 있어요.</AppText>
         {memoriesQuery.data.map((memory) => (
           <Panel key={memory.id} style={styles.card}>

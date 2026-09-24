@@ -20,6 +20,9 @@ import type {
   PurchaseItemInput,
   PurchaseResult,
   RoomPlacement,
+  CreateMemoryDraftInput,
+  MemoryDraftResult,
+  MemoryShareResult,
 } from '@/domain/models';
 import type { HomeRepository } from '@/domain/repository';
 import type { Database } from '@/types/database.generated';
@@ -288,6 +291,23 @@ export class SupabaseRepository implements HomeRepository {
 
   async listMemories(): Promise<MemorySummary[]> {
     throw new DomainError('not_implemented', 'memories_repository_not_implemented');
+  }
+
+  async createMemoryDraft(input: CreateMemoryDraftInput): Promise<MemoryDraftResult> {
+    const { data, error } = await this.client.rpc('create_memory_draft' as never, {
+      p_title: input.title, p_body: input.body, p_occurred_on: input.occurredOn,
+    } as never);
+    if (error) throw mapSupabaseError(error);
+    if (typeof data !== 'string') throw new DomainError('unknown', 'memory_draft_result_missing');
+    return { id: data, status: 'private_draft' };
+  }
+
+  async shareMemoryDraft(memoryId: string): Promise<MemoryShareResult> {
+    const { data, error } = await this.client.rpc('share_memory_draft' as never, { p_memory_id: memoryId } as never);
+    if (error) throw mapSupabaseError(error);
+    const row = (data as { memory_id: string; house_id: string; viewer_count: number; result: MemoryShareResult['result'] }[] | null)?.[0];
+    if (!row) throw new DomainError('unknown', 'memory_share_result_missing');
+    return { memoryId: row.memory_id, houseId: row.house_id, viewerCount: row.viewer_count, result: row.result };
   }
 
   async listHabitLearning(): Promise<HabitLearningSummary[]> {
