@@ -134,7 +134,7 @@ export class SupabaseRepository implements HomeRepository {
       .order('category')
       .order('id');
     if (error) throw mapSupabaseError(error);
-    return data.map((row) => ({
+    return (data ?? []).map((row) => ({
       id: row.id,
       source: row.source as CatalogItem['source'],
       category: row.category,
