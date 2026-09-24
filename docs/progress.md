@@ -28,8 +28,8 @@
   기본 RLS와 실제 원격 생성 Database 타입
 - 완료: typed Supabase client·세션 저장소·repository 주입·사용자/집 cache key 기반
 - 완료: Supabase Auth 이메일 세션, 로그인/가입 화면, 로그아웃과 세션 기반 route guard
-- 진행: 프로필·개인 동물 온보딩 RPC와 화면·route guard·RLS migration을 추가했으나,
-  원격 DB 적용 및 실제 계정 검증 전
+- 진행: 프로필·개인 동물 온보딩 RPC와 화면·route guard, 집 생성/초대 선택 진입과
+  RLS migration을 추가했으나, 원격 DB 적용 및 실제 계정 검증 전
 - 진행: 집 생성·최초 admin 멤버십·request-key 멱등성 migration과 화면을 추가했으나,
   원격 DB 적용 및 실제 동시 요청 검증 전
 - 진행: 24시간 초대 lifecycle migration, 안전한 초대 미리보기 RPC, 집장 초대
