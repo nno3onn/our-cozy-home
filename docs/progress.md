@@ -92,6 +92,7 @@
 | 날짜 | 대상 | 명령 또는 환경 | 결과 | 범위 제한 |
 | --- | --- | --- | --- | --- |
 | 2026-09-19 | 명세 문서 | `git diff --check` | 통과 | 코드 동작을 검증하지 않음 |
+| 2026-09-24 | 서버 카탈로그·상점 조회 | `npm test -- --runInBand src/repositories/supabase/__tests__/SupabaseRepository.test.ts src/catalog/__tests__/catalog.test.ts src/features/shop/screens/__tests__/ShopScreen.test.tsx`, `npm run catalog:seed` | 3 suite/25 test 통과, 결정적 seed 재생성 | 실제 Supabase migration/seed·RLS 조회는 별도 환경이 필요함 |
 | 2026-09-19 | 명세 문서 | 미결정 표식 검색 | 통과 | 요구사항 완전성을 자동 증명하지 않음 |
 | 2026-09-20 | 데모 방·생명주기 | `npm test -- src/features/room --runInBand` | 통과 | Skia는 Jest 모형, 실제 GPU 렌더 아님 |
 | 2026-09-20 | 55종 카탈로그·갤러리 | `npm test -- src/catalog src/features/dev --runInBand` | 통과 | 모두 임시 에셋 |

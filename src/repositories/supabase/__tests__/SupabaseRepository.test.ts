@@ -143,6 +143,18 @@ describe('SupabaseRepository', () => {
     expect(eq).toHaveBeenCalledWith('active', true);
   });
 
+  it('treats an empty catalog response as an empty shop instead of throwing', async () => {
+    const order: jest.Mock = jest.fn();
+    order.mockImplementationOnce(() => ({ order })).mockResolvedValueOnce({ data: null, error: null });
+    const eq: jest.Mock = jest.fn();
+    eq.mockReturnValue({ eq, order });
+    const select = jest.fn(() => ({ eq }));
+    const from = jest.fn(() => ({ select }));
+    const repository = new SupabaseRepository({ from } as unknown as SupabaseClient<Database>);
+
+    await expect(repository.listShopItems()).resolves.toEqual([]);
+  });
+
   it('sends only a definition id and request key to the purchase RPC', async () => {
     const rpc = jest.fn().mockResolvedValue({ data: [{ item_definition_id: 'cushion-shell', owned_item_id: 'owned-1', balance: 1100, quantity: 1, result: 'purchased' }], error: null });
     const repository = new SupabaseRepository({ rpc } as unknown as SupabaseClient<Database>);
