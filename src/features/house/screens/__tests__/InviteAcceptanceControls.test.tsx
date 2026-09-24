@@ -33,6 +33,17 @@ describe('InviteAcceptanceControls', () => {
     expect(await view.findByText('집이 꽉 찼어요. 다른 우리집을 찾아봐요.')).toBeOnTheScreen();
   });
 
+  it('explains when a previously previewed invite is no longer valid', async () => {
+    const onAccept = jest.fn().mockRejectedValue({ message: 'invite_invalid' });
+    const view = await render(
+      <InviteAcceptanceControls createRequestId={() => 'accept-request'} onAccept={onAccept} onJoined={jest.fn()} token="invite-token" />,
+    );
+
+    await userEvent.setup().press(view.getByRole('button', { name: '이 집에 입주하기' }));
+
+    expect(await view.findByText('초대를 찾지 못했어요. 집 관리자에게 새 링크를 요청해 주세요.')).toBeOnTheScreen();
+  });
+
   it('does not reserve or accept an invite while offline', async () => {
     const onAccept = jest.fn();
     const offlineState: ConnectionState = { isOnline: () => false, subscribe: () => () => undefined };
