@@ -9,6 +9,8 @@ import { AppText } from '@/components/ui/AppText';
 import { AppButton } from '@/components/ui/AppButton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Panel } from '@/components/ui/Panel';
+import { OfflineReadOnlyBanner } from '@/components/OfflineReadOnlyBanner';
+import { useConnectionStatus } from '@/network/ConnectionProvider';
 import { useRepository } from '@/repositories/RepositoryContext';
 import { colors, radii, spacing } from '@/theme/tokens';
 
@@ -19,6 +21,7 @@ const categoryLabels: Record<ShopCategory, string> = {
 
 export function ShopScreen() {
   const repository = useRepository();
+  const isOnline = useConnectionStatus();
   const router = useRouter();
   const [category, setCategory] = useState<ShopCategory>(SHOP_CATEGORIES[0]);
   const [message, setMessage] = useState<string | null>(null);
@@ -45,6 +48,7 @@ export function ShopScreen() {
     <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content}>
         <AppText variant="title">상점</AppText>
+        {!isOnline ? <OfflineReadOnlyBanner /> : null}
         <AppButton label="내 보관함 보기" onPress={() => router.push('/inventory')} tone="secondary" />
         <AppText tone="muted" variant="caption">가격과 상품 정보는 서버 카탈로그를 기준으로 표시돼요.</AppText>
         <View style={styles.categories}>
@@ -67,7 +71,7 @@ export function ShopScreen() {
               <AppText variant="label">{item.nameKo}</AppText>
               <AppText variant="caption">{item.price} 코인</AppText>
               <AppText tone="muted" variant="caption">{item.assetStatus === 'placeholder' ? '임시 에셋' : '최종 에셋'}</AppText>
-              <AppButton disabled={purchase.isPending} label={`${item.nameKo} 구매`} onPress={() => purchase.mutate({ itemDefinitionId: item.id, requestId: crypto.randomUUID() })} />
+              <AppButton disabled={!isOnline || purchase.isPending} label={`${item.nameKo} 구매`} onPress={() => purchase.mutate({ itemDefinitionId: item.id, requestId: crypto.randomUUID() })} />
             </Panel>
           ))}
         </View>

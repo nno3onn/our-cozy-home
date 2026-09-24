@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -11,6 +11,7 @@ import { colors, spacing } from '@/theme/tokens';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppText } from '@/components/ui/AppText';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { OfflineReadOnlyBanner } from '@/components/OfflineReadOnlyBanner';
 
 import { AnimalActions } from '../components/AnimalActions';
 import { MemberStrip } from '../components/MemberStrip';
@@ -18,6 +19,7 @@ import { RoomCanvas } from '../components/RoomCanvas';
 import { homeSnapshotKey, useAnimalAction, useHomeSnapshot } from '../hooks/useHomeSnapshot';
 import { useAppLifecycle } from '../hooks/useAppLifecycle';
 import { useRepository } from '@/repositories/RepositoryContext';
+import { useConnectionStatus } from '@/network/ConnectionProvider';
 
 export function HomeScreen({
   onOpenMemory,
@@ -41,11 +43,20 @@ export function HomeScreen({
   const [selectedAnimalId, setSelectedAnimalId] = useState<string | null>(null);
   const [attendanceMessage, setAttendanceMessage] = useState<string | null>(null);
   const [claimingAttendance, setClaimingAttendance] = useState(false);
+  const isOnline = useConnectionStatus();
+  const wasMounted = useRef(false);
   const isActive = useAppLifecycle({
     onActive: () => {
       void queryClient.invalidateQueries({ queryKey: homeSnapshotKey });
     },
   });
+
+  useEffect(() => {
+    if (wasMounted.current && isOnline) {
+      void queryClient.invalidateQueries({ queryKey: homeSnapshotKey });
+    }
+    wasMounted.current = true;
+  }, [isOnline, queryClient]);
 
   const effectiveSelectedAnimalId =
     selectedAnimalId ??
@@ -116,7 +127,7 @@ export function HomeScreen({
 
   const handleAnimalPress = (animalId: string) => {
     setSelectedAnimalId(animalId);
-    if (isActive && !actionMutation.isPending) {
+    if (isActive && isOnline && !actionMutation.isPending) {
       actionMutation.mutate({ animalId, action: 'reacting' });
     }
   };
@@ -141,11 +152,12 @@ export function HomeScreen({
             <View style={styles.coin}>
               <AppText variant="label">{homeQuery.data.coinBalance.toLocaleString()} 코인</AppText>
             </View>
-            <AppButton disabled={claimingAttendance} label={claimingAttendance ? '출석 확인 중…' : '오늘 출석'} onPress={() => void claimAttendance()} tone="quiet" />
-            {currentMember?.role === 'admin' && onOpenInvite ? <AppButton label="친구 초대" onPress={onOpenInvite} tone="secondary" /> : null}
+            <AppButton disabled={!isOnline || claimingAttendance} label={claimingAttendance ? '출석 확인 중…' : '오늘 출석'} onPress={() => void claimAttendance()} tone="quiet" />
+            {currentMember?.role === 'admin' && onOpenInvite ? <AppButton disabled={!isOnline} label="친구 초대" onPress={onOpenInvite} tone="secondary" /> : null}
             <AppButton label="설정 열기" onPress={onOpenSettings} tone="quiet" />
           </View>
         </View>
+        {!isOnline ? <View style={styles.offlineBanner}><OfflineReadOnlyBanner /></View> : null}
         {attendanceMessage ? <AppText style={styles.attendanceMessage} tone="muted" variant="caption">{attendanceMessage}</AppText> : null}
         <MemberStrip members={homeQuery.data.members} />
         <View style={[styles.stage, isWideLayout && styles.stageWide]}>
@@ -165,7 +177,7 @@ export function HomeScreen({
             {selectedAnimal ? (
               <AnimalActions
                 animal={selectedAnimal}
-                disabled={!isActive || actionMutation.isPending}
+                disabled={!isActive || !isOnline || actionMutation.isPending}
                 onAction={handleAction}
               />
             ) : null}
@@ -214,6 +226,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   attendanceMessage: { paddingHorizontal: spacing.lg },
+  offlineBanner: { marginHorizontal: spacing.lg },
   stage: { gap: spacing.lg },
   stageWide: { flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: spacing.lg },
   roomColumn: { flex: 1, minWidth: 0 },

@@ -40,6 +40,11 @@ iOS Simulator는 `npm run ios`, Android Emulator는 `npm run android`로 연다.
 - 방의 추억 라디오 또는 추억 탭에서 상세 열기
 - 설정에서 55종 임시 에셋 목록 확인과 데모 상태 초기화
 
+Supabase 모드에서 웹 연결이 끊기면 마지막으로 성공한 방·상점·꾸미기 화면은
+`오프라인 읽기 전용`으로 남고, 입주·출석·구매·배치 같은 확정 명령은 실행되지 않는다.
+연결 또는 앱 foreground 복귀 뒤에는 집 소속과 snapshot을 다시 확인한다. 이 동작의
+실제 browser 네트워크 토글 및 네이티브 reachability 검증은 아직 기록되지 않았다.
+
 ## 품질 명령
 
 ```bash

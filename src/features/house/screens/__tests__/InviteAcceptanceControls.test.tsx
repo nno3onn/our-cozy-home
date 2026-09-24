@@ -1,6 +1,8 @@
 import { render, userEvent } from '@testing-library/react-native';
 
 import { InviteAcceptanceControls } from '../InviteAcceptanceControls';
+import { ConnectionProvider } from '@/network/ConnectionProvider';
+import type { ConnectionState } from '@/network/connectionState';
 
 describe('InviteAcceptanceControls', () => {
   it('submits a stable idempotency key and opens the joined house', async () => {
@@ -29,5 +31,19 @@ describe('InviteAcceptanceControls', () => {
     await userEvent.setup().press(view.getByRole('button', { name: '이 집에 입주하기' }));
 
     expect(await view.findByText('집이 꽉 찼어요. 다른 우리집을 찾아봐요.')).toBeOnTheScreen();
+  });
+
+  it('does not reserve or accept an invite while offline', async () => {
+    const onAccept = jest.fn();
+    const offlineState: ConnectionState = { isOnline: () => false, subscribe: () => () => undefined };
+    const view = await render(
+      <ConnectionProvider state={offlineState}>
+        <InviteAcceptanceControls onAccept={onAccept} onJoined={jest.fn()} token="invite-token" />
+      </ConnectionProvider>,
+    );
+
+    expect(view.getByText('오프라인 읽기 전용')).toBeOnTheScreen();
+    expect(view.getByRole('button', { name: '이 집에 입주하기' })).toBeDisabled();
+    expect(onAccept).not.toHaveBeenCalled();
   });
 });

@@ -5,11 +5,13 @@ import { RepositoryProvider } from '@/repositories/RepositoryContext';
 import { DemoRepository } from '@/repositories/demo/DemoRepository';
 import { DomainError } from '@/domain/errors';
 import type { HomeRepository } from '@/domain/repository';
+import { ConnectionProvider } from '@/network/ConnectionProvider';
+import type { ConnectionState } from '@/network/connectionState';
 
 import { HomeScreen } from '../HomeScreen';
 
-async function renderHome(options: { onOpenMemory?: jest.Mock; onOpenInvite?: jest.Mock } = {}) {
-  const repository = new DemoRepository();
+async function renderHome(options: { onOpenMemory?: jest.Mock; onOpenInvite?: jest.Mock; repository?: HomeRepository; connectionState?: ConnectionState } = {}) {
+  const repository = options.repository ?? new DemoRepository();
   const client = new QueryClient({
     defaultOptions: {
       queries: { retry: false, gcTime: Infinity },
@@ -18,9 +20,11 @@ async function renderHome(options: { onOpenMemory?: jest.Mock; onOpenInvite?: je
   });
   const view = await render(
     <QueryClientProvider client={client}>
-      <RepositoryProvider repository={repository}>
-        <HomeScreen onOpenInvite={options.onOpenInvite} onOpenMemory={options.onOpenMemory ?? jest.fn()} onOpenSettings={jest.fn()} />
-      </RepositoryProvider>
+      <ConnectionProvider state={options.connectionState}>
+        <RepositoryProvider repository={repository}>
+          <HomeScreen onOpenInvite={options.onOpenInvite} onOpenMemory={options.onOpenMemory ?? jest.fn()} onOpenSettings={jest.fn()} />
+        </RepositoryProvider>
+      </ConnectionProvider>
     </QueryClientProvider>,
   );
   return { repository, view };
@@ -74,6 +78,17 @@ describe('HomeScreen', () => {
     await user.press(view.getByRole('button', { name: '친구 초대' }));
 
     expect(onOpenInvite).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the latest room visible but disables server-confirmed actions offline', async () => {
+    const repository = new DemoRepository();
+    const offlineState: ConnectionState = { isOnline: () => false, subscribe: () => () => undefined };
+    const { view } = await renderHome({ repository, connectionState: offlineState });
+
+    expect(await view.findByText('오프라인 읽기 전용')).toBeOnTheScreen();
+    expect(view.getByText('도란도란 우리집')).toBeOnTheScreen();
+    expect(view.getByRole('button', { name: '오늘 출석' })).toBeDisabled();
+    expect(view.getByRole('button', { name: '먹기' })).toBeDisabled();
   });
 
   it('guides an onboarded user without a house to the creation flow', async () => {

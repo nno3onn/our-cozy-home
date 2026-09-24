@@ -1,5 +1,6 @@
 import { DemoRepository } from '../demo/DemoRepository';
 import { createRepository } from '../createRepository';
+import { OnlineGuardedHomeRepository } from '../OnlineGuardedHomeRepository';
 import { SupabaseRepository } from '../supabase/SupabaseRepository';
 
 describe('createRepository', () => {
@@ -25,11 +26,10 @@ describe('createRepository', () => {
 
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(result.repository).toBeInstanceOf(SupabaseRepository);
+      expect(result.repository).toBeInstanceOf(OnlineGuardedHomeRepository);
       expect(result.repository).not.toBeInstanceOf(DemoRepository);
-      if (result.repository instanceof SupabaseRepository) {
-        result.repository.dispose();
-      }
+      expect(result.supabaseRepository).toBeInstanceOf(SupabaseRepository);
+      result.supabaseRepository?.dispose();
     }
   });
 });

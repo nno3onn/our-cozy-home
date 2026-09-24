@@ -3,6 +3,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { RepositoryProvider } from '@/repositories/RepositoryContext';
 import { DemoRepository } from '@/repositories/demo/DemoRepository';
+import { ConnectionProvider } from '@/network/ConnectionProvider';
+import type { ConnectionState } from '@/network/connectionState';
 
 import { DecorateScreen } from '../DecorateScreen';
 
@@ -38,5 +40,23 @@ describe('DecorateScreen', () => {
     await waitFor(() => expect(client.isMutating()).toBe(0));
     await view.unmount();
     client.clear();
+  });
+
+  it('keeps placement details visible but disables replacement offline', async () => {
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: Infinity } } });
+    const offlineState: ConnectionState = { isOnline: () => false, subscribe: () => () => undefined };
+    const view = await render(
+      <ConnectionProvider state={offlineState}>
+        <QueryClientProvider client={client}>
+          <RepositoryProvider repository={new DemoRepository()}>
+            <DecorateScreen />
+          </RepositoryProvider>
+        </QueryClientProvider>
+      </ConnectionProvider>,
+    );
+
+    expect(await view.findByText('오프라인 읽기 전용')).toBeOnTheScreen();
+    expect(view.getByText('복숭아 조개 쿠션 배치 중')).toBeOnTheScreen();
+    expect(view.getByRole('button', { name: '선택한 가구 놓기' })).toBeDisabled();
   });
 });
