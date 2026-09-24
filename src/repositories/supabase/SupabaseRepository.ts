@@ -159,6 +159,15 @@ export class SupabaseRepository implements HomeRepository {
     const { data, error } = await this.client.rpc('purchase_item' as never, {
       p_item_definition_id: input.itemDefinitionId, p_request_key: input.requestId,
     } as never);
+    if (error?.code === 'P0001' && error.message === 'insufficient_coins') {
+      let details: Record<string, unknown> | undefined;
+      try {
+        details = JSON.parse(error.details ?? '') as Record<string, unknown>;
+      } catch {
+        details = undefined;
+      }
+      throw new DomainError('conflict', 'insufficient_coins', details);
+    }
     if (error) throw mapSupabaseError(error);
     return this.mapPurchaseResult(data, input.requestId);
   }
