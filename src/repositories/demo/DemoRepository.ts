@@ -12,6 +12,9 @@ import type {
   InviteAcceptance,
   HomeSnapshot,
   MemorySummary,
+  CreateMemoryDraftInput,
+  MemoryDraftResult,
+  MemoryShareResult,
   PlaceItemInput,
   PurchaseItemInput,
   PurchaseResult,
@@ -29,6 +32,7 @@ function clone<T>(value: T): T {
 export class DemoRepository implements HomeRepository {
   private state: DemoState = clone(demoSeed);
   private purchaseResults = new Map<string, PurchaseResult>();
+  private draftResults = new Map<string, CreateMemoryDraftInput>();
 
   async createHouse(_input: CreateHouseInput): Promise<HouseCreation> {
     throw new Error('demo_house_creation_not_available');
@@ -139,6 +143,17 @@ export class DemoRepository implements HomeRepository {
     return clone(this.state.memories);
   }
 
+  async createMemoryDraft(input: CreateMemoryDraftInput): Promise<MemoryDraftResult> {
+    const id = `draft-${this.draftResults.size + 1}`;
+    this.draftResults.set(id, clone(input));
+    return { id, status: 'private_draft' };
+  }
+
+  async shareMemoryDraft(memoryId: string): Promise<MemoryShareResult> {
+    if (!this.draftResults.has(memoryId)) throw new Error('memory_draft_not_found');
+    return { memoryId, houseId: this.state.home.house.id, viewerCount: this.state.home.members.length, result: 'shared' };
+  }
+
   async listHabitLearning(): Promise<HabitLearningSummary[]> {
     return clone(this.state.habitLearning);
   }
@@ -146,5 +161,6 @@ export class DemoRepository implements HomeRepository {
   async resetDemo(): Promise<void> {
     this.state = clone(demoSeed);
     this.purchaseResults.clear();
+    this.draftResults.clear();
   }
 }

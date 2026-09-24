@@ -164,4 +164,20 @@ describe('SupabaseRepository', () => {
     await expect(repository.placeItem({ ownedItemId: 'owned-1', slotId: 'floor-accent-left', expectedVersion: 1 })).resolves.toEqual({ id: 'placement-1', ownedItemId: 'owned-1', slotId: 'floor-accent-left', version: 2 });
     expect(rpc).toHaveBeenCalledWith('place_owned_item', { p_owned_item_id: 'owned-1', p_slot_id: 'floor-accent-left', p_expected_version: 1 });
   });
+
+  it('creates a private draft without accepting a client supplied owner or house', async () => {
+    const rpc = jest.fn().mockResolvedValue({ data: 'memory-1', error: null });
+    const repository = new SupabaseRepository({ rpc } as unknown as SupabaseClient<Database>);
+
+    await expect(repository.createMemoryDraft({ title: '혼자 쓴 기록', body: '나만 보는 글', occurredOn: '2026-09-24' })).resolves.toEqual({ id: 'memory-1', status: 'private_draft' });
+    expect(rpc).toHaveBeenCalledWith('create_memory_draft', { p_title: '혼자 쓴 기록', p_body: '나만 보는 글', p_occurred_on: '2026-09-24' });
+  });
+
+  it('shares a draft through the server-owned active-member snapshot', async () => {
+    const rpc = jest.fn().mockResolvedValue({ data: [{ memory_id: 'memory-1', house_id: 'house-1', viewer_count: 3, result: 'shared' }], error: null });
+    const repository = new SupabaseRepository({ rpc } as unknown as SupabaseClient<Database>);
+
+    await expect(repository.shareMemoryDraft('memory-1')).resolves.toEqual({ memoryId: 'memory-1', houseId: 'house-1', viewerCount: 3, result: 'shared' });
+    expect(rpc).toHaveBeenCalledWith('share_memory_draft', { p_memory_id: 'memory-1' });
+  });
 });

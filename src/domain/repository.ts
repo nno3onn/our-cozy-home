@@ -17,6 +17,9 @@ import type {
   PurchaseItemInput,
   PurchaseResult,
   RoomPlacement,
+  CreateMemoryDraftInput,
+  MemoryDraftResult,
+  MemoryShareResult,
 } from './models';
 
 export interface HomeRepository {
@@ -33,5 +36,7 @@ export interface HomeRepository {
   performAnimalAction(animalId: string, action: AnimalAction): Promise<Animal>;
   placeItem(input: PlaceItemInput): Promise<RoomPlacement>;
   listMemories(): Promise<MemorySummary[]>;
+  createMemoryDraft(input: CreateMemoryDraftInput): Promise<MemoryDraftResult>;
+  shareMemoryDraft(memoryId: string): Promise<MemoryShareResult>;
   listHabitLearning(): Promise<HabitLearningSummary[]>;
 }

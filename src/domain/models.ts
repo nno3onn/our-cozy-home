@@ -118,6 +118,10 @@ export type MemorySummary = {
   preview: string;
 };
 
+export type CreateMemoryDraftInput = { title: string; body: string; occurredOn: string };
+export type MemoryDraftResult = { id: string; status: 'private_draft' };
+export type MemoryShareResult = { memoryId: string; houseId: string; viewerCount: number; result: 'shared' | 'already_shared' };
+
 export type HabitLearningSummary = {
   id: string;
   learnerAnimalId: string;

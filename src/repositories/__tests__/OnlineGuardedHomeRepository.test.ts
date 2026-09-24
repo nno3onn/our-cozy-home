@@ -18,6 +18,8 @@ function createRepository(): jest.Mocked<HomeRepository> {
     performAnimalAction: jest.fn(),
     placeItem: jest.fn(),
     listMemories: jest.fn().mockResolvedValue([]),
+    createMemoryDraft: jest.fn(),
+    shareMemoryDraft: jest.fn(),
     listHabitLearning: jest.fn().mockResolvedValue([]),
   };
 }
