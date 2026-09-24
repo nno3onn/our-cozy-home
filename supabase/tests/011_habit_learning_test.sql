@@ -1,0 +1,13 @@
+begin;
+select plan(9);
+select has_table('public','habit_learning');
+select has_table('public','habit_learning_days');
+select has_table('public','habit_learning_participants');
+select has_table('public','learned_habits');
+select has_function('public','start_habit_learning',array['uuid','uuid','text']);
+select has_function('public','record_habit_activity',array['uuid']);
+select has_function('public','end_departed_habit_learning');
+select col_is_pk('public','habit_learning_days',array['learning_id','game_date']);
+select col_is_pk('public','learned_habits',array['animal_id','habit_id']);
+select * from finish();
+rollback;
