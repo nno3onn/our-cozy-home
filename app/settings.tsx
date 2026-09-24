@@ -8,5 +8,11 @@ export default function SettingsRoute() {
   const config = readRuntimeConfig();
   const mode = config.ok ? config.mode : 'supabase';
 
-  return <SettingsScreen mode={mode} onOpenAssets={() => router.push('/dev/assets')} />;
+  return (
+    <SettingsScreen
+      mode={mode}
+      onLeftHouse={() => router.replace('/house/choose')}
+      onOpenAssets={() => router.push('/dev/assets')}
+    />
+  );
 }

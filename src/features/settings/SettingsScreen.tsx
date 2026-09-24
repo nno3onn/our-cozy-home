@@ -22,9 +22,11 @@ function canResetDemo(repository: HomeRepository): repository is ResettableRepos
 
 export function SettingsScreen({
   mode,
+  onLeftHouse,
   onOpenAssets,
 }: {
   mode: AppMode;
+  onLeftHouse?: () => void;
   onOpenAssets?: () => void;
 }) {
   const repository = useRepository();
@@ -64,7 +66,13 @@ export function SettingsScreen({
             <AppText variant="heading">계정</AppText>
             <AppText tone="muted" variant="caption">로그아웃하면 이전 사용자 캐시가 기기에서 제거돼요.</AppText>
             <AppButton label="로그아웃" onPress={() => void auth.signOut()} tone="danger" />
-            <HouseLeaveControls onLeave={() => repository.leaveHouse()} onLeft={() => void queryClient.resetQueries()} />
+            <HouseLeaveControls
+              onLeave={() => repository.leaveHouse()}
+              onLeft={() => {
+                void queryClient.resetQueries();
+                onLeftHouse?.();
+              }}
+            />
           </Panel>
         ) : null}
 
