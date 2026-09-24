@@ -46,5 +46,7 @@ export interface HomeRepository {
   getMemoryContributions(memoryId: string): Promise<MemoryContribution[]>;
   uploadMemoryPhoto(input: MemoryPhotoUploadInput): Promise<string>;
   getOwnMemoryContribution(memoryId: string): Promise<string>;
+  reviseMemoryContribution(contributionId: string, body: string): Promise<string>;
+  deleteMemoryContribution(contributionId: string): Promise<string>;
   listHabitLearning(): Promise<HabitLearningSummary[]>;
 }

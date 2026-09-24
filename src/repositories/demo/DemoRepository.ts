@@ -165,6 +165,8 @@ export class DemoRepository implements HomeRepository {
   async getMemoryContributions(_memoryId: string): Promise<MemoryContribution[]> { return []; }
   async uploadMemoryPhoto(_input: MemoryPhotoUploadInput): Promise<string> { return `photo-${Date.now()}`; }
   async getOwnMemoryContribution(memoryId: string): Promise<string> { return `contribution-${memoryId}`; }
+  async reviseMemoryContribution(contributionId: string, _body: string): Promise<string> { return contributionId; }
+  async deleteMemoryContribution(contributionId: string): Promise<string> { return contributionId; }
 
   async listHabitLearning(): Promise<HabitLearningSummary[]> {
     return clone(this.state.habitLearning);

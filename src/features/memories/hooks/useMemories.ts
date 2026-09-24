@@ -14,3 +14,8 @@ export function useArchivedMemories() {
   const repository = useRepository();
   return useQuery({ queryKey: archivedMemoriesKey, queryFn: () => repository.listArchivedMemories() });
 }
+
+export function useMemoryContributions(memoryId: string) {
+  const repository = useRepository();
+  return useQuery({ queryKey: ['memories', memoryId, 'contributions'], queryFn: () => repository.getMemoryContributions(memoryId), enabled: Boolean(memoryId) });
+}

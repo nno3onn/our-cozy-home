@@ -113,6 +113,8 @@ describe('HomeScreen', () => {
       getMemoryContributions: jest.fn().mockResolvedValue([]),
       uploadMemoryPhoto: jest.fn(),
       getOwnMemoryContribution: jest.fn(),
+      reviseMemoryContribution: jest.fn(),
+      deleteMemoryContribution: jest.fn(),
       listHabitLearning: jest.fn().mockResolvedValue([]),
     };
     const onCreateHouse = jest.fn();
