@@ -7,16 +7,11 @@ describe('SupabaseRepository', () => {
   beforeEach(() => jest.useFakeTimers());
   afterEach(() => jest.useRealTimers());
 
-  it('returns a domain error for commands whose server RPC has not been implemented', async () => {
-    const repository = new SupabaseRepository(createSupabaseClient({
-      supabaseUrl: 'https://example.supabase.co',
-      supabasePublishableKey: 'publishable-test-key',
-    }));
+  it('maps a server error while loading memory summaries', async () => {
+    const rpc = jest.fn().mockResolvedValue({ data: null, error: { code: '42501', message: 'permission denied' } });
+    const repository = new SupabaseRepository({ rpc } as unknown as SupabaseClient<Database>);
 
-    await expect(repository.listMemories()).rejects.toMatchObject({
-      code: 'not_implemented',
-    });
-    repository.dispose();
+    await expect(repository.listMemories()).rejects.toMatchObject({ code: 'forbidden' });
   });
 
   it('stops session refresh work when the repository is disposed', () => {
@@ -179,5 +174,48 @@ describe('SupabaseRepository', () => {
 
     await expect(repository.shareMemoryDraft('memory-1')).resolves.toEqual({ memoryId: 'memory-1', houseId: 'house-1', viewerCount: 3, result: 'shared' });
     expect(rpc).toHaveBeenCalledWith('share_memory_draft', { p_memory_id: 'memory-1' });
+  });
+
+  it('reads the current-house shelf and personal archive through separate server scopes', async () => {
+    const rpc = jest.fn()
+      .mockResolvedValueOnce({
+        data: [{ id: 'memory-current', title: '현재 추억', occurred_on: '2026-09-24', participant_names: ['모모', '밤비'], contribution_count: 2, furniture_owned_item_id: null, preview: '같이 남긴 기록' }],
+        error: null,
+      })
+      .mockResolvedValueOnce({
+        data: [{ id: 'memory-archive', title: '보관한 추억', occurred_on: '2026-09-20', participant_names: ['모모'], contribution_count: 1, furniture_owned_item_id: null, preview: '퇴장 시점의 기록' }],
+        error: null,
+      });
+    const repository = new SupabaseRepository({ rpc } as unknown as SupabaseClient<Database>);
+
+    await expect(repository.listMemories()).resolves.toEqual([
+      expect.objectContaining({ id: 'memory-current', contributionCount: 2 }),
+    ]);
+    await expect(repository.listArchivedMemories()).resolves.toEqual([
+      expect.objectContaining({ id: 'memory-archive', contributionCount: 1 }),
+    ]);
+    expect(rpc).toHaveBeenNthCalledWith(1, 'list_memory_summaries', { p_scope: 'current' });
+    expect(rpc).toHaveBeenNthCalledWith(2, 'list_memory_summaries', { p_scope: 'archive' });
+  });
+
+  it('sends a contribution body only to the server-owned contribution RPC', async () => {
+    const rpc = jest.fn().mockResolvedValue({ data: 'contribution-1', error: null });
+    const repository = new SupabaseRepository({ rpc } as unknown as SupabaseClient<Database>);
+
+    await expect(repository.addMemoryContribution({ memoryId: 'memory-1', body: '함께 산책했어' })).resolves.toBe('contribution-1');
+    expect(rpc).toHaveBeenCalledWith('add_memory_contribution', { p_memory_id: 'memory-1', p_body: '함께 산책했어' });
+  });
+
+  it('maps server-filtered contribution details without reconstructing access rules in the app', async () => {
+    const rpc = jest.fn().mockResolvedValue({
+      data: [{ contribution_id: 'contribution-1', author_profile_id: 'profile-1', display_name: '모모', body: '퇴장 전 기록', published_at: '2026-09-24T10:00:00Z' }],
+      error: null,
+    });
+    const repository = new SupabaseRepository({ rpc } as unknown as SupabaseClient<Database>);
+
+    await expect(repository.getMemoryContributions('memory-1')).resolves.toEqual([
+      { id: 'contribution-1', authorProfileId: 'profile-1', displayName: '모모', body: '퇴장 전 기록', publishedAt: '2026-09-24T10:00:00Z' },
+    ]);
+    expect(rpc).toHaveBeenCalledWith('get_memory_contribution_detail', { p_memory_id: 'memory-1' });
   });
 });

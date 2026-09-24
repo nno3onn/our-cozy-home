@@ -23,6 +23,8 @@ import type {
   CreateMemoryDraftInput,
   MemoryDraftResult,
   MemoryShareResult,
+  MemoryContributionInput,
+  MemoryContribution,
 } from '@/domain/models';
 import type { HomeRepository } from '@/domain/repository';
 import type { Database } from '@/types/database.generated';
@@ -290,7 +292,22 @@ export class SupabaseRepository implements HomeRepository {
   }
 
   async listMemories(): Promise<MemorySummary[]> {
-    throw new DomainError('not_implemented', 'memories_repository_not_implemented');
+    return this.listMemorySummaries('current');
+  }
+
+  async listArchivedMemories(): Promise<MemorySummary[]> {
+    return this.listMemorySummaries('archive');
+  }
+
+  private async listMemorySummaries(scope: 'current' | 'archive'): Promise<MemorySummary[]> {
+    const { data, error } = await this.client.rpc('list_memory_summaries' as never, { p_scope: scope } as never);
+    if (error) throw mapSupabaseError(error);
+    return ((data as { id: string; title: string; occurred_on: string; participant_names: string[]; contribution_count: number; furniture_owned_item_id: string | null; preview: string }[] | null) ?? [])
+      .map((row) => ({
+        id: row.id, title: row.title, occurredOn: row.occurred_on,
+        participantNames: row.participant_names ?? [], contributionCount: row.contribution_count,
+        furnitureOwnedItemId: row.furniture_owned_item_id, preview: row.preview,
+      }));
   }
 
   async createMemoryDraft(input: CreateMemoryDraftInput): Promise<MemoryDraftResult> {
@@ -308,6 +325,22 @@ export class SupabaseRepository implements HomeRepository {
     const row = (data as { memory_id: string; house_id: string; viewer_count: number; result: MemoryShareResult['result'] }[] | null)?.[0];
     if (!row) throw new DomainError('unknown', 'memory_share_result_missing');
     return { memoryId: row.memory_id, houseId: row.house_id, viewerCount: row.viewer_count, result: row.result };
+  }
+  async addMemoryContribution(input: MemoryContributionInput): Promise<string> {
+    const { data, error } = await this.client.rpc('add_memory_contribution' as never, { p_memory_id: input.memoryId, p_body: input.body } as never);
+    if (error) throw mapSupabaseError(error);
+    if (typeof data !== 'string') throw new DomainError('unknown', 'memory_contribution_result_missing');
+    return data;
+  }
+
+  async getMemoryContributions(memoryId: string): Promise<MemoryContribution[]> {
+    const { data, error } = await this.client.rpc('get_memory_contribution_detail' as never, { p_memory_id: memoryId } as never);
+    if (error) throw mapSupabaseError(error);
+    return ((data as { contribution_id: string; author_profile_id: string; display_name: string; body: string; published_at: string }[] | null) ?? [])
+      .map((row) => ({
+        id: row.contribution_id, authorProfileId: row.author_profile_id, displayName: row.display_name,
+        body: row.body, publishedAt: row.published_at,
+      }));
   }
 
   async listHabitLearning(): Promise<HabitLearningSummary[]> {

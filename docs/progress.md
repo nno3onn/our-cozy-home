@@ -43,6 +43,8 @@
   local/remote SQL 권한 검증 전
 - 진행: private `memory-photos` bucket과 기본 거부 Storage 기반을 추가했으나,
   local/remote Storage API 검증 및 추억 viewer grant 연결 전
+- 진행: 추억 기여·revision·사진 메타데이터, 현재 집/개인 보관함 분리 조회와 탈퇴
+  시점 cutoff RPC를 추가했으나, 원격 migration 적용 및 다계정 권한 검증 전
 - 진행: 개인 wallet·거래 원장·KST 하루 100코인 출석 RPC와 홈 실행 UI를 추가했으나,
   local/remote DB 적용 및 동시 호출 검증 전
 - 진행: 실제 Supabase repository를 온라인 가드로 감싸고, 방·꾸미기·상점·입주 화면의
@@ -51,7 +53,7 @@
 - 앱 코드: Expo SDK 57 기반 데모가 실행 가능
 - Supabase 도메인 스키마·함수·정책: 미구현(로컬 CLI 기반만 완료)
 - 데모 모드: 구현됨(메모리 기반이며 앱 재실행 시 초기화)
-- 자동화 테스트: 카탈로그·repository·배치·UI 흐름 82개 통과(아래 검증 원장 참고)
+- 자동화 테스트: 카탈로그·repository·배치·UI 흐름 100개 통과(아래 검증 원장 참고)
 - 실제 Supabase 계정 검증: 미수행
 - 실제 iOS·Android 기기 검증: 미수행
 
@@ -78,6 +80,7 @@
 | 6.0 | 공동 방 배치 | placement schema·예상 버전 RPC·탈퇴 배치 회수·실제 snapshot 조회 작성 완료 | repository RPC mapping Jest·typecheck 통과 | local/remote 동시 이동·슬롯 점유·탈퇴 경쟁·RLS 미검증 |
 | 6.1 | 실제 방 snapshot·오프라인 읽기 전용 | online repository 가드, 마지막 query snapshot 표시, 방·상점·꾸미기·입주 UI 명령 제한, foreground/reconnect refetch 작성 완료 | 연결 상태·가드·캐시 정리·오프라인 UI Jest 통과 | 브라우저 네트워크 토글, local Supabase 중단/복구, 네이티브 reachability 미검증 |
 | 7.0 | 추억 초안·공유 대상 snapshot | private draft·명시적 share RPC, `memory_viewers` snapshot RLS, 작성 화면·공유 대상 표시 작성 완료 | repository mapping·작성 UI Jest 통과 | local/remote SQL RLS·다계정 공유 검증 미실행 |
+| 7.1 | 기여 revision·탈퇴 보관함 | 기여 단일 행+revision, 사진 메타데이터, 직접 기여자 archive·cutoff 서버 조회와 원본 삭제 전파 작성 완료 | repository current/archive mapping·SQL pgTAP 시나리오 파일·Jest 통과 | Docker 부재로 pgTAP 미실행, 원격 migration·A/B 탈퇴 후 cutoff 미검증 |
 | 3 | 로그인, 집 생성, 초대·입장·퇴장·승계 | 시작 전 | 시작 전 | 미수행 |
 | 4 | 출석, 구매, 인벤토리, 공동 배치 | 데모 배치만 완료 | 배치 버전 통과 | 서버 미수행 |
 | 5 | 추억 작성, 접근 범위, 추억 가구 | 데모 열람만 완료 | 목록·상세 통과 | 서버 권한 미수행 |
@@ -114,6 +117,7 @@
 | 2026-09-23 | 서버 카탈로그 | Node 22 `catalog:seed`, Jest 전체, typecheck·lint·웹 export | 28 suites·82 tests, 55종·고정 슬롯 SQL seed, DB 가격 mapping, 8개 카테고리 filter, `/shop` 웹 번들 확인 | local/remote Supabase migration·seed와 실제 계정 상점 조회는 미검증; Jest는 async handle 경고로 `--forceExit` 사용 |
 | 2026-09-23 | 구매·인벤토리 | Node 22 Jest·typecheck·lint | request-key 재시도, DB RPC mapping, 상점 구매 결과 조정·개인 보관함 경로 확인 | `purchase_inventory` migration의 local/remote transaction·RLS·동시 구매는 미검증 |
 | 2026-09-24 | 오프라인 방 복구 | Node 22 connection state·repository guard·room/shop/decorate/invite UI Jest, typecheck | offline 상태에서 마지막 방·카탈로그·배치 정보가 보이고 출석·입주·구매·배치·동물 행동 명령이 제한되는 경로, 로그아웃 시 active snapshot 제거, foreground/reconnect invalidate 경로를 코드·Jest로 확인 | 실제 browser network toggle, local/remote Supabase 중단/복구와 iOS·Android reachability는 미검증 |
+| 2026-09-24 | 추억 기여·개인 보관함 | Node 22 Jest·typecheck·lint | current/archive 분리 RPC mapping, 기여 RPC mapping, 30개 pgTAP 시나리오(직접 기여·revision·탈퇴 cutoff·원본 삭제·재입주)를 코드·정적 파일로 확인 | Docker daemon 부재로 `008_memory_contributions_access_test.sql` 미실행; 원격 migration·실제 A/B 계정 검증 미수행 |
 
 ## 실제 환경 완료 시나리오
 
@@ -149,7 +153,9 @@ placeholder를 방에서 확인한 것과 최종 에셋 확인을 별도로 기�
    동시성을 검증한다.
 4. 탈퇴 migration을 원격에 적용하고 실제 탈퇴 직후 접근 차단·승계를 검증한다.
 5. item/placement schema 도입 시 탈퇴 RPC에 개인 소유 가구 배치 회수를 추가한다.
-6. 이후 출석·구매, 추억 권한 스냅샷, 2인 완성, 쌍별 버릇 학습 순서로 연결한다.
+6. `20260921001400`과 `20260921001500`을 원격에 적용하고, A/B 계정으로 탈퇴
+   시점 이후 revision·사진 차단, 원작자 삭제 전파, 재입주 grant 미복원을 확인한다.
+7. 이후 2인 추억 가구 완성, 쌍별 버릇 학습 순서로 연결한다.
 
 아직 자동 검증하지 못한 핵심 규칙은 출석·구매 동시성, 활성 집 하나, 정원 초과,
 탈퇴 후 RLS 차단, 추억 가구 멱등 생성, 같은 날짜 학습 중복 방지와 타 사용자 비공개

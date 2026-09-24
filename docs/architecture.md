@@ -1,6 +1,6 @@
 # 우리집 기술 아키텍처
 
-최종 수정일: 2026-09-22
+최종 수정일: 2026-09-24
 
 제품 규칙은 [`product-spec.md`](product-spec.md), 상세 설계와 테스트 행렬은
 [`superpowers/specs/2026-09-19-woorijip-design.md`](superpowers/specs/2026-09-19-woorijip-design.md),
@@ -158,6 +158,15 @@ migration으로 관리한다. 적용된 파일을 덮어쓰지 않는다. 앱 �
 현재 시드는 공통 설정, 40개 상점 아이템, 15개 추억 가구와 방 슬롯을 멱등하게
 생성한다. 기본 버릇 seed는 버릇 학습 schema Issue에서 추가한다. 생성 DB 타입은
 `src/types/database.generated.ts`로 관리한다.
+
+공동 추억은 `memory_viewers`의 공유 시점 membership snapshot과
+`memory_contributions`의 직접 기여를 별도로 저장한다. 한 사용자당 contribution은 하나고
+수정은 `memory_contribution_revisions`에만 추가된다. 탈퇴 trigger는 해당 viewer grant에
+`access_ended_at`을 기록하고, 직접 기여가 있는 경우에만 `archive_retained`를 남긴다.
+Security definer 조회 함수는 현재 멤버에게는 최신 비삭제 revision/사진 메타데이터를,
+보관함 사용자에게는 cutoff 이전의 비삭제 원본만 반환한다. 원본 삭제는 모든 scope에서
+즉시 반영되고 재입주는 종료된 기존 grant를 되살리지 않는다. Storage object의 signed URL
+발급과 실제 업로드는 다음 Storage Issue에서 이 조회 범위에 결합한다.
 
 ## 검증 계층
 
