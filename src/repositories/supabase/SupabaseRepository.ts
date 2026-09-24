@@ -238,15 +238,15 @@ export class SupabaseRepository implements HomeRepository {
     if (animalsResult.error) {
       throw mapSupabaseError(animalsResult.error);
     }
-    const ownedItemsResult = await (this.client.from('owned_items' as never) as any)
-      .select('*')
-      .eq('profile_id', authData.user.id)
-      .is('recovered_at', null);
-    if (ownedItemsResult.error) throw mapSupabaseError(ownedItemsResult.error);
     const placementsResult = await (this.client.from('room_placements' as never) as any)
       .select('*')
       .eq('house_id', houseResult.data.id);
     if (placementsResult.error) throw mapSupabaseError(placementsResult.error);
+    const ownedItemsResult = await (this.client.from('owned_items' as never) as any)
+      .select('*')
+      .is('recovered_at', null)
+      .or(`profile_id.eq.${authData.user.id},id.in.(${placementsResult.data.map((placement: { owned_item_id: string }) => placement.owned_item_id).join(',') || '00000000-0000-0000-0000-000000000000'})`);
+    if (ownedItemsResult.error) throw mapSupabaseError(ownedItemsResult.error);
 
     return {
       currentUserId: authData.user.id,
