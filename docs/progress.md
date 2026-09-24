@@ -81,6 +81,7 @@
 | 6.1 | 실제 방 snapshot·오프라인 읽기 전용 | online repository 가드, 마지막 query snapshot 표시, 방·상점·꾸미기·입주 UI 명령 제한, foreground/reconnect refetch 작성 완료 | 연결 상태·가드·캐시 정리·오프라인 UI Jest 통과 | 브라우저 네트워크 토글, local Supabase 중단/복구, 네이티브 reachability 미검증 |
 | 7.0 | 추억 초안·공유 대상 snapshot | private draft·명시적 share RPC, `memory_viewers` snapshot RLS, 작성 화면·공유 대상 표시 작성 완료 | repository mapping·작성 UI Jest 통과 | local/remote SQL RLS·다계정 공유 검증 미실행 |
 | 7.1 | 기여 revision·탈퇴 보관함 | 기여 단일 행+revision, 사진 메타데이터, 직접 기여자 archive·cutoff 서버 조회와 원본 삭제 전파 작성 완료 | repository current/archive mapping·SQL pgTAP 시나리오 파일·Jest 통과 | Docker 부재로 pgTAP 미실행, 원격 migration·A/B 탈퇴 후 cutoff 미검증 |
+| 7.2 | 두 명 기여·추억 가구 | memory row lock, 출처 고유 memory item·완료 event, 현재 viewer 기반 방 노출 정책과 snapshot item 조회 작성 완료 | 22개 pgTAP 시나리오 파일·typecheck 통과 | Docker 부재로 pgTAP 미실행, 원격 migration·동시 두 번째 기여·다계정 방 노출 미검증 |
 | 3 | 로그인, 집 생성, 초대·입장·퇴장·승계 | 시작 전 | 시작 전 | 미수행 |
 | 4 | 출석, 구매, 인벤토리, 공동 배치 | 데모 배치만 완료 | 배치 버전 통과 | 서버 미수행 |
 | 5 | 추억 작성, 접근 범위, 추억 가구 | 데모 열람만 완료 | 목록·상세 통과 | 서버 권한 미수행 |
@@ -118,6 +119,7 @@
 | 2026-09-23 | 구매·인벤토리 | Node 22 Jest·typecheck·lint | request-key 재시도, DB RPC mapping, 상점 구매 결과 조정·개인 보관함 경로 확인 | `purchase_inventory` migration의 local/remote transaction·RLS·동시 구매는 미검증 |
 | 2026-09-24 | 오프라인 방 복구 | Node 22 connection state·repository guard·room/shop/decorate/invite UI Jest, typecheck | offline 상태에서 마지막 방·카탈로그·배치 정보가 보이고 출석·입주·구매·배치·동물 행동 명령이 제한되는 경로, 로그아웃 시 active snapshot 제거, foreground/reconnect invalidate 경로를 코드·Jest로 확인 | 실제 browser network toggle, local/remote Supabase 중단/복구와 iOS·Android reachability는 미검증 |
 | 2026-09-24 | 추억 기여·개인 보관함 | Node 22 Jest·typecheck·lint | current/archive 분리 RPC mapping, 기여 RPC mapping, 30개 pgTAP 시나리오(직접 기여·revision·탈퇴 cutoff·원본 삭제·재입주)를 코드·정적 파일로 확인 | Docker daemon 부재로 `008_memory_contributions_access_test.sql` 미실행; 원격 migration·실제 A/B 계정 검증 미수행 |
+| 2026-09-24 | 두 명 추억 가구 완료 | Node 22 typecheck·migration/pgTAP 정적 점검 | 두 명 distinct contribution 완료, memory-id 출처 고유, 완료 event, 세 번째 기여와 revision 재시도 비중복, viewer 기반 방 가구 노출 시나리오를 작성 | Docker daemon 부재로 `009_memory_completion_furniture_test.sql` 미실행; 원격 migration·실제 동시 기여 및 방 RLS 미검증 |
 
 ## 실제 환경 완료 시나리오
 
