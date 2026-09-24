@@ -36,4 +36,23 @@ describe('memory screens', () => {
     expect(view.getByText('기여 3명')).toBeOnTheScreen();
     expect(view.getByText(/서로 좋아하는 노래/)).toBeOnTheScreen();
   });
+
+  it('separates a departed contributor archive from current-house memories', async () => {
+    const repository = new DemoRepository();
+    jest.spyOn(repository, 'listArchivedMemories').mockResolvedValue([
+      {
+        id: 'archive-1', title: '보관한 산책', occurredOn: '2026-09-20', participantNames: ['나래'],
+        contributionCount: 1, furnitureOwnedItemId: null, preview: '퇴장 시점의 기록',
+      },
+    ]);
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: Infinity } } });
+    const view = await render(
+      <QueryClientProvider client={client}>
+        <RepositoryProvider repository={repository}><MemoriesScreen onOpenMemory={jest.fn()} /></RepositoryProvider>
+      </QueryClientProvider>,
+    );
+
+    expect(await view.findByText('개인 보관함')).toBeOnTheScreen();
+    expect(view.getByText('보관한 산책')).toBeOnTheScreen();
+  });
 });

@@ -15,6 +15,8 @@ import type {
   CreateMemoryDraftInput,
   MemoryDraftResult,
   MemoryShareResult,
+  MemoryContributionInput,
+  MemoryContribution,
   PlaceItemInput,
   PurchaseItemInput,
   PurchaseResult,
@@ -143,6 +145,10 @@ export class DemoRepository implements HomeRepository {
     return clone(this.state.memories);
   }
 
+  async listArchivedMemories(): Promise<MemorySummary[]> {
+    return [];
+  }
+
   async createMemoryDraft(input: CreateMemoryDraftInput): Promise<MemoryDraftResult> {
     const id = `draft-${this.draftResults.size + 1}`;
     this.draftResults.set(id, clone(input));
@@ -153,6 +159,9 @@ export class DemoRepository implements HomeRepository {
     if (!this.draftResults.has(memoryId)) throw new Error('memory_draft_not_found');
     return { memoryId, houseId: this.state.home.house.id, viewerCount: this.state.home.members.length, result: 'shared' };
   }
+  async addMemoryContribution(_input: MemoryContributionInput): Promise<string> { return `contribution-${Date.now()}`; }
+
+  async getMemoryContributions(_memoryId: string): Promise<MemoryContribution[]> { return []; }
 
   async listHabitLearning(): Promise<HabitLearningSummary[]> {
     return clone(this.state.habitLearning);
