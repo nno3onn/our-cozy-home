@@ -362,6 +362,14 @@ export class SupabaseRepository implements HomeRepository {
     if (typeof data !== 'string') throw new DomainError('not_found', 'memory_contribution_not_found');
     return data;
   }
+  async reviseMemoryContribution(contributionId: string, body: string): Promise<string> {
+    const { data, error } = await this.client.rpc('revise_memory_contribution' as never, { p_contribution_id: contributionId, p_body: body } as never);
+    if (error) throw mapSupabaseError(error); if (typeof data !== 'string') throw new DomainError('unknown', 'memory_contribution_revision_missing'); return data;
+  }
+  async deleteMemoryContribution(contributionId: string): Promise<string> {
+    const { data, error } = await this.client.rpc('delete_memory_contribution' as never, { p_contribution_id: contributionId } as never);
+    if (error) throw mapSupabaseError(error); if (typeof data !== 'string') throw new DomainError('unknown', 'memory_contribution_delete_missing'); return data;
+  }
 
   async listHabitLearning(): Promise<HabitLearningSummary[]> {
     throw new DomainError('not_implemented', 'habit_repository_not_implemented');
