@@ -10,6 +10,7 @@ import { AppButton } from '@/components/ui/AppButton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Panel } from '@/components/ui/Panel';
 import { OfflineReadOnlyBanner } from '@/components/OfflineReadOnlyBanner';
+import { DomainError } from '@/domain/errors';
 import { useConnectionStatus } from '@/network/ConnectionProvider';
 import { useRepository } from '@/repositories/RepositoryContext';
 import { colors, radii, spacing } from '@/theme/tokens';
@@ -29,7 +30,14 @@ export function ShopScreen() {
   const purchase = useMutation({
     mutationFn: (input: { itemDefinitionId: string; requestId: string }) => repository.purchaseItem(input),
     onSuccess: (result) => setMessage(`${result.balance} 코인이 남았어요.`),
-    onError: async (_error, input) => {
+    onError: async (error, input) => {
+      if (error instanceof DomainError && error.message === 'insufficient_coins') {
+        const shortage = error.details?.shortage;
+        if (typeof shortage === 'number') {
+          setMessage(`코인이 ${shortage}만큼 부족해요.`);
+          return;
+        }
+      }
       setMessage('구매 결과를 확인 중이에요.');
       const recovered = await repository.getPurchaseResult(input.requestId).catch(() => null);
       setMessage(recovered ? `${recovered.balance} 코인이 남았어요.` : '구매 결과를 확인하지 못했어요. 같은 요청을 다시 시도해 주세요.');
