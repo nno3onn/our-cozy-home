@@ -8,7 +8,6 @@ import { DemoBanner } from '@/components/DemoBanner';
 import { ModeErrorScreen } from '@/components/ModeErrorScreen';
 import { readRuntimeConfig } from '@/config/env';
 import { createRepository } from '@/repositories/createRepository';
-import { SupabaseRepository } from '@/repositories/supabase/SupabaseRepository';
 import { getAuthRedirect, getPendingInviteRedirect } from '@/auth/routeGuard';
 import { AppText } from '@/components/ui/AppText';
 import { colors, spacing } from '@/theme/tokens';
@@ -26,8 +25,8 @@ export default function RootLayout() {
         <ModeErrorScreen reason={runtimeConfig.reason} />
       ) : repositoryResult && !repositoryResult.ok ? (
         <ModeErrorScreen reason={repositoryResult.reason} />
-      ) : runtimeConfig.mode === 'supabase' && repositoryResult?.ok && repositoryResult.repository instanceof SupabaseRepository ? (
-        <AuthProvider client={repositoryResult.repository.getClient()}><AuthenticatedRoutes /></AuthProvider>
+      ) : runtimeConfig.mode === 'supabase' && repositoryResult?.ok && repositoryResult.supabaseRepository ? (
+        <AuthProvider client={repositoryResult.supabaseRepository.getClient()}><AuthenticatedRoutes /></AuthProvider>
       ) : (
         <View style={{ flex: 1 }}>
           {runtimeConfig.mode === 'demo' ? <DemoBanner /> : null}

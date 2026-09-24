@@ -23,4 +23,14 @@ describe('query keys', () => {
     expect(queryClient.getQueryData(queryKeys.home.snapshot('user-b', 'house-a'))).toBe('b');
     queryClient.clear();
   });
+
+  it('also removes the active room snapshot because it is not a permission grant', () => {
+    const queryClient = new QueryClient();
+    queryClient.setQueryData(queryKeys.home.activeSnapshot, 'stale-room');
+
+    clearScopedCaches(queryClient, 'user-a');
+
+    expect(queryClient.getQueryData(queryKeys.home.activeSnapshot)).toBeUndefined();
+    queryClient.clear();
+  });
 });

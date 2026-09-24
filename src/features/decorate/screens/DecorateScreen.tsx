@@ -7,6 +7,8 @@ import { AppButton } from '@/components/ui/AppButton';
 import { AppText } from '@/components/ui/AppText';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Panel } from '@/components/ui/Panel';
+import { OfflineReadOnlyBanner } from '@/components/OfflineReadOnlyBanner';
+import { useConnectionStatus } from '@/network/ConnectionProvider';
 import { useHomeSnapshot } from '@/features/room/hooks/useHomeSnapshot';
 import { colors, radii, spacing } from '@/theme/tokens';
 
@@ -17,6 +19,7 @@ const SLOT_ID = 'floor-accent-left';
 
 export function DecorateScreen() {
   const router = useRouter();
+  const isOnline = useConnectionStatus();
   const homeQuery = useHomeSnapshot();
   const placeMutation = usePlaceItem();
   const selectedOwnedItemId = useDecorateStore((state) => state.selectedOwnedItemId);
@@ -61,6 +64,7 @@ export function DecorateScreen() {
     <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content}>
         <AppText variant="title">꾸미기</AppText>
+        {!isOnline ? <OfflineReadOnlyBanner /> : null}
         <AppButton label="상점 열기" onPress={() => router.push('/shop')} tone="secondary" />
         <Panel style={styles.previewPanel}>
           <AppText variant="heading">왼쪽 포근 자리</AppText>
@@ -105,7 +109,7 @@ export function DecorateScreen() {
             <AppText variant="label">선택: {selectedDefinition.nameKo}</AppText>
             <AppText tone="muted" variant="caption">소유자 {owner?.displayName ?? '알 수 없음'}</AppText>
             <AppButton
-              disabled={placeMutation.isPending || placement?.ownedItemId === selectedOwnedItem?.id}
+              disabled={!isOnline || placeMutation.isPending || placement?.ownedItemId === selectedOwnedItem?.id}
               label="선택한 가구 놓기"
               onPress={placeSelected}
             />

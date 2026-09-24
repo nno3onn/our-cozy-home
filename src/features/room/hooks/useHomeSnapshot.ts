@@ -2,8 +2,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import type { AnimalAction } from '@/domain/models';
 import { useRepository } from '@/repositories/RepositoryContext';
+import { queryKeys } from '@/repositories/queryKeys';
 
-export const homeSnapshotKey = ['home', 'snapshot'] as const;
+export const homeSnapshotKey = queryKeys.home.activeSnapshot;
 
 export function useHomeSnapshot() {
   const repository = useRepository();

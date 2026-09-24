@@ -136,6 +136,14 @@ background·inactive 상태에서는 반복 애니메이션과 타이머를 멈�
 시 세션, 멤버십과 화면 데이터를 다시 조회한다. 화면 종료, 집 변경, 로그아웃에서
 listener, Realtime, 사용자 범위 캐시와 서명 URL을 제거한다.
 
+Supabase 모드의 `OnlineGuardedHomeRepository`는 브라우저 연결 상태가 offline일 때
+집 생성·초대·입주·탈퇴·출석·구매·동물 행동·배치처럼 서버가 확정해야 하는 명령을
+`offline_read_only`로 거부한다. 읽기 query는 마지막 TanStack Query snapshot을 계속
+표시할 수 있지만, 그 캐시는 권한 근거가 아니다. 로그아웃 시 활성 방 snapshot도 함께
+제거하고, 앱이 foreground가 되거나 연결이 복구되면 snapshot을 무효화해 세션·멤버십을
+다시 검증한다. 웹은 `online`/`offline` browser event를 사용하며, 네이티브 실제
+reachability 검증은 Development Build 단계에서 별도 확인한다.
+
 사진 경로, 원문 초대 토큰과 인증 토큰은 로그에 남기지 않는다. 알림 본문은 비공개
 추억 내용을 포함하지 않는다. 계정 삭제는 탈퇴와 별도 흐름이며 본인의 프로필,
 초안, 기여 원본, 사진, 소유 데이터와 토큰을 정리하되 다른 사용자의 기여와 확정된
