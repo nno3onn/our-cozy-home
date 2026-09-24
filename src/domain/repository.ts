@@ -22,6 +22,7 @@ import type {
   MemoryShareResult,
   MemoryContributionInput,
   MemoryContribution,
+  MemoryPhotoUploadInput,
 } from './models';
 
 export interface HomeRepository {
@@ -43,5 +44,7 @@ export interface HomeRepository {
   shareMemoryDraft(memoryId: string): Promise<MemoryShareResult>;
   addMemoryContribution(input: MemoryContributionInput): Promise<string>;
   getMemoryContributions(memoryId: string): Promise<MemoryContribution[]>;
+  uploadMemoryPhoto(input: MemoryPhotoUploadInput): Promise<string>;
+  getOwnMemoryContribution(memoryId: string): Promise<string>;
   listHabitLearning(): Promise<HabitLearningSummary[]>;
 }
