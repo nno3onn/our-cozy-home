@@ -34,6 +34,9 @@ export function SettingsScreen({
   const clearDecorateSelection = useDecorateStore((state) => state.clearSelection);
   const [confirming, setConfirming] = useState(false);
   const [resetting, setResetting] = useState(false);
+  const [confirmingDeletion, setConfirmingDeletion] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
+  const [deletionMessage, setDeletionMessage] = useState<string | null>(null);
   const auth = useOptionalAuth();
 
   const resetDemo = async () => {
@@ -46,6 +49,25 @@ export function SettingsScreen({
       setConfirming(false);
     } finally {
       setResetting(false);
+    }
+  };
+
+  const requestAccountDeletion = async () => {
+    if (!auth) return;
+    setDeletingAccount(true);
+    setDeletionMessage(null);
+    try {
+      const result = await repository.requestAccountDeletion(crypto.randomUUID());
+      if (result.authDeletionComplete) {
+        await auth.signOut();
+        setDeletionMessage('계정 삭제가 완료되었어요.');
+      } else {
+        setDeletionMessage('개인 데이터 정리는 준비되었어요. 계정 삭제를 다시 시도해 주세요.');
+      }
+    } catch {
+      setDeletionMessage('계정 삭제를 시작하지 못했어요. 네트워크를 확인한 뒤 다시 시도해 주세요.');
+    } finally {
+      setDeletingAccount(false);
     }
   };
 
@@ -73,6 +95,19 @@ export function SettingsScreen({
                 onLeftHouse?.();
               }}
             />
+            {!confirmingDeletion ? (
+              <AppButton label="계정 삭제" onPress={() => setConfirmingDeletion(true)} tone="danger" />
+            ) : (
+              <View style={styles.confirmation}>
+                <AppText variant="label">정말 계정을 삭제할까요?</AppText>
+                <AppText tone="muted" variant="caption">집 퇴장과 가구 회수 뒤 개인 기록·사진·토큰이 정리돼요. 다른 친구의 기록과 완성 가구는 남아요.</AppText>
+                <View style={styles.row}>
+                  <AppButton disabled={deletingAccount} label="취소" onPress={() => setConfirmingDeletion(false)} tone="quiet" />
+                  <AppButton disabled={deletingAccount} label="계정 삭제 확인" onPress={() => void requestAccountDeletion()} tone="danger" />
+                </View>
+              </View>
+            )}
+            {deletionMessage ? <AppText tone="muted" variant="caption">{deletionMessage}</AppText> : null}
           </Panel>
         ) : null}
 

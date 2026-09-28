@@ -31,3 +31,9 @@ file_size_limit = "50MiB"
 # NOTIFICATION_WORKER_SECRET before it creates a service-role client.
 [functions.send-push]
 verify_jwt = false
+
+[functions.delete-account]
+verify_jwt = true
+
+[functions.reconcile-account-deletion]
+verify_jwt = false

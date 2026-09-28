@@ -45,6 +45,10 @@ export type HouseLeaveResult = {
   result: 'left' | 'already_left';
 };
 export type AttendanceReward = { balance: number; gameDate: string; granted: boolean };
+export type AccountDeletionResult = {
+  status: 'ready_for_auth_deletion' | 'completed';
+  authDeletionComplete: boolean;
+};
 
 export type CatalogItem = {
   id: string;

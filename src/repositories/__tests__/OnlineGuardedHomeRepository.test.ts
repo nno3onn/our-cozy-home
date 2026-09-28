@@ -12,6 +12,7 @@ function createRepository(): jest.Mocked<HomeRepository> {
     acceptInvite: jest.fn(),
     leaveHouse: jest.fn(),
     claimAttendance: jest.fn(),
+    requestAccountDeletion: jest.fn(),
     listShopItems: jest.fn().mockResolvedValue([]),
     purchaseItem: jest.fn(),
     getPurchaseResult: jest.fn().mockResolvedValue(null),
@@ -41,10 +42,12 @@ describe('OnlineGuardedHomeRepository', () => {
     await expect(guarded.claimAttendance()).rejects.toEqual(new DomainError('network_unavailable', 'offline_read_only'));
     await expect(guarded.purchaseItem({ itemDefinitionId: 'rug-leaf', requestId: 'request-1' })).rejects.toEqual(new DomainError('network_unavailable', 'offline_read_only'));
     await expect(guarded.placeItem({ ownedItemId: 'owned-1', slotId: 'floor-accent-left', expectedVersion: 1 })).rejects.toEqual(new DomainError('network_unavailable', 'offline_read_only'));
+    await expect(guarded.requestAccountDeletion('00000000-0000-4000-8000-000000000001')).rejects.toEqual(new DomainError('network_unavailable', 'offline_read_only'));
 
     expect(repository.getHomeSnapshot).toHaveBeenCalledTimes(1);
     expect(repository.claimAttendance).not.toHaveBeenCalled();
     expect(repository.purchaseItem).not.toHaveBeenCalled();
     expect(repository.placeItem).not.toHaveBeenCalled();
+    expect(repository.requestAccountDeletion).not.toHaveBeenCalled();
   });
 });

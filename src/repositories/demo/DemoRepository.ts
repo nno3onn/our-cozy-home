@@ -1,6 +1,7 @@
 import type {
   Animal,
   AttendanceReward,
+  AccountDeletionResult,
   AnimalAction,
   AcceptInviteInput,
   CreateHouseInput,
@@ -59,6 +60,9 @@ export class DemoRepository implements HomeRepository {
     throw new Error('demo_house_leave_not_available');
   }
   async claimAttendance(): Promise<AttendanceReward> { throw new Error('demo_attendance_not_available'); }
+  async requestAccountDeletion(_requestId: string): Promise<AccountDeletionResult> {
+    throw new Error('demo_account_deletion_not_available');
+  }
   async listShopItems() {
     return clone(ITEM_CATALOG.filter((item) => item.source === 'shop'));
   }

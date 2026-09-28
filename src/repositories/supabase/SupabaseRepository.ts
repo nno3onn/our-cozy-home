@@ -4,6 +4,7 @@ import { DomainError } from '@/domain/errors';
 import type {
   Animal,
   AttendanceReward,
+  AccountDeletionResult,
   CatalogItem,
   AnimalAction,
   AcceptInviteInput,
@@ -123,6 +124,22 @@ export class SupabaseRepository implements HomeRepository {
     const row = (data as unknown as { balance: number; game_date: string; granted: boolean }[] | null)?.[0];
     if (!row) throw new DomainError('unknown', 'attendance_result_missing');
     return { balance: row.balance, gameDate: row.game_date, granted: row.granted };
+  }
+
+  async requestAccountDeletion(requestId: string): Promise<AccountDeletionResult> {
+    const { data, error } = await this.client.rpc('request_account_deletion' as never, { p_request_key: requestId } as never);
+    if (error) throw mapSupabaseError(error);
+    const result = (data as unknown as { status: AccountDeletionResult['status'] }[] | null)?.[0];
+    if (!result) throw new DomainError('unknown', 'account_deletion_request_missing');
+
+    const { data: functionData, error: functionError } = await this.client.functions.invoke('delete-account');
+    if (functionError) {
+      return { status: result.status, authDeletionComplete: false };
+    }
+    return {
+      status: (functionData as { status?: AccountDeletionResult['status'] } | null)?.status ?? result.status,
+      authDeletionComplete: (functionData as { status?: string } | null)?.status === 'completed',
+    };
   }
 
   async listShopItems(): Promise<CatalogItem[]> {

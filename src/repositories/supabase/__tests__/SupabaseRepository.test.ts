@@ -116,6 +116,18 @@ describe('SupabaseRepository', () => {
     await expect(repository.claimAttendance()).resolves.toEqual({ balance: 100, gameDate: '2026-09-23', granted: true });
   });
 
+  it('prepares account deletion before requesting the privileged Auth deletion function', async () => {
+    const rpc = jest.fn().mockResolvedValue({ data: [{ status: 'ready_for_auth_deletion' }], error: null });
+    const invoke = jest.fn().mockResolvedValue({ data: { status: 'completed' }, error: null });
+    const repository = new SupabaseRepository({ rpc, functions: { invoke } } as unknown as SupabaseClient<Database>);
+
+    await expect(repository.requestAccountDeletion('00000000-0000-4000-8000-000000000003')).resolves.toEqual({
+      status: 'completed', authDeletionComplete: true,
+    });
+    expect(rpc).toHaveBeenCalledWith('request_account_deletion', { p_request_key: '00000000-0000-4000-8000-000000000003' });
+    expect(invoke).toHaveBeenCalledWith('delete-account');
+  });
+
   it('reads active shop catalog entries and treats database prices as authoritative', async () => {
     const queryResult = {
       data: [{

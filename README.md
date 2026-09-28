@@ -186,6 +186,38 @@ curl --fail-with-body \
 Edge Function은 Deno runtime용이므로 앱의 `npm run typecheck` 범위에서 제외되고,
 배포 전 `supabase functions serve send-push` 또는 deploy 환경에서 별도로 확인한다.
 
+## 계정 삭제 Edge Function
+
+`20260928000200_account_deletion.sql`은 사용자가 먼저 개인 데이터 정리와 집 퇴장을
+멱등 요청으로 준비하고, `delete-account` Function이 검증된 현재 사용자만 Auth에서
+최종 삭제하게 한다. Function은 service-role key를 Supabase 관리 환경에서만 사용하며
+앱에는 포함하지 않는다. Auth 삭제 뒤 공동 결과의 외래 키를 깨지 않도록 프로필과 동물은
+`떠난 친구`·`떠난 동물`로 비식별화된 tombstone으로 남는다.
+
+원격 migration을 적용한 뒤 프로젝트 관리자가 Function을 배포한다.
+
+```bash
+npx supabase secrets set --project-ref cbyikdryogktctskvzzk \
+  ACCOUNT_DELETION_WORKER_SECRET='long-random-secret'
+npx supabase functions deploy delete-account --project-ref cbyikdryogktctskvzzk
+npx supabase functions deploy reconcile-account-deletion --project-ref cbyikdryogktctskvzzk
+```
+
+배포 전에는 별도 테스트 계정으로 설정 → 계정 삭제 확인을 실행하고, 집 퇴장·사진
+Storage 제거·재로그인 불가·공동 추억 보존을 함께 확인해야 한다. 현재 저장소에서는
+Function deploy와 실제 Auth 삭제를 검증하지 않았다.
+
+Auth 삭제 뒤 완료 상태 기록이 일시적으로 실패한 요청은 운영자만 아래 worker로
+재조정한다. 이 secret과 profile ID를 앱·브라우저 로그에 노출하지 않는다.
+
+```bash
+curl --fail-with-body -X POST \
+  -H "x-account-deletion-worker-secret: $ACCOUNT_DELETION_WORKER_SECRET" \
+  -H "content-type: application/json" \
+  -d '{"profileId":"ACCOUNT_DELETION_PROFILE_ID"}' \
+  "https://cbyikdryogktctskvzzk.functions.supabase.co/reconcile-account-deletion"
+```
+
 ## 에셋 상태
 
 상점 40종과 추억 가구 15종의 카탈로그·크기·기준점·슬롯·상호작용 데이터와 DB seed는
