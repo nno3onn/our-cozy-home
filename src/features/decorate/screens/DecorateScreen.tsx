@@ -41,7 +41,13 @@ export function DecorateScreen() {
   };
 
   return (
-    <HouseGameShell activeTab="decorate" onOpenInvite={() => router.push('/house/invite')} onOpenSettings={() => router.push('/settings')} snapshot={homeQuery.data}>
+    <HouseGameShell
+      activeTab="decorate"
+      onNavigate={(tab) => router.replace(tab === 'home' ? '/' : tab === 'memories' ? '/memories' : '/decorate')}
+      onOpenInvite={() => router.push('/house/invite')}
+      onOpenSettings={() => router.push('/settings')}
+      snapshot={homeQuery.data}
+    >
       <View style={styles.stage}>
         {!isOnline ? <OfflineReadOnlyBanner /> : null}
         <RoomCanvas

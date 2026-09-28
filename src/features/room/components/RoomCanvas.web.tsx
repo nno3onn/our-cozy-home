@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import type { Animal, Member } from '@/domain/models';
 import { getAnimalAnchors, toViewport } from '@/game/room/roomLayout';
@@ -30,7 +30,9 @@ export function RoomCanvas({
   onSelectAnimal,
   selectedAnimalId,
 }: RoomCanvasProps) {
+  const window = useWindowDimensions();
   const [viewport, setViewport] = useState({ width: 320, height: 320 });
+  const desktopSceneSize = window.width >= 900 ? Math.min(720, Math.max(360, window.height - 190)) : undefined;
   const anchors = getAnimalAnchors(Math.min(Math.max(animals.length, 1), 4) as 1 | 2 | 3 | 4);
   const actors = sortRoomActors(
     animals.map((animal, index) => ({
@@ -48,7 +50,7 @@ export function RoomCanvas({
     <View
       accessibilityLabel="네 동물이 함께 지내는 방"
       onLayout={(event) => setViewport(event.nativeEvent.layout)}
-      style={styles.room}
+      style={[styles.room, desktopSceneSize ? { aspectRatio: undefined, height: desktopSceneSize, width: desktopSceneSize } : undefined]}
     >
       <View style={[styles.wall, { height: wallBottom }]} />
       <View style={[styles.floor, { top: wallBottom }]} />

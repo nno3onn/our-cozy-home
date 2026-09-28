@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import * as ReactNative from 'react-native';
 
 import type { HomeSnapshot } from '@/domain/models';
@@ -58,5 +58,18 @@ describe('HouseGameShell', () => {
     );
 
     expect(view.getByLabelText('데스크톱 방 탐색')).toBeOnTheScreen();
+  });
+
+  it('uses labelled shell navigation controls to change sections', async () => {
+    const onNavigate = jest.fn();
+    const view = await render(
+      <HouseGameShell activeTab="home" onNavigate={onNavigate} onOpenInvite={jest.fn()} onOpenSettings={jest.fn()} snapshot={snapshot}>
+        테스트 방
+      </HouseGameShell>,
+    );
+
+    fireEvent.press(view.getByRole('button', { name: '꾸미기로 이동' }));
+
+    expect(onNavigate).toHaveBeenCalledWith('decorate');
   });
 });

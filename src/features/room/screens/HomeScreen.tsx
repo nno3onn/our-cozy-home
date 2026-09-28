@@ -1,4 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -33,6 +34,7 @@ export function HomeScreen({
   onOpenInvite?: () => void;
 }) {
   const queryClient = useQueryClient();
+  const router = useRouter();
   const homeQuery = useHomeSnapshot();
   const actionMutation = useAnimalAction();
   const memoriesQuery = useMemories();
@@ -117,6 +119,7 @@ export function HomeScreen({
   return (
     <HouseGameShell
       activeTab="home"
+      onNavigate={(tab) => router.replace(tab === 'decorate' ? '/decorate' : tab === 'memories' ? '/memories' : '/')}
       onOpenInvite={onOpenInvite}
       onOpenSettings={onOpenSettings}
       snapshot={homeQuery.data}

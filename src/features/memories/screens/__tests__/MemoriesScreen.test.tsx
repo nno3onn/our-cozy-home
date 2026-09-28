@@ -29,6 +29,15 @@ describe('memory screens', () => {
     expect(onOpenMemory).toHaveBeenCalledWith('memory-river-picnic');
   });
 
+  it('provides a labelled path back to the house shell', async () => {
+    const onNavigateHome = jest.fn();
+    const view = await render(wrapper(<MemoriesScreen onNavigateHome={onNavigateHome} onOpenMemory={jest.fn()} />));
+
+    fireEvent.press(await view.findByRole('button', { name: '우리집으로 돌아가기' }));
+
+    expect(onNavigateHome).toHaveBeenCalledTimes(1);
+  });
+
   it('shows participants and contribution content in the detail', async () => {
     const view = await render(wrapper(<MemoryDetailScreen memoryId="memory-river-picnic" />));
 

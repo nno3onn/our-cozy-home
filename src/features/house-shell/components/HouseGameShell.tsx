@@ -1,6 +1,6 @@
 import type { PropsWithChildren } from 'react';
 import * as ReactNative from 'react-native';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { HomeSnapshot } from '@/domain/models';
@@ -14,6 +14,7 @@ type HouseTab = 'home' | 'decorate' | 'memories';
 type HouseGameShellProps = PropsWithChildren<{
   snapshot: HomeSnapshot;
   activeTab: HouseTab;
+  onNavigate?: (tab: HouseTab) => void;
   onOpenSettings: () => void;
   onOpenInvite?: () => void;
 }>;
@@ -27,6 +28,7 @@ const tabLabels: Record<HouseTab, string> = {
 export function HouseGameShell({
   activeTab,
   children,
+  onNavigate,
   onOpenInvite,
   onOpenSettings,
   snapshot,
@@ -40,9 +42,18 @@ export function HouseGameShell({
         {isDesktop ? (
           <View accessibilityLabel="데스크톱 방 탐색" style={styles.desktopRail}>
             {(Object.keys(tabLabels) as HouseTab[]).map((tab) => (
-              <AppText key={tab} style={tab === activeTab ? styles.activeRailText : styles.railText} variant="caption">
-                {tabLabels[tab]}
-              </AppText>
+              <Pressable
+                accessibilityLabel={`${tabLabels[tab].replace(/^.+? /, '')}로 이동`}
+                accessibilityRole="button"
+                disabled={!onNavigate || tab === activeTab}
+                key={tab}
+                onPress={() => onNavigate?.(tab)}
+                style={styles.railButton}
+              >
+                <AppText style={tab === activeTab ? styles.activeRailText : styles.railText} variant="caption">
+                  {tabLabels[tab]}
+                </AppText>
+              </Pressable>
             ))}
           </View>
         ) : null}
@@ -59,9 +70,18 @@ export function HouseGameShell({
           {!isDesktop ? (
             <View accessibilityLabel="우리집 탐색" style={styles.mobileTabs}>
               {(Object.keys(tabLabels) as HouseTab[]).map((tab) => (
-                <AppText key={tab} style={tab === activeTab ? styles.activeTabText : styles.tabText} variant="caption">
-                  {tabLabels[tab]}
-                </AppText>
+                <Pressable
+                  accessibilityLabel={`${tabLabels[tab].replace(/^.+? /, '')}로 이동`}
+                  accessibilityRole="button"
+                  disabled={!onNavigate || tab === activeTab}
+                  key={tab}
+                  onPress={() => onNavigate?.(tab)}
+                  style={styles.tabButton}
+                >
+                  <AppText style={tab === activeTab ? styles.activeTabText : styles.tabText} variant="caption">
+                    {tabLabels[tab]}
+                  </AppText>
+                </Pressable>
               ))}
             </View>
           ) : null}
@@ -76,9 +96,11 @@ const styles = StyleSheet.create({
   frame: { alignSelf: 'center', flex: 1, maxWidth: 1120, width: '100%' },
   desktopFrame: { flexDirection: 'row', padding: spacing.md },
   desktopRail: { borderRightColor: colors.line, borderRightWidth: 1, gap: spacing.xl, paddingHorizontal: spacing.sm, paddingTop: 100, width: 94 },
+  railButton: { minHeight: 44, justifyContent: 'center' },
   main: { flex: 1, minWidth: 0 },
   stage: { flex: 1, minHeight: 0 },
   mobileTabs: { alignItems: 'center', backgroundColor: colors.paper, borderTopColor: colors.line, borderTopWidth: 1, flexDirection: 'row', justifyContent: 'space-around', minHeight: 64, paddingHorizontal: spacing.sm },
+  tabButton: { alignItems: 'center', justifyContent: 'center', minHeight: 44, minWidth: 70 },
   activeTabText: { color: colors.ink, fontWeight: '700' },
   tabText: { color: colors.mutedInk },
   activeRailText: { color: colors.ink, fontWeight: '700' },
