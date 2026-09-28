@@ -59,4 +59,37 @@ describe('DecorateScreen', () => {
     expect(view.getByText('복숭아 조개 쿠션 배치 중')).toBeOnTheScreen();
     expect(view.getByRole('button', { name: '선택한 가구 놓기' })).toBeDisabled();
   });
+
+  it('shows a friend-owned placement without offering controls to move it', async () => {
+    class SharedRoomRepository extends DemoRepository {
+      override async getHomeSnapshot() {
+        const snapshot = await super.getHomeSnapshot();
+        snapshot.ownedItems.push({
+          id: 'owned-friend-star-cushion',
+          ownerId: 'user-minseo',
+          itemDefinitionId: 'cushion-star',
+          kind: 'furniture',
+          allowedSlotIds: ['floor-accent-left', 'floor-accent-right'],
+          quantity: 1,
+        });
+        snapshot.placements = snapshot.placements.map((placement) =>
+          placement.slotId === 'floor-accent-left'
+            ? { ...placement, ownedItemId: 'owned-friend-star-cushion' }
+            : placement,
+        );
+        return snapshot;
+      }
+    }
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: Infinity } } });
+    const view = await render(
+      <QueryClientProvider client={client}>
+        <RepositoryProvider repository={new SharedRoomRepository()}>
+          <DecorateScreen />
+        </RepositoryProvider>
+      </QueryClientProvider>,
+    );
+
+    expect(await view.findByText('별 쿠션 배치 중')).toBeOnTheScreen();
+    expect(view.queryByRole('button', { name: '별 쿠션 선택' })).not.toBeOnTheScreen();
+  });
 });
