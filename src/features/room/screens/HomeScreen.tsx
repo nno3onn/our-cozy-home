@@ -6,7 +6,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { AnimalAction } from '@/domain/models';
 import { DomainError } from '@/domain/errors';
 import { ITEM_BY_ID } from '@/catalog/items';
-import { AppText } from '@/components/ui/AppText';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { OfflineReadOnlyBanner } from '@/components/OfflineReadOnlyBanner';
 import { HouseGameShell } from '@/features/house-shell/components/HouseGameShell';

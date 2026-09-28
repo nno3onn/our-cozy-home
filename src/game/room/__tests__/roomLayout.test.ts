@@ -2,7 +2,6 @@ import { ROOM_SIZE } from '../constants';
 import {
   getAnimalAnchors,
   getAnimalHitTargets,
-  getHitTarget,
   toViewport,
   type Rect,
 } from '../roomLayout';
