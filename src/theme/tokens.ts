@@ -1,10 +1,12 @@
 export const colors = {
   cream: '#FFF8E8',
   paper: '#FFFCF4',
+  surface: '#FFF7EA',
   floor: '#F0DFC0',
   ink: '#38332E',
   mutedInk: '#6D645B',
   peach: '#F2A98C',
+  coral: '#F18191',
   mint: '#91C9AF',
   sky: '#94BFE0',
   lilac: '#B7A8D8',
@@ -25,8 +27,21 @@ export const spacing = {
 export const radii = {
   sm: 8,
   md: 14,
+  card: 16,
+  sheet: 20,
   lg: 22,
+  scene: 24,
   pill: 999,
+} as const;
+
+export const elevation = {
+  soft: {
+    shadowColor: '#8C7056',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    elevation: 3,
+  },
 } as const;
 
 export const typeScale = {
