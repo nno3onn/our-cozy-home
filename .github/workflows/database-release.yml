@@ -1,0 +1,30 @@
+name: Database release gate
+
+on:
+  pull_request:
+    paths:
+      - 'supabase/**'
+      - '.github/workflows/database-release.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/**'
+      - '.github/workflows/database-release.yml'
+
+jobs:
+  pg_tap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Start local Supabase
+        run: npx supabase start
+      - name: Apply migrations and deterministic seed
+        run: npx supabase db reset --local
+      - name: Run pgTAP release matrix
+        run: npx supabase test db
