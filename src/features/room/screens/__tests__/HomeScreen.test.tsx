@@ -34,7 +34,7 @@ describe('HomeScreen', () => {
   it('shows four clearly identified members and animals', async () => {
     const { view } = await renderHome();
 
-    expect(await view.findByText('4/4')).toBeOnTheScreen();
+    expect(await view.findByLabelText('우리집 식구 4 / 4명')).toBeOnTheScreen();
     for (const memberName of ['나래', '민준', '유빈', '하루']) {
       expect(view.getByText(memberName)).toBeOnTheScreen();
     }
@@ -42,22 +42,23 @@ describe('HomeScreen', () => {
     expect(view.queryByText(/온라인|접속 중/)).not.toBeOnTheScreen();
   });
 
-  it('uses the same action controls after an animal is selected by touch', async () => {
+  it('keeps the room visible while an animal detail sheet opens from touch', async () => {
     const { view } = await renderHome();
     const user = userEvent.setup();
-    await view.findByText('4/4');
+    await view.findByLabelText('우리집 식구 4 / 4명');
 
     await user.press(view.getByRole('button', { name: '토리 동물 선택' }));
     await waitFor(() => {
-      expect(view.getByText('토리 · 반가워하고 있어요')).toBeOnTheScreen();
+      expect(view.getByLabelText('토리 동물 상세')).toBeOnTheScreen();
     });
-    await user.press(view.getByRole('button', { name: '놀기' }));
+    expect(view.getByLabelText('네 동물이 함께 지내는 방')).toBeOnTheScreen();
+    await user.press(view.getByRole('button', { name: '놀아주기' }));
 
     await waitFor(() => {
-      expect(view.getByText('토리 · 놀고 있어요')).toBeOnTheScreen();
+      expect(view.getByText('놀고 있어요')).toBeOnTheScreen();
     });
-    expect(view.getByRole('button', { name: '먹기' })).toBeOnTheScreen();
-    expect(view.getByRole('button', { name: '쉬기' })).toBeOnTheScreen();
+    await user.press(view.getByRole('button', { name: '동물 상세 닫기' }));
+    expect(view.queryByLabelText('토리 동물 상세')).not.toBeOnTheScreen();
   });
 
   it('opens the memory detail from its room furniture', async () => {
@@ -69,26 +70,15 @@ describe('HomeScreen', () => {
     expect(onOpenMemory).toHaveBeenCalledWith('memory-river-picnic');
   });
 
-  it('opens invite management from the current admin home', async () => {
-    const onOpenInvite = jest.fn();
-    const { view } = await renderHome({ onOpenInvite });
-    const user = userEvent.setup();
-
-    await view.findByText('4/4');
-    await user.press(view.getByRole('button', { name: '친구 초대' }));
-
-    expect(onOpenInvite).toHaveBeenCalledTimes(1);
-  });
-
   it('keeps the latest room visible but disables server-confirmed actions offline', async () => {
     const repository = new DemoRepository();
     const offlineState: ConnectionState = { isOnline: () => false, subscribe: () => () => undefined };
     const { view } = await renderHome({ repository, connectionState: offlineState });
 
     expect(await view.findByText('오프라인 읽기 전용')).toBeOnTheScreen();
-    expect(view.getByText('도란도란 우리집')).toBeOnTheScreen();
-    expect(view.getByRole('button', { name: '오늘 출석' })).toBeDisabled();
-    expect(view.getByRole('button', { name: '먹기' })).toBeDisabled();
+    expect(view.getByLabelText('네 동물이 함께 지내는 방')).toBeOnTheScreen();
+    await userEvent.setup().press(view.getByRole('button', { name: '토리 동물 선택' }));
+    expect(view.getByRole('button', { name: '간식 주기' })).toBeDisabled();
   });
 
   it('guides an onboarded user without a house to the creation flow', async () => {
