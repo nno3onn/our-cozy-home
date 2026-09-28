@@ -123,10 +123,20 @@ const categoryPrices: Record<ShopCategory, number> = {
   snack: 80,
 };
 
+// The first illustrated set is intentionally small. Every remaining catalog
+// entry continues to resolve through the same keys and falls back to a
+// placeholder until its production art is ready.
+const pilotAssetKeys: Record<string, string> = {
+  'table-round-cookie': 'illustrated:furniture:table-cookie',
+  'cushion-shell': 'illustrated:furniture:cushion-shell',
+  'plant-round-rubber-tree': 'illustrated:furniture:plant-rubber-tree',
+};
+
 function createShopItems(): ItemDefinition[] {
   return SHOP_CATEGORIES.flatMap((category) =>
     commonSeeds[category].map((seed, index) => {
       const id = `${category}-${seed.silhouette}`;
+      const illustratedAssetKey = pilotAssetKeys[id];
       return {
         id,
         source: 'shop',
@@ -134,9 +144,9 @@ function createShopItems(): ItemDefinition[] {
         theme: ['sunny', 'forest', 'cloud', 'night', 'picnic'][index],
         ...seed,
         price: categoryPrices[category] + index * 20,
-        thumbnailKey: `placeholder:thumb:${id}`,
-        roomAssetKey: `placeholder:room:${id}`,
-        assetStatus: 'placeholder',
+        thumbnailKey: illustratedAssetKey ?? `placeholder:thumb:${id}`,
+        roomAssetKey: illustratedAssetKey ?? `placeholder:room:${id}`,
+        assetStatus: illustratedAssetKey ? 'final' : 'placeholder',
         ...categoryDefaults[category],
       };
     }),

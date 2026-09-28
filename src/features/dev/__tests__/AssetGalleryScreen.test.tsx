@@ -3,11 +3,12 @@ import { render } from '@testing-library/react-native';
 import { AssetGalleryScreen } from '../AssetGalleryScreen';
 
 describe('AssetGalleryScreen', () => {
-  it('shows all shop and memory placeholders with honest status labels', async () => {
+  it('shows all shop and memory assets with honest status labels', async () => {
     const view = await render(<AssetGalleryScreen enabled />);
 
     expect(view.getByText('상점 40 · 추억 15')).toBeOnTheScreen();
-    expect(view.getAllByText('임시 에셋')).toHaveLength(55);
+    expect(view.getAllByText('임시 에셋')).toHaveLength(52);
+    expect(view.getAllByText('완성 일러스트')).toHaveLength(3);
     expect(view.getByText('복숭아 조개 쿠션')).toBeOnTheScreen();
     expect(view.getByText('소풍 라디오')).toBeOnTheScreen();
   });
