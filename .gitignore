@@ -47,3 +47,6 @@ example
 /ios
 /android
 .vercel
+
+# local implementation worktrees
+.worktrees/
