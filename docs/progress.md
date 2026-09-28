@@ -90,6 +90,7 @@
 | 11.0 | 웹 배포·딥 링크 | Vercel SPA rewrite, Expo static export·artifact secret 검사, Auth redirect 설정 문서 작성 | demo 웹 export·artifact 검사 통과 | 실제 Vercel deploy·production URL 직접 접근/새로고침 미검증 |
 | 11.1 | 반응형·접근성·모션 | 주요 route의 SafeArea/scroll·키보드 회피, 44pt 버튼 계약, 동물 대체 행동·reduced motion·offline/empty/error 접근성 상태를 감사 | Room layout·button·screen Jest 회귀와 typecheck/lint 통과 | 390/1280 실제 브라우저, iOS/Android 스크린리더·키보드·모션 감소 미검증 |
 | 12.0 | DB release matrix | 기능별 pgTAP 시나리오와 reset→seed→test GitHub Actions release gate 구성 | workflow 정적 파일·Supabase foundation 검사 통과 | Docker가 없는 현재 환경에서는 병렬 DB/RLS/Storage 실제 실행 미검증 |
+| 12.1 | 실제 환경 E2E | 마스킹 규칙·A–E 다계정/production web/실기기 검증 matrix와 runbook 작성 | 자동화·문서 구분 확인 | migration 적용 권한·테스트 계정·production URL·iOS/Android 기기가 없어 실제 항목 미수행 |
 
 ## 검증 원장
 
