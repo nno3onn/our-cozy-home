@@ -37,9 +37,10 @@ export function DecorateScreen() {
   const furniture = ownedItems.filter(
     (item) => item.kind === 'furniture' && item.allowedSlotIds.includes(SLOT_ID),
   );
+  const movableFurniture = furniture.filter((item) => item.ownerId === homeQuery.data.currentUserId);
   const placement = placements.find((candidate) => candidate.slotId === SLOT_ID);
-  const effectiveOwnedItemId = selectedOwnedItemId ?? placement?.ownedItemId ?? furniture[0]?.id ?? null;
-  const selectedOwnedItem = furniture.find((item) => item.id === effectiveOwnedItemId);
+  const effectiveOwnedItemId = selectedOwnedItemId ?? movableFurniture[0]?.id ?? null;
+  const selectedOwnedItem = movableFurniture.find((item) => item.id === effectiveOwnedItemId);
   const selectedDefinition = selectedOwnedItem
     ? ITEM_BY_ID.get(selectedOwnedItem.itemDefinitionId)
     : undefined;
@@ -47,7 +48,7 @@ export function DecorateScreen() {
     ? members.find((member) => member.userId === selectedOwnedItem.ownerId)
     : undefined;
   const placedItem = placement
-    ? furniture.find((item) => item.id === placement.ownedItemId)
+    ? ownedItems.find((item) => item.id === placement.ownedItemId)
     : undefined;
   const placedDefinition = placedItem ? ITEM_BY_ID.get(placedItem.itemDefinitionId) : undefined;
 
@@ -84,7 +85,7 @@ export function DecorateScreen() {
 
         <AppText variant="heading">이 자리에 놓을 가구</AppText>
         <View style={styles.options}>
-          {furniture.map((item) => {
+          {movableFurniture.map((item) => {
             const definition = ITEM_BY_ID.get(item.itemDefinitionId);
             if (!definition) return null;
             const itemOwner = members.find((member) => member.userId === item.ownerId);
