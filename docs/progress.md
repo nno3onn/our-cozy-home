@@ -89,6 +89,7 @@
 | 10.0 | 계정 삭제 | 삭제 요청 RPC, 집 탈퇴 재사용·개인 원문/토큰/비추억 인벤토리 정리, 비식별 tombstone, `delete-account` Edge Function·설정 확인 UI 작성 | repository·오프라인 guard Jest 통과, account deletion SQL 시나리오 추가 | Docker/local Supabase·Edge deploy·실제 Auth 삭제 미검증 |
 | 11.0 | 웹 배포·딥 링크 | Vercel SPA rewrite, Expo static export·artifact secret 검사, Auth redirect 설정 문서 작성 | demo 웹 export·artifact 검사 통과 | 실제 Vercel deploy·production URL 직접 접근/새로고침 미검증 |
 | 11.1 | 반응형·접근성·모션 | 주요 route의 SafeArea/scroll·키보드 회피, 44pt 버튼 계약, 동물 대체 행동·reduced motion·offline/empty/error 접근성 상태를 감사 | Room layout·button·screen Jest 회귀와 typecheck/lint 통과 | 390/1280 실제 브라우저, iOS/Android 스크린리더·키보드·모션 감소 미검증 |
+| 12.0 | DB release matrix | 기능별 pgTAP 시나리오와 reset→seed→test GitHub Actions release gate 구성 | workflow 정적 파일·Supabase foundation 검사 통과 | Docker가 없는 현재 환경에서는 병렬 DB/RLS/Storage 실제 실행 미검증 |
 
 ## 검증 원장
 
