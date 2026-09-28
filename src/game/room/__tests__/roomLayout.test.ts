@@ -1,6 +1,7 @@
 import { ROOM_SIZE } from '../constants';
 import {
   getAnimalAnchors,
+  getAnimalHitTargets,
   getHitTarget,
   toViewport,
   type Rect,
@@ -40,9 +41,7 @@ describe('room layout', () => {
 
   it('keeps four accessible hit targets separate on a 320pt-wide screen', () => {
     const viewport = { width: 320, height: 568 };
-    const targets = getAnimalAnchors(4).map((anchor) =>
-      getHitTarget(anchor, viewport),
-    );
+    const targets = getAnimalHitTargets(4, viewport);
 
     for (const target of targets) {
       expect(target.width).toBeGreaterThanOrEqual(44);
@@ -54,6 +53,13 @@ describe('room layout', () => {
         expect(intersects(targets[left], targets[right])).toBe(false);
       }
     }
+  });
+
+  it('derives a press target for every anchor at desktop size', () => {
+    const targets = getAnimalHitTargets(4, { width: 1280, height: 760 });
+
+    expect(targets).toHaveLength(4);
+    expect(targets.every((target) => target.width >= 44 && target.height >= 44)).toBe(true);
   });
 
   it('places each name label in a dedicated band above its animal', () => {

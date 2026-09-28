@@ -11,7 +11,7 @@ import Animated, {
 
 import type { Animal, Member } from '@/domain/models';
 import type { AnimalAnchor, Viewport } from '@/game/room/roomLayout';
-import { toViewport } from '@/game/room/roomLayout';
+import { getHitTarget } from '@/game/room/roomLayout';
 import { colors, radii, spacing } from '@/theme/tokens';
 
 import { AppText } from '@/components/ui/AppText';
@@ -35,7 +35,7 @@ export function AnimalActor({
   selected,
   onPress,
 }: AnimalActorProps) {
-  const foot = toViewport(anchor.foot, viewport);
+  const hitTarget = getHitTarget(anchor, viewport);
   const reducedMotion = useReducedMotion();
   const lift = useSharedValue(0);
 
@@ -63,8 +63,10 @@ export function AnimalActor({
       style={[
         styles.target,
         {
-          left: foot.x - 26,
-          top: foot.y - 78,
+          left: hitTarget.x,
+          top: hitTarget.y,
+          width: hitTarget.width,
+          height: hitTarget.height,
         },
       ]}
     >
@@ -88,8 +90,6 @@ export function AnimalActor({
 const styles = StyleSheet.create({
   target: {
     position: 'absolute',
-    width: 52,
-    height: 60,
     alignItems: 'center',
     justifyContent: 'flex-start',
     paddingTop: 0,
