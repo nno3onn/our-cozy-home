@@ -1,0 +1,17 @@
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
+
+const dist = join(process.cwd(), 'dist');
+if (!existsSync(join(dist, 'index.html'))) throw new Error('web export is missing dist/index.html');
+const collectFiles = (directory) => readdirSync(directory, { withFileTypes: true }).flatMap((entry) =>
+  entry.isDirectory() ? collectFiles(join(directory, entry.name)) : [join(directory, entry.name)],
+);
+const files = collectFiles(dist).filter((file) => /\.(html|js|json|map)$/u.test(file));
+const vercel = JSON.parse(readFileSync(join(process.cwd(), 'vercel.json'), 'utf8'));
+if (vercel.rewrites?.[0]?.destination !== '/index.html') throw new Error('vercel SPA rewrite is missing');
+const forbidden = ['SUPABASE_SERVICE_ROLE_KEY', 'NOTIFICATION_WORKER_SECRET', 'ACCOUNT_DELETION_WORKER_SECRET'];
+for (const file of files) {
+  const contents = readFileSync(file, 'utf8');
+  for (const secret of forbidden) if (contents.includes(secret)) throw new Error(`web export contains forbidden secret name: ${secret}`);
+}
+console.log(`Web export has an SPA entrypoint, rewrite, and no server-secret names in ${files.length} files.`);

@@ -58,12 +58,22 @@ EXPO_PUBLIC_APP_MODE=demo npx expo export --platform web
 
 ```bash
 npm run build:web
+npm run verify:web:export
 npm run preview:web
 ```
 
 정적 결과는 `dist/`에 생성된다. Expo Router가 `/`, `/decorate`, `/memories`,
-`/settings`, `/dev/assets`와 추억 상세 경로를 관리한다. 실제 호스팅에서는 동적 추억
-상세 URL이 앱으로 돌아오도록 플랫폼의 SPA/라우트 rewrite를 설정해야 한다.
+`/settings`, `/dev/assets`, `/invite/:token`, `/memories/:id`를 관리한다. Vercel은
+저장소의 `vercel.json` rewrite로 직접 접근·새로고침을 `index.html`로 복구한다.
+`npm run verify:web:export`는 생성물 전체에 service-role/worker secret 이름이 없는지와
+rewrite 계약을 확인한다.
+
+Vercel 프로젝트의 Build Command는 `npm run build:web`, Output Directory는 `dist`로
+설정한다. Supabase Dashboard의 **Auth → URL Configuration**에는 production 도메인과
+preview 도메인(예: `https://our-cozy-home.vercel.app`, `https://*.vercel.app`)을 Redirect
+URLs로 추가한다. 앱에는 `EXPO_PUBLIC_SUPABASE_URL`과 publishable key만 설정하며,
+service-role·worker secret은 Vercel 환경 변수에도 넣지 않는다. production URL에서
+초대/추억 상세 주소를 직접 열고 새로고침하는 검증은 아직 수행하지 않았다.
 
 ## Development Build와 EAS
 

@@ -57,6 +57,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "build:web": "expo export --platform web",
+    "verify:web:export": "node scripts/verify-web-export.mjs",
     "preview:web": "expo serve dist",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
