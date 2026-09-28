@@ -100,6 +100,7 @@ describe('HomeScreen', () => {
       acceptInvite: jest.fn(),
       leaveHouse: jest.fn(),
       claimAttendance: jest.fn(),
+      requestAccountDeletion: jest.fn(),
       listShopItems: jest.fn().mockResolvedValue([]),
       purchaseItem: jest.fn(),
       getPurchaseResult: jest.fn(),
