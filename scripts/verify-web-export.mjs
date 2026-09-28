@@ -8,6 +8,8 @@ const collectFiles = (directory) => readdirSync(directory, { withFileTypes: true
 );
 const files = collectFiles(dist).filter((file) => /\.(html|js|json|map)$/u.test(file));
 const vercel = JSON.parse(readFileSync(join(process.cwd(), 'vercel.json'), 'utf8'));
+if (vercel.buildCommand !== 'npm run build:web') throw new Error('vercel build command must export the Expo web app');
+if (vercel.outputDirectory !== 'dist') throw new Error('vercel output directory must be dist');
 if (vercel.rewrites?.[0]?.destination !== '/index.html') throw new Error('vercel SPA rewrite is missing');
 const forbidden = ['SUPABASE_SERVICE_ROLE_KEY', 'NOTIFICATION_WORKER_SECRET', 'ACCOUNT_DELETION_WORKER_SECRET'];
 for (const file of files) {

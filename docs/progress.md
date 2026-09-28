@@ -1,6 +1,6 @@
 # 우리집 구현·검증 현황
 
-최종 수정일: 2026-09-24
+최종 수정일: 2026-09-28
 
 기능을 완료할 때 코드 경로, 검증 명령과 결과를 함께 갱신한다. 자동화 검증,
 로컬 Supabase 검증, 실제 계정·실기기 검증은 서로 대체하지 않는다.
@@ -22,6 +22,8 @@
 - 완료: 상점 8개 카테고리 × 5종과 추억 가구 3개 종류 × 5외형의 데이터 카탈로그
 - 완료: Supabase CLI 고정, 로컬 `config.toml`, 추가 전용 migration·seed·SQL test
   디렉터리와 명시적 실행 명령 기반
+- 완료: Vercel 프로덕션 프로젝트와 GitHub 저장소 연결, Expo static export(`dist`)와 SPA
+  rewrite를 사용하는 공개 웹 데모 배포
 - 완료: 서울 리전 원격 Supabase 프로젝트(`our-cozy-home`) 생성, publishable key의
   로컬 `.env` 설정(비추적), Auth health 및 publishable-key Data API 요청 확인
 - 완료: 핵심 `app_settings`·프로필·집·멤버십·동물 schema, 활성 멤버십 부분 고유 인덱스,
@@ -87,7 +89,7 @@
 | 7.2 | 두 명 기여·추억 가구 | memory row lock, 출처 고유 memory item·완료 event, 현재 viewer 기반 방 노출 정책과 snapshot item 조회 작성 완료 | 22개 pgTAP 시나리오 파일·typecheck 통과 | Docker 부재로 pgTAP 미실행, 원격 migration·동시 두 번째 기여·다계정 방 노출 미검증 |
 | 9.1 | 알림 Outbox·Expo Push | event/delivery/token target, DB lease·권한 재검증·receipt/재시도와 `send-push` Edge Function 작성 완료 | payload·ticket 분류·backoff Jest 통과 | local DB/pgTAP, Edge deploy/scheduler, Expo 실제 기기 수신 미검증 |
 | 10.0 | 계정 삭제 | 삭제 요청 RPC, 집 탈퇴 재사용·개인 원문/토큰/비추억 인벤토리 정리, 비식별 tombstone, `delete-account` Edge Function·설정 확인 UI 작성 | repository·오프라인 guard Jest 통과, account deletion SQL 시나리오 추가 | Docker/local Supabase·Edge deploy·실제 Auth 삭제 미검증 |
-| 11.0 | 웹 배포·딥 링크 | Vercel SPA rewrite, Expo static export·artifact secret 검사, Auth redirect 설정 문서 작성 | demo 웹 export·artifact 검사 통과 | 실제 Vercel deploy·production URL 직접 접근/새로고침 미검증 |
+| 11.0 | 웹 배포·딥 링크 | Vercel SPA rewrite, Expo static export·artifact secret 검사, Auth redirect 설정 문서 작성 | demo 웹 export·artifact 검사 통과 | Vercel production 데모에서 `/`, `/invite/test-token`, `/memories/demo-memory` 200 확인. 실제 Supabase Auth redirect·로그인 흐름은 미검증 |
 | 11.1 | 반응형·접근성·모션 | 주요 route의 SafeArea/scroll·키보드 회피, 44pt 버튼 계약, 동물 대체 행동·reduced motion·offline/empty/error 접근성 상태를 감사 | Room layout·button·screen Jest 회귀와 typecheck/lint 통과 | 390/1280 실제 브라우저, iOS/Android 스크린리더·키보드·모션 감소 미검증 |
 | 12.0 | DB release matrix | 기능별 pgTAP 시나리오와 reset→seed→test GitHub Actions release gate 구성 | workflow 정적 파일·Supabase foundation 검사 통과 | Docker가 없는 현재 환경에서는 병렬 DB/RLS/Storage 실제 실행 미검증 |
 | 12.1 | 실제 환경 E2E | 마스킹 규칙·A–E 다계정/production web/실기기 검증 matrix와 runbook 작성 | 자동화·문서 구분 확인 | migration 적용 권한·테스트 계정·production URL·iOS/Android 기기가 없어 실제 항목 미수행 |
@@ -101,6 +103,7 @@
 | 2026-09-24 | 구매·인벤토리 | `npm test -- --runInBand --forceExit src/repositories/supabase/__tests__/SupabaseRepository.test.ts src/features/shop/screens/__tests__/ShopScreen.test.tsx` | repository 부족 금액 mapping·상점 부족 안내 22 test 통과 | `009_purchase_inventory_test.sql`은 작성했으나 Docker/local Supabase 부재로 미실행 |
 | 2026-09-28 | 공동 방 배치 | `npm test -- --runInBand --forceExit src/features/decorate/screens/__tests__/DecorateScreen.test.tsx` | 타인 소유 배치는 표시하고 이동 제어를 제공하지 않는 UI 3 test 통과 | `013_room_placement_visibility_test.sql`은 작성했으나 Docker/local Supabase 부재로 미실행 |
 | 2026-09-28 | 계정 삭제 | repository·오프라인 guard·settings Jest, `tsc --noEmit` | 삭제 요청→privileged Edge 호출 순서와 offline 차단 23 test 통과 | `014_account_deletion_test.sql`, Edge Function deploy와 실제 Auth 삭제는 Docker/원격 Supabase가 필요함 |
+| 2026-09-28 | Vercel production 웹 데모 | `EXPO_PUBLIC_APP_MODE=demo npm run build:web`, `npm run verify:web:export`, Vercel production deploy, 공개 URL curl | Expo export와 artifact 검사 통과. `/`, `/invite/test-token`, `/memories/demo-memory`이 모두 200이고 HTML에 데모 모드 UI 포함 | 현재 배포는 명시적 Demo Mode. 원격 Supabase migrations/Auth/Storage/Edge Function과 실제 로그인 흐름은 배포·검증하지 않음 |
 | 2026-09-19 | 명세 문서 | 미결정 표식 검색 | 통과 | 요구사항 완전성을 자동 증명하지 않음 |
 | 2026-09-20 | 데모 방·생명주기 | `npm test -- src/features/room --runInBand` | 통과 | Skia는 Jest 모형, 실제 GPU 렌더 아님 |
 | 2026-09-20 | 55종 카탈로그·갤러리 | `npm test -- src/catalog src/features/dev --runInBand` | 통과 | 모두 임시 에셋 |
