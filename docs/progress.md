@@ -100,7 +100,7 @@
 
 | 날짜 | 대상 | 명령 또는 환경 | 결과 | 범위 제한 |
 | --- | --- | --- | --- | --- |
-| 2026-09-29 | 게임형 우리집 셸·추억 앨범 | Node 22 `npm test -- --runInBand --forceExit`, typecheck, lint, demo export·artifact 검사; 로컬 브라우저 390×844·1280×720 | 41 suite/128 tests, 정적 검사·export·artifact 검사 통과. 네 동물·Sheet·꾸미기 트레이·스크랩북 경로를 브라우저에서 확인 | Jest는 기존 async handle 경고 때문에 `--forceExit` 사용. 웹 수동 검증이며 iOS·Android, 실제 Supabase 다계정 검증이 아님 |
+| 2026-09-29 | 게임형 우리집 셸·추억 앨범 | Node 22 `npm test -- --runInBand --forceExit`, typecheck, lint, demo export·artifact 검사; 로컬 브라우저 390×844·1280×720 | 41 suite/129 tests, 정적 검사·export·artifact 검사 통과. 네 동물·Sheet·꾸미기 트레이·스크랩북 경로를 브라우저에서 확인 | Jest는 기존 async handle 경고 때문에 `--forceExit` 사용. 웹 수동 검증이며 iOS·Android, 실제 Supabase 다계정 검증이 아님 |
 | 2026-09-19 | 명세 문서 | `git diff --check` | 통과 | 코드 동작을 검증하지 않음 |
 | 2026-09-24 | 서버 카탈로그·상점 조회 | `npm test -- --runInBand src/repositories/supabase/__tests__/SupabaseRepository.test.ts src/catalog/__tests__/catalog.test.ts src/features/shop/screens/__tests__/ShopScreen.test.tsx`, `npm run catalog:seed` | 3 suite/25 test 통과, 결정적 seed 재생성 | 실제 Supabase migration/seed·RLS 조회는 별도 환경이 필요함 |
 | 2026-09-24 | 구매·인벤토리 | `npm test -- --runInBand --forceExit src/repositories/supabase/__tests__/SupabaseRepository.test.ts src/features/shop/screens/__tests__/ShopScreen.test.tsx` | repository 부족 금액 mapping·상점 부족 안내 22 test 통과 | `009_purchase_inventory_test.sql`은 작성했으나 Docker/local Supabase 부재로 미실행 |
