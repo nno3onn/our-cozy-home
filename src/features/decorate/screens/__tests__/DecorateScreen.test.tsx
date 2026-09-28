@@ -31,7 +31,7 @@ describe('DecorateScreen', () => {
     fireEvent.press(view.getByRole('button', { name: '선택한 가구 놓기' }));
 
     await waitFor(() => expect(view.getByText('민트 매듭 쿠션 배치 중')).toBeOnTheScreen());
-    expect(view.getAllByText('소유자 나래')).toHaveLength(2);
+    expect(view.getAllByText('소유자 나래')).toHaveLength(1);
 
     const snapshot = await repository.getHomeSnapshot();
     expect(snapshot.placements.find((placement) => placement.slotId === 'floor-accent-left')).toEqual(

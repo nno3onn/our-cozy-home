@@ -6,4 +6,5 @@ export const ROOM_SIZE = {
 export const ANIMAL_HIT_TARGET = {
   width: 52,
   height: 60,
+  topOffset: 18,
 } as const;

@@ -60,8 +60,12 @@ export function getHitTarget(anchor: AnimalAnchor, viewport: Viewport): Rect {
   const foot = toViewport(anchor.foot, viewport);
   return {
     x: foot.x - ANIMAL_HIT_TARGET.width / 2,
-    y: foot.y - ANIMAL_HIT_TARGET.height,
+    y: foot.y - ANIMAL_HIT_TARGET.height - ANIMAL_HIT_TARGET.topOffset,
     width: ANIMAL_HIT_TARGET.width,
     height: ANIMAL_HIT_TARGET.height,
   };
+}
+
+export function getAnimalHitTargets(memberCount: 1 | 2 | 3 | 4, viewport: Viewport): Rect[] {
+  return getAnimalAnchors(memberCount).map((anchor) => getHitTarget(anchor, viewport));
 }

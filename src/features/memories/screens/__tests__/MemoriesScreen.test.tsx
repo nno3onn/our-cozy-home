@@ -24,8 +24,18 @@ describe('memory screens', () => {
     const view = await render(wrapper(<MemoriesScreen onOpenMemory={onOpenMemory} />));
 
     expect(await view.findByText('강가에서 보낸 오후')).toBeOnTheScreen();
+    expect(view.getByText('2026년 9월')).toBeOnTheScreen();
     fireEvent.press(view.getByRole('button', { name: '강가에서 보낸 오후 상세 열기' }));
     expect(onOpenMemory).toHaveBeenCalledWith('memory-river-picnic');
+  });
+
+  it('provides a labelled path back to the house shell', async () => {
+    const onNavigateHome = jest.fn();
+    const view = await render(wrapper(<MemoriesScreen onNavigateHome={onNavigateHome} onOpenMemory={jest.fn()} />));
+
+    fireEvent.press(await view.findByRole('button', { name: '우리집으로 돌아가기' }));
+
+    expect(onNavigateHome).toHaveBeenCalledTimes(1);
   });
 
   it('shows participants and contribution content in the detail', async () => {
