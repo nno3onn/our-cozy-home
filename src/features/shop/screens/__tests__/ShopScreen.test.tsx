@@ -24,7 +24,8 @@ describe('ShopScreen', () => {
     fireEvent.press(view.getByRole('button', { name: '쿠션 카테고리' }));
     expect(await view.findByText('복숭아 조개 쿠션')).toBeOnTheScreen();
     expect(view.queryByText('햇살 리본 커튼')).not.toBeOnTheScreen();
-    expect(view.getAllByText('임시 에셋')).toHaveLength(5);
+    expect(view.getAllByText('임시 에셋')).toHaveLength(4);
+    expect(view.getAllByText('최종 에셋')).toHaveLength(1);
   });
 
   it('keeps the catalog readable but disables purchases offline', async () => {

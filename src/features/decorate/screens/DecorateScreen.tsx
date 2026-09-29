@@ -51,7 +51,7 @@ export function DecorateScreen() {
       <View style={styles.stage}>
         {!isOnline ? <OfflineReadOnlyBanner /> : null}
         <RoomCanvas
-          accentFurniture={accentDefinition ? { name: accentDefinition.nameKo, color: accentDefinition.previewColor } : undefined}
+          accentFurniture={accentDefinition ? { name: accentDefinition.nameKo, color: accentDefinition.previewColor, itemId: accentDefinition.id } : undefined}
           animals={homeQuery.data.animals}
           isActive
           members={homeQuery.data.members}
