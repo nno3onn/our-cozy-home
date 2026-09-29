@@ -21,10 +21,16 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+      # Keep the local stack image schema aligned with the project migrations.
+      # The legacy npm CLI (v1) starts an older Storage schema without bucket
+      # metadata columns used by current Supabase projects.
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.118.0
       - run: npm ci
       - name: Start local Supabase
-        run: npx supabase start
+        run: supabase start
       - name: Apply migrations and deterministic seed
-        run: npx supabase db reset --local
+        run: supabase db reset --local
       - name: Run pgTAP release matrix
-        run: npx supabase test db
+        run: supabase test db
