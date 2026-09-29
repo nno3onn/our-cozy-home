@@ -18,8 +18,8 @@ export function MemberAvatarRow({ capacity, currentUserId, members, onInvite }: 
               <View style={[styles.avatar, { borderColor: member.pointColor }]}><AppText variant="label">{member.displayName.slice(0, 1)}</AppText></View>
               <AppText numberOfLines={1} style={styles.name} variant="caption">{member.displayName}</AppText>
             </>
-          ) : canInvite && index === members.length ? (
-            <Pressable accessibilityLabel="친구 초대" accessibilityRole="button" onPress={onInvite} style={styles.invite}>
+          ) : canInvite ? (
+            <Pressable accessibilityLabel="빈 자리로 친구 초대" accessibilityRole="button" onPress={onInvite} style={styles.invite}>
               <AppText style={styles.plus} variant="heading">+</AppText>
             </Pressable>
           ) : <View style={styles.empty} />}
