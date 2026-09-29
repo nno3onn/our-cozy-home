@@ -100,3 +100,25 @@ begin
   return query select raw_token, new_code, new_expiry;
 end;
 $$;
+
+-- Qualify only the output-name collisions in invite acceptance. This preserves
+-- local variables such as timestamps instead of changing PL/pgSQL's global
+-- variable-resolution mode.
+do $$
+declare function_definition text;
+begin
+  select pg_get_functiondef('public.accept_house_invite(text,text)'::regprocedure)
+  into function_definition;
+  function_definition := replace(
+    function_definition,
+    E'select id, house_id into candidate_invite_id, candidate_house_id\n  from public.house_invites\n  where token_hash',
+    E'select invite.id, invite.house_id into candidate_invite_id, candidate_house_id\n  from public.house_invites invite\n  where invite.token_hash'
+  );
+  function_definition := replace(
+    function_definition,
+    E'from public.house_memberships\n  where house_id = locked_house.id and status = \'active\';',
+    E'from public.house_memberships membership\n  where membership.house_id = locked_house.id and membership.status = \'active\';'
+  );
+  execute function_definition;
+end;
+$$;
