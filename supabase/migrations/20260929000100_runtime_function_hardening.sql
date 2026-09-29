@@ -65,28 +65,24 @@ begin
 end;
 $$;
 
--- TABLE return names become PL/pgSQL variables. Recreate existing public
--- PL/pgSQL functions with a compile directive, preserving their signatures,
--- grants and bodies while preferring real table columns over result variables.
--- `ALTER FUNCTION ... SET` is unavailable to the unprivileged migration role.
-do $$
-declare function_definition text;
-begin
-  for function_definition in
-    select pg_get_functiondef(proc.oid)
-    from pg_proc proc
-    join pg_namespace namespace on namespace.oid = proc.pronamespace
-    join pg_language language on language.oid = proc.prolang
-    where namespace.nspname = 'public'
-      and language.lanname = 'plpgsql'
-      and position('#variable_conflict' in pg_get_functiondef(proc.oid)) = 0
-  loop
-    function_definition := replace(
-      function_definition,
-      E'AS $function$\n',
-      E'AS $function$\n#variable_conflict use_column\n'
-    );
-    execute function_definition;
-  end loop;
-end;
-$$;
+-- TABLE return names become PL/pgSQL variables. Prefer real table columns in
+-- each security-definer RPC so result names such as `house_id`, `quantity`,
+-- and `game_date` cannot shadow a query column at runtime.
+alter function public.create_house(text, text) set plpgsql.variable_conflict = 'use_column';
+alter function public.create_house_invite(boolean) set plpgsql.variable_conflict = 'use_column';
+alter function public.preview_house_invite(text) set plpgsql.variable_conflict = 'use_column';
+alter function public.accept_house_invite(text, text) set plpgsql.variable_conflict = 'use_column';
+alter function public.leave_house() set plpgsql.variable_conflict = 'use_column';
+alter function public.claim_attendance_reward() set plpgsql.variable_conflict = 'use_column';
+alter function public.purchase_item(text, uuid) set plpgsql.variable_conflict = 'use_column';
+alter function public.get_purchase_result(uuid) set plpgsql.variable_conflict = 'use_column';
+alter function public.place_owned_item(uuid, text, integer) set plpgsql.variable_conflict = 'use_column';
+alter function public.share_memory_draft(uuid) set plpgsql.variable_conflict = 'use_column';
+alter function public.list_memory_summaries(text) set plpgsql.variable_conflict = 'use_column';
+alter function public.get_memory_contribution_detail(uuid) set plpgsql.variable_conflict = 'use_column';
+alter function public.get_memory_photo_metadata(uuid) set plpgsql.variable_conflict = 'use_column';
+alter function public.prepare_memory_photo_upload(uuid, uuid, text) set plpgsql.variable_conflict = 'use_column';
+alter function public.record_habit_activity(uuid) set plpgsql.variable_conflict = 'use_column';
+alter function public.claim_notification_delivery_targets(integer, integer) set plpgsql.variable_conflict = 'use_column';
+alter function public.claim_notification_receipts(integer, integer) set plpgsql.variable_conflict = 'use_column';
+alter function public.request_account_deletion(uuid) set plpgsql.variable_conflict = 'use_column';
