@@ -545,3 +545,49 @@ begin
   return p_contribution_id;
 end;
 $$;
+
+-- A departed contributor sees one immutable snapshot per contributor: the
+-- latest revision available at the departure timestamp, never later changes.
+create or replace function public.get_memory_contribution_detail(p_memory_id uuid)
+returns table(contribution_id uuid,author_profile_id uuid,display_name text,body text,published_at timestamptz)
+language sql security definer set search_path = public
+as $$
+  select contribution.id, contribution.author_profile_id, profile.display_name,
+    revision.body, revision.published_at
+  from public.memory_viewers viewer
+  join public.memory_contributions contribution
+    on contribution.memory_id = viewer.memory_id and contribution.deleted_at is null
+  join public.profiles profile on profile.id = contribution.author_profile_id
+  join lateral (
+    select candidate.body, candidate.published_at
+    from public.memory_contribution_revisions candidate
+    where candidate.contribution_id = contribution.id
+      and candidate.deleted_at is null
+      and (
+        viewer.access_ended_at is null
+        or (viewer.archive_retained and candidate.published_at <= viewer.access_ended_at)
+      )
+    order by candidate.published_at desc, candidate.id desc
+    limit 1
+  ) revision on true
+  where viewer.memory_id = p_memory_id
+    and viewer.profile_id = auth.uid()
+  order by revision.published_at asc, contribution.id asc;
+$$;
+
+drop policy if exists "profiles_select_active_house_members" on public.profiles;
+create policy "profiles_select_active_house_members" on public.profiles
+for select to authenticated using (
+  deleted_at is null and (
+    id = auth.uid()
+    or exists (
+      select 1
+      from public.house_memberships mine
+      join public.house_memberships theirs on theirs.house_id = mine.house_id
+      where mine.profile_id = auth.uid()
+        and mine.status = 'active'
+        and theirs.profile_id = profiles.id
+        and theirs.status = 'active'
+    )
+  )
+);
