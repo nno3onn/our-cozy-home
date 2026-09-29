@@ -500,3 +500,36 @@ begin
   return next;
 end;
 $$;
+
+create or replace function public.revise_memory_contribution(p_contribution_id uuid, p_body text)
+returns uuid language plpgsql security definer set search_path = public
+as $$
+declare
+  uid uuid := auth.uid();
+  contribution_memory_id uuid;
+begin
+  if uid is null then raise exception 'authentication required' using errcode='42501'; end if;
+  select contribution.memory_id into contribution_memory_id
+  from public.memory_contributions contribution
+  where contribution.id = p_contribution_id
+    and contribution.author_profile_id = uid
+    and contribution.deleted_at is null
+  for update;
+  if not found then raise exception 'memory_contribution_not_found' using errcode='42501'; end if;
+  if not exists(
+    select 1 from public.memory_viewers viewer
+    where viewer.memory_id = contribution_memory_id
+      and viewer.profile_id = uid
+      and viewer.can_contribute
+      and viewer.access_ended_at is null
+  ) then
+    raise exception 'memory_contribution_forbidden' using errcode='42501';
+  end if;
+  insert into public.memory_contribution_revisions(contribution_id,body,published_at)
+  values(p_contribution_id,coalesce(p_body,''),clock_timestamp());
+  update public.memory_contributions contribution
+  set updated_at = timezone('utc',now())
+  where contribution.id = p_contribution_id;
+  return p_contribution_id;
+end;
+$$;

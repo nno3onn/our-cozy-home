@@ -2,7 +2,7 @@ begin;
 
 select plan(11);
 
-select has_table('public', 'room_placements');
+select has_table('public', 'room_placements', 'room placements exists');
 select has_function('public', 'place_owned_item');
 select has_function('public', 'is_active_house_placed_item');
 
@@ -22,7 +22,7 @@ select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000061
 select lives_ok($$select public.complete_onboarding('방 친구', '#FFD3A5', '친구 동물', 'cat')$$, 'the room friend is onboarded');
 select is((select result from public.accept_house_invite((select token from placement_invites), 'placement-friend')), 'joined', 'the friend joins the same active house');
 
-reset role;
+set local role postgres;
 create temporary table placement_fixture (owned_item_id uuid not null);
 with inserted_owned_item as (
   insert into public.owned_items(profile_id, item_definition_id, kind)
@@ -30,6 +30,7 @@ with inserted_owned_item as (
   returning id
 )
 insert into placement_fixture select id from inserted_owned_item;
+grant select on placement_fixture to authenticated;
 insert into public.room_placements(house_id, slot_id, owned_item_id)
 select hm.house_id, 'floor-accent-left', fixture.owned_item_id
 from public.house_memberships hm cross join placement_fixture fixture
@@ -47,7 +48,7 @@ select is_empty(
   'shared-room visibility does not expose another member''s purchase records'
 );
 
-reset role;
+set local role postgres;
 select lives_ok(
   $$delete from public.room_placements where owned_item_id = (select owned_item_id from placement_fixture)$$,
   'a departure-style placement recovery can remove the shared placement'

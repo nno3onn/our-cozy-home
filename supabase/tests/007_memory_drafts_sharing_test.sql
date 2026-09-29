@@ -1,9 +1,9 @@
 begin;
 
-select plan(11);
+select plan(14);
 
-select has_table('public', 'memories');
-select has_table('public', 'memory_viewers');
+select has_table('public', 'memories', 'memories exists');
+select has_table('public', 'memory_viewers', 'memory viewers exists');
 select has_function('public', 'create_memory_draft', array['text', 'text', 'date']);
 select has_function('public', 'share_memory_draft', array['uuid']);
 
@@ -34,10 +34,12 @@ select is((select result from public.accept_house_invite((select token from memo
 
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000030', true);
 select lives_ok($$select public.share_memory_draft((select id from memory_ids))$$, 'writer shares the draft');
+set local role postgres;
 select is((select count(*) from public.memory_viewers where memory_id = (select id from memory_ids)), 2::bigint, 'sharing snapshots both active members');
+set local role authenticated;
 select lives_ok($$select public.share_memory_draft((select id from memory_ids))$$, 'sharing retry is idempotent');
+set local role postgres;
 select is((select count(*) from public.memory_viewers where memory_id = (select id from memory_ids)), 2::bigint, 'sharing retry does not duplicate viewers');
 
-reset role;
 select * from finish();
 rollback;

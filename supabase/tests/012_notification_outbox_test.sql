@@ -2,10 +2,10 @@ begin;
 
 select plan(19);
 
-select has_table('public', 'notification_events');
-select has_table('public', 'notification_deliveries');
-select has_table('public', 'notification_delivery_targets');
-select has_table('public', 'notification_preferences');
+select has_table('public', 'notification_events', 'notification events exists');
+select has_table('public', 'notification_deliveries', 'notification deliveries exists');
+select has_table('public', 'notification_delivery_targets', 'notification delivery targets exists');
+select has_table('public', 'notification_preferences', 'notification preferences exists');
 select has_function('public', 'enqueue_notification_event', array['text','text','uuid','uuid','uuid','uuid']);
 select has_function('public', 'set_my_push_enabled', array['boolean']);
 select has_function('public', 'claim_notification_delivery_targets', array['integer','integer']);
@@ -27,7 +27,7 @@ insert into notification_invites select invite_token from public.create_house_in
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000071', true);
 select lives_ok($$select public.complete_onboarding('알림 친구', '#FFD3A5', '친구 동물', 'rabbit')$$, 'friend is onboarded');
 select lives_ok($$select public.accept_house_invite((select token from notification_invites), 'notification-join')$$, 'friend joins');
-reset role;
+set local role postgres;
 
 select is((select count(*) from public.notification_events where event_type='house_joined'), 1::bigint, 'joining creates exactly one outbox event');
 select is((select count(*) from public.notification_deliveries d join public.notification_events e on e.id=d.event_id where e.event_type='house_joined'), 1::bigint, 'joining creates one delivery for the existing member');

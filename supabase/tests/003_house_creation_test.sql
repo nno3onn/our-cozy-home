@@ -2,7 +2,7 @@ begin;
 
 select plan(11);
 
-select has_table('public', 'house_create_requests');
+select has_table('public', 'house_create_requests', 'house create requests exists');
 select has_function('public', 'create_house', array['text', 'text']);
 
 insert into auth.users (id)
@@ -65,6 +65,6 @@ select throws_ok(
   'direct house writes are blocked by RLS'
 );
 
-reset role;
+set local role postgres;
 select * from finish();
 rollback;

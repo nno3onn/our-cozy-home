@@ -29,21 +29,21 @@ select is((select result from public.accept_house_invite((select token from leav
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000020', true);
 select is((select successor_profile_id from public.leave_house()), '00000000-0000-0000-0000-000000000021'::uuid, 'admin role transfers to the earliest active member');
 
-reset role;
+set local role postgres;
 select is((select role::text from public.house_memberships where profile_id = '00000000-0000-0000-0000-000000000021' and status = 'active'), 'admin', 'the successor membership becomes admin');
 select is((select status::text from public.house_invites), 'cancelled', 'departure cancels the active invite');
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000021', true);
 select is((select result from public.leave_house()), 'left', 'a non-last member can leave');
-reset role;
+set local role postgres;
 select is((select status::text from public.houses), 'active', 'a house with one remaining member stays active');
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000022', true);
 select is((select house_archived from public.leave_house()), true, 'the last member archives the house');
 select is((select result from public.leave_house()), 'already_left', 'a leave retry is safe');
-reset role;
+set local role postgres;
 select is((select status::text from public.houses), 'archived', 'only the final departure archives the house');
 
 select * from finish();

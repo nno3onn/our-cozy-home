@@ -2,11 +2,11 @@ begin;
 
 select plan(16);
 
-select has_table('public', 'app_settings');
-select has_table('public', 'profiles');
-select has_table('public', 'houses');
-select has_table('public', 'house_memberships');
-select has_table('public', 'animals');
+select has_table('public', 'app_settings', 'app settings exists');
+select has_table('public', 'profiles', 'profiles exists');
+select has_table('public', 'houses', 'houses exists');
+select has_table('public', 'house_memberships', 'house memberships exists');
+select has_table('public', 'animals', 'animals exists');
 
 select has_index('public', 'house_memberships', 'one_active_house_membership_per_profile');
 

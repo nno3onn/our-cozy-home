@@ -2,7 +2,7 @@ begin;
 
 select plan(14);
 
-select has_table('public', 'account_deletion_requests');
+select has_table('public', 'account_deletion_requests', 'account deletion requests exists');
 select has_function('public', 'request_account_deletion', array['uuid']);
 select has_function('public', 'mark_account_deletion_completed', array['uuid']);
 select has_function('public', 'get_account_deletion_status');
@@ -16,7 +16,7 @@ select lives_ok($$select public.create_house('삭제 테스트 집', 'delete-hou
 create temporary table deletion_draft (id uuid not null);
 insert into deletion_draft select public.create_memory_draft('개인 초안', '삭제할 원문', date '2026-09-28');
 
-reset role;
+set local role postgres;
 insert into public.push_tokens(profile_id, token, platform) values ('00000000-0000-0000-0000-000000000070', 'ExponentPushToken[deletion-test]', 'web');
 set local role authenticated;
 select is(
@@ -25,7 +25,7 @@ select is(
   'the user prepares an idempotent deletion before privileged Auth removal'
 );
 
-reset role;
+set local role postgres;
 select is(
   (select status::text from public.house_memberships where profile_id = '00000000-0000-0000-0000-000000000070' order by created_at desc limit 1),
   'left',
@@ -36,9 +36,8 @@ select is(
   '떠난 친구',
   'the retained profile tombstone has no original display name'
 );
-select is_not(
-  (select deleted_at from public.animals where profile_id = '00000000-0000-0000-0000-000000000070'),
-  null::timestamptz,
+select ok(
+  (select deleted_at is not null from public.animals where profile_id = '00000000-0000-0000-0000-000000000070'),
   'the retained animal provenance is soft-deleted and anonymized'
 );
 select is_empty(

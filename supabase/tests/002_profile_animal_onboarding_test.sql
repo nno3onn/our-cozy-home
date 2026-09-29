@@ -51,7 +51,7 @@ select throws_ok(
   '.*',
   'direct profile writes are blocked by RLS'
 );
-reset role;
+set local role postgres;
 
 select * from finish();
 rollback;
