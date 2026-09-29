@@ -294,7 +294,7 @@ begin
     select existing.id, membership.profile_id, membership.id
     from public.house_memberships membership
     where membership.house_id = active_house and membership.status = 'active'
-    on conflict (memory_id, profile_id) do nothing;
+    on conflict on constraint memory_viewers_pkey do nothing;
   elsif existing.house_id <> active_house then
     raise exception 'memory_house_mismatch' using errcode = '42501';
   end if;
@@ -412,6 +412,91 @@ begin
   balance := current_balance;
   quantity := item_quantity;
   result := 'purchased';
+  return next;
+end;
+$$;
+
+create or replace function public.request_account_deletion(p_request_key uuid)
+returns table(profile_id uuid, status text)
+language plpgsql security definer set search_path = public
+as $$
+declare
+  uid uuid := auth.uid();
+  now_at timestamptz := clock_timestamp();
+begin
+  if uid is null then raise exception 'authentication required' using errcode = '42501'; end if;
+  perform pg_advisory_xact_lock(hashtextextended(uid::text, 0));
+  perform 1 from public.profiles profile where profile.id = uid for update;
+  if not found then raise exception 'profile_not_found' using errcode = 'P0001'; end if;
+
+  select request.status into status
+  from public.account_deletion_requests request
+  where request.profile_id = uid for update;
+  if found then
+    profile_id := uid;
+    return next;
+    return;
+  end if;
+
+  perform public.leave_house();
+
+  delete from public.memories memory
+  where memory.author_profile_id = uid and memory.status = 'private_draft';
+  update public.memory_photos photo
+  set deleted_at = now_at
+  from public.memory_contributions contribution
+  where photo.contribution_id = contribution.id
+    and contribution.author_profile_id = uid
+    and photo.deleted_at is null;
+  update public.memory_contribution_revisions revision
+  set deleted_at = now_at
+  from public.memory_contributions contribution
+  where revision.contribution_id = contribution.id
+    and contribution.author_profile_id = uid
+    and revision.deleted_at is null;
+  update public.memory_contributions contribution
+  set deleted_at = now_at, updated_at = now_at
+  where contribution.author_profile_id = uid and contribution.deleted_at is null;
+  update public.memories memory
+  set title = '함께한 추억', body = '', updated_at = now_at
+  where memory.author_profile_id = uid and memory.status in ('shared', 'completed');
+  delete from public.memory_viewers viewer where viewer.profile_id = uid;
+
+  update public.habit_learning learning
+  set status = 'ended', ended_at = now_at
+  where learning.status = 'learning'
+    and (learning.learner_animal_id in (select animal.id from public.animals animal where animal.profile_id = uid)
+      or learning.teacher_animal_id in (select animal.id from public.animals animal where animal.profile_id = uid));
+  update public.animals animal
+  set name = '떠난 동물', state = 'idle', deleted_at = now_at, updated_at = now_at
+  where animal.profile_id = uid and animal.deleted_at is null;
+
+  delete from public.notification_delivery_targets target
+  using public.notification_deliveries delivery
+  where target.delivery_id = delivery.id and delivery.recipient_profile_id = uid;
+  delete from public.notification_deliveries delivery where delivery.recipient_profile_id = uid;
+  update public.notification_events notification_event
+  set actor_profile_id = null where notification_event.actor_profile_id = uid;
+  delete from public.push_tokens token where token.profile_id = uid;
+  delete from public.notification_preferences preference where preference.profile_id = uid;
+
+  delete from public.purchase_requests request where request.profile_id = uid;
+  delete from public.attendance_rewards attendance where attendance.profile_id = uid;
+  delete from public.coin_transactions transaction_entry where transaction_entry.profile_id = uid;
+  delete from public.coin_wallets wallet where wallet.profile_id = uid;
+  delete from public.room_placements placement
+  using public.owned_items item
+  where placement.owned_item_id = item.id and item.profile_id = uid;
+  delete from public.owned_items item where item.profile_id = uid and item.kind <> 'memory';
+
+  update public.profiles profile
+  set display_name = '떠난 친구', point_color = '#B8B8B8', deleted_at = now_at, updated_at = now_at
+  where profile.id = uid;
+  insert into public.account_deletion_requests(profile_id, request_key, status, prepared_at, updated_at)
+  values (uid, p_request_key, 'ready_for_auth_deletion', now_at, now_at);
+
+  profile_id := uid;
+  status := 'ready_for_auth_deletion';
   return next;
 end;
 $$;
