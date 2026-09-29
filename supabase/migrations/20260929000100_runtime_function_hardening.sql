@@ -188,3 +188,230 @@ begin
   return created_event_id;
 end;
 $$;
+
+-- Return-table field names become PL/pgSQL variables. Recompile the remaining
+-- state-changing RPCs with explicit relation aliases and distinct local names;
+-- changing the global conflict setting would corrupt legitimate assignments.
+create or replace function public.leave_house()
+returns table (house_id uuid, house_archived boolean, successor_profile_id uuid, result text)
+language plpgsql security definer set search_path = public
+as $$
+declare
+  current_user_id uuid := auth.uid();
+  candidate_house_id uuid;
+  locked_house public.houses%rowtype;
+  current_membership public.house_memberships%rowtype;
+  successor_membership public.house_memberships%rowtype;
+  remaining_members integer;
+  departure_at timestamptz := timezone('utc', now());
+begin
+  if current_user_id is null then raise exception 'authentication required' using errcode = '42501'; end if;
+  perform pg_advisory_xact_lock(hashtextextended(current_user_id::text, 0));
+
+  select membership.house_id into candidate_house_id
+  from public.house_memberships membership
+  where membership.profile_id = current_user_id and membership.status = 'active';
+  if not found then
+    return query select null::uuid, false, null::uuid, 'already_left';
+    return;
+  end if;
+
+  select * into locked_house from public.houses house where house.id = candidate_house_id for update;
+  select * into current_membership from public.house_memberships membership
+  where membership.profile_id = current_user_id
+    and membership.house_id = locked_house.id
+    and membership.status = 'active'
+  for update;
+  if not found then
+    return query select locked_house.id, locked_house.status = 'archived', null::uuid, 'already_left';
+    return;
+  end if;
+
+  update public.house_invites invite
+  set status = 'cancelled', ended_at = departure_at
+  where invite.house_id = locked_house.id and invite.status = 'active';
+
+  update public.house_memberships membership
+  set status = 'left', left_at = departure_at
+  where membership.id = current_membership.id;
+
+  select count(*)::integer into remaining_members
+  from public.house_memberships membership
+  where membership.house_id = locked_house.id and membership.status = 'active';
+  if remaining_members = 0 then
+    update public.houses house
+    set status = 'archived', archived_at = departure_at
+    where house.id = locked_house.id;
+    return query select locked_house.id, true, null::uuid, 'left';
+    return;
+  end if;
+
+  if current_membership.role = 'admin' then
+    select * into successor_membership from public.house_memberships membership
+    where membership.house_id = locked_house.id and membership.status = 'active'
+    order by membership.joined_at asc, membership.id asc limit 1 for update;
+    update public.house_memberships membership
+    set role = 'admin'
+    where membership.id = successor_membership.id;
+    update public.houses house
+    set admin_profile_id = successor_membership.profile_id
+    where house.id = locked_house.id;
+    return query select locked_house.id, false, successor_membership.profile_id, 'left';
+    return;
+  end if;
+
+  return query select locked_house.id, false, null::uuid, 'left';
+end;
+$$;
+
+create or replace function public.share_memory_draft(p_memory_id uuid)
+returns table(memory_id uuid, house_id uuid, viewer_count integer, result text)
+language plpgsql security definer set search_path = public
+as $$
+declare
+  uid uuid := auth.uid();
+  active_house uuid;
+  existing public.memories%rowtype;
+  viewers integer;
+begin
+  if uid is null then raise exception 'authentication required' using errcode = '42501'; end if;
+  perform pg_advisory_xact_lock(hashtextextended(uid::text, 0));
+  select membership.house_id into active_house
+  from public.house_memberships membership
+  where membership.profile_id = uid and membership.status = 'active';
+  if active_house is null then raise exception 'not_in_house' using errcode = '42501'; end if;
+  perform 1 from public.houses house
+  where house.id = active_house and house.status = 'active' for update;
+  if not found then raise exception 'not_in_house' using errcode = '42501'; end if;
+  select * into existing from public.memories memory
+  where memory.id = p_memory_id and memory.author_profile_id = uid for update;
+  if not found then raise exception 'memory_draft_not_found' using errcode = '42501'; end if;
+  if existing.status = 'private_draft' then
+    update public.memories memory
+    set house_id = active_house, status = 'shared', shared_at = timezone('utc',now())
+    where memory.id = existing.id;
+    insert into public.memory_viewers(memory_id, profile_id, membership_id)
+    select existing.id, membership.profile_id, membership.id
+    from public.house_memberships membership
+    where membership.house_id = active_house and membership.status = 'active'
+    on conflict (memory_id, profile_id) do nothing;
+  elsif existing.house_id <> active_house then
+    raise exception 'memory_house_mismatch' using errcode = '42501';
+  end if;
+  select count(*)::integer into viewers
+  from public.memory_viewers viewer
+  where viewer.memory_id = existing.id;
+  return query select existing.id, active_house, viewers,
+    case when existing.status = 'private_draft' then 'shared' else 'already_shared' end;
+end;
+$$;
+
+create or replace function public.claim_attendance_reward()
+returns table (balance integer, game_date date, granted boolean)
+language plpgsql security definer set search_path = public
+as $$
+declare
+  uid uuid := auth.uid();
+  kst_date date := (timezone('Asia/Seoul', now()))::date;
+  reward integer;
+  tx uuid;
+begin
+  if uid is null then raise exception 'authentication required' using errcode='42501'; end if;
+  select settings.value::text::integer into reward
+  from public.app_settings settings
+  where settings.key = 'attendance_daily_reward';
+  if reward <> 100 then raise exception 'invalid_attendance_reward_setting' using errcode='P0001'; end if;
+  insert into public.coin_wallets(profile_id) values(uid) on conflict(profile_id) do nothing;
+  perform 1 from public.coin_wallets wallet where wallet.profile_id = uid for update;
+  select attendance.transaction_id into tx
+  from public.attendance_rewards attendance
+  where attendance.profile_id = uid and attendance.game_date = kst_date;
+  if found then
+    return query select wallet.balance, kst_date, false
+    from public.coin_wallets wallet where wallet.profile_id = uid;
+    return;
+  end if;
+  insert into public.coin_transactions(profile_id,amount,reason)
+  values(uid,reward,'attendance') returning id into tx;
+  insert into public.attendance_rewards(profile_id,game_date,transaction_id)
+  values(uid,kst_date,tx);
+  update public.coin_wallets wallet
+  set balance = wallet.balance + reward, updated_at = timezone('utc',now())
+  where wallet.profile_id = uid;
+  return query select wallet.balance, kst_date, true
+  from public.coin_wallets wallet where wallet.profile_id = uid;
+end;
+$$;
+
+create or replace function public.purchase_item(p_item_definition_id text, p_request_key uuid)
+returns table (item_definition_id text, owned_item_id uuid, balance integer, quantity integer, result text)
+language plpgsql security definer set search_path = public
+as $$
+declare
+  uid uuid := auth.uid();
+  price integer;
+  consumable boolean;
+  item_kind text;
+  owned uuid;
+  item_quantity integer;
+  current_balance integer;
+  tx uuid;
+begin
+  if uid is null then raise exception 'authentication required' using errcode = '42501'; end if;
+  insert into public.coin_wallets(profile_id) values (uid) on conflict(profile_id) do nothing;
+  perform 1 from public.coin_wallets wallet where wallet.profile_id = uid for update;
+  select request.item_definition_id, request.owned_item_id, request.balance, request.quantity
+    into item_definition_id, owned_item_id, balance, quantity
+  from public.purchase_requests request
+  where request.profile_id = uid and request.request_key = p_request_key;
+  if found then result := 'already_purchased'; return next; return; end if;
+  select item.price, item.consumable into price, consumable
+  from public.item_definitions item
+  where item.id = p_item_definition_id and item.source = 'shop' and item.active;
+  if not found then raise exception 'shop_item_not_found' using errcode = 'P0001'; end if;
+  select wallet.balance into current_balance
+  from public.coin_wallets wallet where wallet.profile_id = uid;
+  if current_balance < price then
+    raise exception 'insufficient_coins' using errcode = 'P0001',
+      detail = json_build_object('balance', current_balance, 'price', price, 'shortage', price - current_balance)::text;
+  end if;
+  item_kind := case when consumable then 'consumable' else 'furniture' end;
+  if consumable then
+    select item.id, item.quantity into owned, item_quantity
+    from public.owned_items item
+    where item.profile_id = uid
+      and item.item_definition_id = p_item_definition_id
+      and item.kind = 'consumable'
+      and item.recovered_at is null
+    for update;
+    if found then
+      update public.owned_items item
+      set quantity = item.quantity + 1, updated_at = now()
+      where item.id = owned
+      returning item.quantity into item_quantity;
+    else
+      insert into public.owned_items as item(profile_id,item_definition_id,kind)
+      values(uid,p_item_definition_id,item_kind)
+      returning item.id, item.quantity into owned,item_quantity;
+    end if;
+  else
+    insert into public.owned_items as item(profile_id,item_definition_id,kind)
+    values(uid,p_item_definition_id,item_kind)
+    returning item.id, item.quantity into owned,item_quantity;
+  end if;
+  update public.coin_wallets wallet
+  set balance = wallet.balance - price, updated_at = now()
+  where wallet.profile_id = uid
+  returning wallet.balance into current_balance;
+  insert into public.coin_transactions(profile_id,amount,reason)
+  values(uid,-price,'purchase:' || p_item_definition_id) returning id into tx;
+  insert into public.purchase_requests(profile_id,request_key,item_definition_id,owned_item_id,transaction_id,balance,quantity)
+  values(uid,p_request_key,p_item_definition_id,owned,tx,current_balance,item_quantity);
+  item_definition_id := p_item_definition_id;
+  owned_item_id := owned;
+  balance := current_balance;
+  quantity := item_quantity;
+  result := 'purchased';
+  return next;
+end;
+$$;
