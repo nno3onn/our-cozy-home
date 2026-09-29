@@ -1,7 +1,7 @@
 create table public.habit_definitions (id text primary key, name_ko text not null, active boolean not null default true);
 insert into public.habit_definitions(id,name_ko) values ('dance','빙글빙글 춤'),('photo-pose','사진 포즈') on conflict(id) do nothing;
 create table public.habit_learning (
- id uuid primary key default extensions.gen_random_uuid(), learner_animal_id uuid not null references public.animals(id), teacher_animal_id uuid not null references public.animals(id), habit_id text not null references public.habit_definitions(id), status text not null default 'learning' check(status in('learning','learned','ended')), started_at timestamptz not null default clock_timestamp(), ended_at timestamptz,
+ id uuid primary key default extensions.gen_random_uuid(), learner_animal_id uuid not null references public.animals(id), teacher_animal_id uuid not null references public.animals(id), habit_id text not null references public.habit_definitions(id), status text not null default 'learning' check(status in('learning','learned','ended')), started_at timestamptz not null default clock_timestamp(), ended_at timestamptz
 );
 create unique index active_habit_learning_once on public.habit_learning(learner_animal_id,habit_id) where status='learning';
 create table public.habit_learning_days (learning_id uuid not null references public.habit_learning(id) on delete cascade, game_date date not null, primary key(learning_id,game_date));
