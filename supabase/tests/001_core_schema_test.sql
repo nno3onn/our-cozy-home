@@ -46,14 +46,14 @@ select throws_ok(
     values ('00000000-0000-0000-0000-000000000001', 'missing user', '#ff99aa')$$,
   '23503',
   '.*profiles_id_fkey.*',
-  'a profile requires an auth user'
+  'a profile requires an auth user',
 );
 
 select throws_ok(
   $$insert into public.houses (name) values ('   ')$$,
   '23514',
   '.*houses_name_not_blank.*',
-  'a house name cannot be blank'
+  'a house name cannot be blank',
 );
 
 select throws_ok(
@@ -61,7 +61,7 @@ select throws_ok(
     values ('00000000-0000-0000-0000-000000000001', 'Momo', 'dog')$$,
   '22P02',
   '.*invalid input value for enum.*',
-  'animal species must be an allowed enum'
+  'animal species must be an allowed enum',
 );
 
 select ok(
@@ -74,7 +74,7 @@ select ok(
       and pg_get_expr(index_metadata.indpred, index_metadata.indrelid)
         = '(status = ''active''::membership_status)'
   ),
-  'the active-membership index is unique and partial'
+  'the active-membership index is unique and partial',
 );
 
 select throws_ok(
@@ -86,7 +86,7 @@ select throws_ok(
     )$$,
   '23505',
   '.*one_active_house_membership_per_profile.*',
-  'a profile cannot have active memberships in two houses'
+  'a profile cannot have active memberships in two houses',
 );
 
 update public.house_memberships
@@ -100,17 +100,17 @@ select lives_ok(
       '00000000-0000-0000-0000-000000000102',
       '00000000-0000-0000-0000-000000000011'
     )$$,
-  'a profile can join another house after leaving the first'
+  'a profile can join another house after leaving the first',
 );
 
 select ok(
   (select relrowsecurity from pg_class where oid = 'public.app_settings'::regclass),
-  'app settings has RLS enabled'
+  'app settings has RLS enabled',
 );
 
 select ok(
   (select relrowsecurity from pg_class where oid = 'public.house_memberships'::regclass),
-  'memberships have RLS enabled'
+  'memberships have RLS enabled',
 );
 
 select * from finish();
