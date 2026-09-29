@@ -2,7 +2,7 @@ begin;
 
 select plan(16);
 
-select has_function('public', 'leave_house');
+select has_function('public', 'leave_house', array[]::text[], 'leave house exists');
 
 insert into auth.users (id) values
   ('00000000-0000-0000-0000-000000000020'),

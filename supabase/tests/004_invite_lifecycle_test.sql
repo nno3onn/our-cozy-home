@@ -4,7 +4,7 @@ select plan(12);
 
 select has_table('public', 'house_invites', 'house invites exists');
 select has_function('public', 'create_house_invite', array['boolean']);
-select has_function('public', 'cancel_house_invite');
+select has_function('public', 'cancel_house_invite', array[]::text[], 'cancel house invite exists');
 select has_function('public', 'preview_house_invite', array['text']);
 
 insert into auth.users (id)

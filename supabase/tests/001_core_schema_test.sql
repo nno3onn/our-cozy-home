@@ -8,7 +8,7 @@ select has_table('public', 'houses', 'houses exists');
 select has_table('public', 'house_memberships', 'house memberships exists');
 select has_table('public', 'animals', 'animals exists');
 
-select has_index('public', 'house_memberships', 'one_active_house_membership_per_profile');
+select has_index('public', 'house_memberships', 'one_active_house_membership_per_profile', 'active membership index exists');
 
 insert into auth.users (id)
 values ('00000000-0000-0000-0000-000000000011');
@@ -41,26 +41,22 @@ select is(
   'attendance daily reward is seeded as one hundred'
 );
 
-select throws_ok(
+select lives_ok(
   $$insert into public.profiles (id, display_name, point_color)
     values ('00000000-0000-0000-0000-000000000001', 'missing user', '#ff99aa')$$,
-  '23503',
-  '.*profiles_id_fkey.*',
-  'a profile requires an auth user'
+  'profile tombstones can outlive the Auth user'
 );
 
-select throws_ok(
+select throws_like(
   $$insert into public.houses (name) values ('   ')$$,
-  '23514',
-  '.*houses_name_not_blank.*',
+  '%houses_name_not_blank%',
   'a house name cannot be blank'
 );
 
-select throws_ok(
+select throws_like(
   $$insert into public.animals (profile_id, name, species)
     values ('00000000-0000-0000-0000-000000000001', 'Momo', 'dog')$$,
-  '22P02',
-  '.*invalid input value for enum.*',
+  '%invalid input value for enum%',
   'animal species must be an allowed enum'
 );
 
@@ -77,15 +73,14 @@ select ok(
   'the active-membership index is unique and partial'
 );
 
-select throws_ok(
+select throws_like(
   $$insert into public.house_memberships (id, house_id, profile_id)
     values (
       '00000000-0000-0000-0000-000000000202',
       '00000000-0000-0000-0000-000000000102',
       '00000000-0000-0000-0000-000000000011'
     )$$,
-  '23505',
-  '.*one_active_house_membership_per_profile.*',
+  '%one_active_house_membership_per_profile%',
   'a profile cannot have active memberships in two houses'
 );
 

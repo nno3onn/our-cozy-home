@@ -5,7 +5,7 @@ select plan(14);
 select has_table('public', 'account_deletion_requests', 'account deletion requests exists');
 select has_function('public', 'request_account_deletion', array['uuid']);
 select has_function('public', 'mark_account_deletion_completed', array['uuid']);
-select has_function('public', 'get_account_deletion_status');
+select has_function('public', 'get_account_deletion_status', array[]::text[], 'account deletion status exists');
 
 insert into auth.users (id) values ('00000000-0000-0000-0000-000000000070');
 select set_config('request.jwt.claim.role', 'authenticated', true);

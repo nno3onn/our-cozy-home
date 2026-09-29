@@ -3,8 +3,8 @@ begin;
 select plan(11);
 
 select has_table('public', 'room_placements', 'room placements exists');
-select has_function('public', 'place_owned_item');
-select has_function('public', 'is_active_house_placed_item');
+select has_function('public', 'place_owned_item', array['uuid', 'text', 'integer'], 'place owned item exists');
+select has_function('public', 'is_active_house_placed_item', array['uuid'], 'active house placement predicate exists');
 
 insert into auth.users (id) values
   ('00000000-0000-0000-0000-000000000060'),

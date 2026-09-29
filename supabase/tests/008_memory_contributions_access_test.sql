@@ -59,7 +59,9 @@ select is((select count(*) from public.get_memory_contribution_detail((select id
 
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000040', true);
 create temporary table writer_contribution (id uuid not null);
+set local role postgres;
 insert into writer_contribution select id from public.memory_contributions where memory_id=(select id from contribution_memory) and author_profile_id='00000000-0000-0000-0000-000000000040';
+set local role authenticated;
 select lives_ok($$select public.revise_memory_contribution((select id from writer_contribution), '퇴장 뒤 새 기록')$$, 'a current member can revise after another member leaves');
 
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000041', true);

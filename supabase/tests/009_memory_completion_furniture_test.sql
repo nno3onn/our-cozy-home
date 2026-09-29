@@ -18,8 +18,8 @@ select ok(
   ),
   'memory completion events are unique per memory'
 );
-select has_column('public', 'memories', 'generated_item_id');
-select has_column('public', 'owned_items', 'memory_id');
+select has_column('public', 'memories', 'generated_item_id', 'memories store generated furniture definition');
+select has_column('public', 'owned_items', 'memory_id', 'owned items link memory furniture to memories');
 
 insert into auth.users (id) values
   ('00000000-0000-0000-0000-000000000050'),

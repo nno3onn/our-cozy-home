@@ -6,7 +6,7 @@ select has_table('public','habit_learning_participants', 'habit learning partici
 select has_table('public','learned_habits', 'learned habits exists');
 select has_function('public','start_habit_learning',array['uuid','uuid','text']);
 select has_function('public','record_habit_activity',array['uuid']);
-select has_function('public','end_departed_habit_learning');
+select has_function('public','end_departed_habit_learning',array[]::text[], 'end departed habit learning exists');
 select ok(exists (select 1 from pg_constraint where conrelid = 'public.habit_learning_days'::regclass and contype = 'p'), 'habit learning days have a primary key');
 select ok(exists (select 1 from pg_constraint where conrelid = 'public.learned_habits'::regclass and contype = 'p'), 'learned habits have a primary key');
 select * from finish();

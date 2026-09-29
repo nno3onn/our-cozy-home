@@ -58,10 +58,9 @@ select throws_ok(
   'a second active house creation is rejected'
 );
 
-select throws_ok(
+select throws_like(
   $$insert into public.houses (name) values ('direct write')$$,
-  '42501',
-  '.*',
+  '%row-level security policy%',
   'direct house writes are blocked by RLS'
 );
 

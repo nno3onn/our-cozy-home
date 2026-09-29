@@ -295,6 +295,18 @@ begin
     from public.house_memberships membership
     where membership.house_id = active_house and membership.status = 'active'
     on conflict on constraint memory_viewers_pkey do nothing;
+    insert into public.memory_contributions(memory_id,author_profile_id)
+    values(existing.id,uid)
+    on conflict on constraint memory_contributions_memory_id_author_profile_id_key do nothing;
+    insert into public.memory_contribution_revisions(contribution_id,body)
+    select contribution.id, existing.body
+    from public.memory_contributions contribution
+    where contribution.memory_id = existing.id
+      and contribution.author_profile_id = uid
+      and not exists (
+        select 1 from public.memory_contribution_revisions revision
+        where revision.contribution_id = contribution.id
+      );
   elsif existing.house_id <> active_house then
     raise exception 'memory_house_mismatch' using errcode = '42501';
   end if;

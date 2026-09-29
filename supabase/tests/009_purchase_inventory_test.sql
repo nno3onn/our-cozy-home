@@ -4,8 +4,8 @@ select plan(15);
 
 select has_table('public', 'owned_items', 'owned items exists');
 select has_table('public', 'purchase_requests', 'purchase requests exists');
-select has_function('public', 'purchase_item');
-select has_function('public', 'get_purchase_result');
+select has_function('public', 'purchase_item', array['text', 'uuid'], 'purchase item exists');
+select has_function('public', 'get_purchase_result', array['uuid'], 'get purchase result exists');
 
 insert into auth.users (id) values ('00000000-0000-0000-0000-000000000050');
 select set_config('request.jwt.claim.role', 'authenticated', true);

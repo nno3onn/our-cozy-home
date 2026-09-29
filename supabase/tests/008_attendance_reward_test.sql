@@ -2,7 +2,7 @@ begin;
 select plan(10);
 select has_table('public', 'coin_wallets', 'coin wallets exists');
 select has_table('public', 'attendance_rewards', 'attendance rewards exists');
-select has_function('public', 'claim_attendance_reward');
+select has_function('public', 'claim_attendance_reward', array[]::text[], 'claim attendance reward exists');
 
 insert into auth.users (id) values ('00000000-0000-0000-0000-000000000040');
 select set_config('request.jwt.claim.role', 'authenticated', true);
