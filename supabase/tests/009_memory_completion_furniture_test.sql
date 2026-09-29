@@ -4,17 +4,7 @@ select plan(22);
 
 select has_table('public', 'memory_completion_events');
 select has_function('public', 'complete_memory_if_ready', array['uuid']);
-select ok(exists (
-  select 1
-  from pg_constraint constraint_metadata
-  where constraint_metadata.conrelid = 'public.memory_completion_events'::regclass
-    and constraint_metadata.contype in ('p', 'u')
-    and constraint_metadata.conkey = array[
-      (select attnum from pg_attribute
-       where attrelid = 'public.memory_completion_events'::regclass
-         and attname = 'memory_id' and not attisdropped)
-    ]
-), 'memory completion events have one event per memory');
+select col_is_unique('public', 'memory_completion_events', array['memory_id']);
 select has_column('public', 'memories', 'generated_item_id');
 select has_column('public', 'owned_items', 'memory_id');
 

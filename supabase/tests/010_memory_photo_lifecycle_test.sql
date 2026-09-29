@@ -6,10 +6,6 @@ select has_function('public', 'delete_memory_photo', array['uuid']);
 select has_column('public', 'memory_photos', 'upload_request_key');
 select has_column('public', 'memory_photos', 'mime_type');
 select has_column('public', 'memory_photos', 'status');
-select ok(exists (
-  select 1 from pg_policies
-  where schemaname = 'storage' and tablename = 'objects'
-    and policyname = 'memory_photos_read_authorized_viewer'
-), 'memory photos have an authorized-viewer read policy');
+select policy_exists('storage', 'objects', 'memory_photos_read_authorized_viewer');
 select * from finish();
 rollback;
