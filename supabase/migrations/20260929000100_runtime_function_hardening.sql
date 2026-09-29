@@ -100,3 +100,31 @@ begin
   return query select raw_token, new_code, new_expiry;
 end;
 $$;
+
+-- Result-column names are PL/pgSQL variables. Recompile only the RPCs whose
+-- queries also use those names, without touching pgTAP helper functions.
+do $$
+declare
+  signature text;
+  function_definition text;
+begin
+  foreach signature in array array[
+    'public.accept_house_invite(text,text)',
+    'public.leave_house()',
+    'public.claim_attendance_reward()',
+    'public.purchase_item(text,uuid)',
+    'public.share_memory_draft(uuid)',
+    'public.revise_memory_contribution(uuid,text)',
+    'public.place_owned_item(uuid,text,integer)',
+    'public.request_account_deletion(uuid)'
+  ] loop
+    select pg_get_functiondef(signature::regprocedure) into function_definition;
+    function_definition := replace(
+      function_definition,
+      E'AS $function$\n',
+      E'AS $function$\n#variable_conflict use_column\n'
+    );
+    execute function_definition;
+  end loop;
+end;
+$$;
