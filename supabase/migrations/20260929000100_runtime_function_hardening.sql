@@ -79,6 +79,7 @@ begin
     join pg_language language on language.oid = proc.prolang
     where namespace.nspname = 'public'
       and language.lanname = 'plpgsql'
+      and proc.prokind = 'f'
       and position('#variable_conflict' in pg_get_functiondef(proc.oid)) = 0
   loop
     function_definition := replace(
