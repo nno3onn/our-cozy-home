@@ -44,15 +44,15 @@ describe('ITEM_CATALOG', () => {
 
     for (const item of ITEM_CATALOG) {
       expect(item.nameKo).not.toHaveLength(0);
-      expect(item.thumbnailKey).toMatch(/^placeholder:/);
-      expect(item.roomAssetKey).toMatch(/^placeholder:/);
+      expect(item.thumbnailKey).toMatch(/^(placeholder:|illustrated:)/);
+      expect(item.roomAssetKey).toMatch(/^(placeholder:|illustrated:)/);
       expect(item.size.width).toBeGreaterThan(0);
       expect(item.size.height).toBeGreaterThan(0);
       expect(item.anchor.x).toBeGreaterThanOrEqual(0);
       expect(item.anchor.y).toBeGreaterThanOrEqual(0);
       expect(item.allowedSlotIds.length).toBeGreaterThan(0);
       expect(Number.isFinite(item.layerBias)).toBe(true);
-      expect(item.assetStatus).toBe('placeholder');
+      expect(['placeholder', 'final']).toContain(item.assetStatus);
       if (item.source === 'shop') expect(item.price).toBeGreaterThan(0);
     }
   });

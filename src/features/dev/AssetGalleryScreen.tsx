@@ -5,6 +5,7 @@ import { ITEM_CATALOG } from '@/catalog/items';
 import { AppText } from '@/components/ui/AppText';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Panel } from '@/components/ui/Panel';
+import { ItemThumbnail } from '@/features/illustrated-ui/scene/ItemThumbnail';
 import { colors, radii, spacing } from '@/theme/tokens';
 
 export function AssetGalleryScreen({ enabled }: { enabled: boolean }) {
@@ -28,22 +29,14 @@ export function AssetGalleryScreen({ enabled }: { enabled: boolean }) {
         <AppText variant="title">에셋 목록</AppText>
         <AppText tone="muted">상점 {shopCount} · 추억 {memoryCount}</AppText>
         <AppText tone="muted" variant="caption">
-          아래 도형은 교체 가능한 제작용 자리표시자이며 최종 이미지가 아니에요.
+          완성된 파일은 실제 일러스트로, 나머지는 교체 가능한 제작용 자리표시자로 표시해요.
         </AppText>
         <View style={styles.grid}>
           {ITEM_CATALOG.map((item) => (
             <Panel key={item.id} style={styles.card}>
-              <View
-                accessibilityLabel={`${item.nameKo} 방 크기 미리보기`}
-                style={[
-                  styles.preview,
-                  {
-                    backgroundColor: item.previewColor,
-                    borderTopLeftRadius: item.silhouette.includes('star') ? 28 : radii.md,
-                    transform: [{ scaleX: item.size.width >= item.size.height ? 1 : 0.72 }],
-                  },
-                ]}
-              />
+              <View style={styles.preview}>
+                <ItemThumbnail itemId={item.id} style={styles.thumbnail} />
+              </View>
               <AppText numberOfLines={2} variant="label">{item.nameKo}</AppText>
               <AppText tone="muted" variant="caption">{item.category} · {item.size.width}×{item.size.height}</AppText>
               <AppText tone="muted" variant="caption">테마 {item.theme} · 형태 {item.silhouette}</AppText>
@@ -52,7 +45,7 @@ export function AssetGalleryScreen({ enabled }: { enabled: boolean }) {
               <AppText tone="muted" variant="caption">상호작용 {item.interaction}</AppText>
               <AppText tone="muted" variant="caption">썸네일/방 키 분리됨</AppText>
               <View style={styles.badge}>
-                <AppText variant="caption">임시 에셋</AppText>
+                <AppText variant="caption">{item.assetStatus === 'final' ? '완성 일러스트' : '임시 에셋'}</AppText>
               </View>
             </Panel>
           ))}
@@ -68,6 +61,7 @@ const styles = StyleSheet.create({
   content: { width: '100%', maxWidth: 1120, alignSelf: 'center', gap: spacing.sm, padding: spacing.lg, paddingBottom: spacing.xxl },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginTop: spacing.md },
   card: { width: '47%', gap: spacing.xs, padding: spacing.md },
-  preview: { width: '100%', height: 88, borderRadius: radii.md, borderWidth: 2, borderColor: colors.ink },
+  preview: { width: '100%', height: 88, borderRadius: radii.md, borderWidth: 2, borderColor: colors.ink, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.floor },
+  thumbnail: { width: '92%', height: '92%' },
   badge: { alignSelf: 'flex-start', marginTop: spacing.xs, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: radii.pill, backgroundColor: colors.floor },
 });

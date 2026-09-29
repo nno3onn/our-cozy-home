@@ -1,9 +1,10 @@
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
 import type { Animal, AnimalAction, Member } from '@/domain/models';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppText } from '@/components/ui/AppText';
 import { colors, radii, spacing } from '@/theme/tokens';
+import { getIllustratedAsset } from '@/features/illustrated-ui/scene/assetManifest';
 
 const stateLabels = {
   idle: '가만히 있어요',
@@ -12,8 +13,6 @@ const stateLabels = {
   playing: '놀고 있어요',
   reacting: '반가워하고 있어요',
 } as const;
-
-const speciesEmoji = { rabbit: '🐰', cat: '🐱', bear: '🐻' } as const;
 
 export function AnimalDetailSheet({
   animal,
@@ -28,11 +27,12 @@ export function AnimalDetailSheet({
   onDismiss: () => void;
 }) {
   const ownerLabel = owner ? `${owner.displayName}이의 동물` : '알 수 없는 친구의 동물';
+  const sprite = getIllustratedAsset(animal.species === 'rabbit' ? 'illustrated:animal:rabbit' : animal.species === 'cat' ? 'illustrated:animal:cat' : 'illustrated:placeholder:animal');
 
   return (
     <View style={styles.content}>
       <View style={[styles.avatar, { borderColor: owner?.pointColor ?? colors.peach }]}>
-        <AppText style={styles.emoji}>{speciesEmoji[animal.species]}</AppText>
+        {sprite?.source ? <Image accessibilityLabel={`${animal.name} 일러스트`} resizeMode="contain" source={sprite.source} style={styles.sprite} /> : <AppText style={styles.emoji}>🐻</AppText>}
       </View>
       <View>
         <AppText variant="heading">{animal.name}</AppText>
@@ -61,8 +61,9 @@ export function AnimalDetailSheet({
 
 const styles = StyleSheet.create({
   content: { gap: spacing.md },
-  avatar: { alignItems: 'center', alignSelf: 'center', backgroundColor: colors.surface, borderRadius: 42, borderWidth: 2, height: 84, justifyContent: 'center', width: 84 },
+  avatar: { alignItems: 'center', alignSelf: 'center', backgroundColor: colors.surface, borderRadius: 42, borderWidth: 2, height: 104, justifyContent: 'center', width: 104 },
   emoji: { fontSize: 42, lineHeight: 50 },
+  sprite: { height: 106, width: 106 },
   statusRow: { borderBottomColor: colors.line, borderBottomWidth: 1, flexDirection: 'row', justifyContent: 'space-between', paddingBottom: spacing.sm },
   actions: { flexDirection: 'row', gap: spacing.sm },
   habit: { backgroundColor: colors.surface, borderRadius: radii.card, gap: spacing.xs, padding: spacing.md },
