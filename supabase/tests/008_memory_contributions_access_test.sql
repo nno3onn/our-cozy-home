@@ -55,6 +55,10 @@ select is((select count(*) from public.list_memory_summaries('archive')), 0::big
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000041', true);
 select lives_ok($$select public.leave_house()$$, 'a direct contributor can leave');
 select is((select count(*) from public.list_memory_summaries('archive')), 1::bigint, 'a direct contributor retains the personal archive');
+select diag(coalesce((
+  select jsonb_agg(to_jsonb(detail))::text
+  from public.get_memory_contribution_detail((select id from contribution_memory)) detail
+), '[]'));
 select is((select count(*) from public.get_memory_contribution_detail((select id from contribution_memory))), 2::bigint, 'the archive exposes only revisions published before departure');
 
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000040', true);
