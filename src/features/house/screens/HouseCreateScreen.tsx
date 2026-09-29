@@ -6,6 +6,7 @@ import type { CreateHouseInput } from '@/domain/models';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppText } from '@/components/ui/AppText';
 import { colors, spacing } from '@/theme/tokens';
+import { illustratedColors, illustratedElevation, illustratedRadii } from '@/theme/illustratedTokens';
 
 import { validateHouseName } from '../houseValidation';
 
@@ -67,6 +68,7 @@ export function HouseCreateScreen({
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.keyboard}>
         <View style={styles.content}>
+          <View style={styles.houseMark}><AppText style={styles.houseIcon}>⌂</AppText></View>
           <AppText variant="title">새 우리집 만들기</AppText>
           <AppText tone="muted">혼자서도 시작할 수 있어요. 친구는 나중에 초대해요.</AppText>
           <TextInput
@@ -92,12 +94,14 @@ export function HouseCreateScreen({
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.cream },
   keyboard: { flex: 1 },
-  content: { flex: 1, justifyContent: 'center', gap: spacing.md, padding: spacing.xl },
+  content: { alignSelf: 'center', flex: 1, justifyContent: 'center', gap: spacing.md, maxWidth: 520, padding: spacing.xl, width: '100%' },
+  houseMark: { alignItems: 'center', alignSelf: 'center', backgroundColor: '#FDE8E1', borderRadius: 46, height: 92, justifyContent: 'center', width: 92, ...illustratedElevation.card },
+  houseIcon: { color: illustratedColors.peach, fontSize: 54, lineHeight: 58 },
   input: {
     minHeight: 48,
     borderWidth: 1,
     borderColor: colors.line,
-    borderRadius: 12,
+    borderRadius: illustratedRadii.card,
     paddingHorizontal: spacing.md,
     backgroundColor: colors.paper,
     color: colors.ink,

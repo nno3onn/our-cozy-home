@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { CreatedInvite } from '@/domain/models';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppText } from '@/components/ui/AppText';
 import { colors, spacing } from '@/theme/tokens';
+import { InviteCard } from '@/features/illustrated-ui/overlays/InviteCard';
 
 type InviteManagerScreenProps = {
   createLink: (token: string) => string;
@@ -50,20 +51,7 @@ export function InviteManagerScreen({ createLink, onCancelInvite, onCreateInvite
         <View style={styles.content}>
           <AppText variant="title">친구 초대</AppText>
           <AppText tone="muted">초대를 본다고 자리가 예약되지는 않아요. 수락 순서대로 입주해요.</AppText>
-          {invite ? (
-            <View style={styles.result}>
-              <AppText variant="label">초대 코드</AppText>
-              <AppText variant="title">{invite.code}</AppText>
-              <TextInput
-                accessibilityLabel="초대 링크"
-                editable={false}
-                selectTextOnFocus
-                style={styles.link}
-                value={createLink(invite.token)}
-              />
-              <AppText tone="muted" variant="caption">이 초대는 만든 뒤 24시간 동안 사용할 수 있어요.</AppText>
-            </View>
-          ) : null}
+          {invite ? <InviteCard createLink={createLink} invite={invite} /> : null}
           {error ? <AppText tone="danger">{error}</AppText> : null}
           <AppButton
             disabled={submitting}
@@ -81,6 +69,4 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.cream },
   keyboard: { flex: 1 },
   content: { flex: 1, gap: spacing.md, justifyContent: 'center', padding: spacing.xl },
-  result: { gap: spacing.sm, borderWidth: 1, borderColor: colors.line, borderRadius: 16, padding: spacing.lg, backgroundColor: colors.paper },
-  link: { minHeight: 48, borderWidth: 1, borderColor: colors.line, borderRadius: 12, paddingHorizontal: spacing.md, color: colors.ink, backgroundColor: colors.cream },
 });

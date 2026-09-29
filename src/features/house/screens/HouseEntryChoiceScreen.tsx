@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppText } from '@/components/ui/AppText';
 import { colors, spacing } from '@/theme/tokens';
+import { Panel } from '@/components/ui/Panel';
 
 type HouseEntryChoiceScreenProps = {
   onCreateHouse(): void;
@@ -36,8 +37,8 @@ export function HouseEntryChoiceScreen({ onCreateHouse, onOpenInvite }: HouseEnt
       <View style={styles.content}>
         <AppText variant="title">어떤 집에서 시작할까요?</AppText>
         <AppText tone="muted">혼자 새 집을 만들거나 친구의 초대를 확인할 수 있어요.</AppText>
-        <AppButton label="새 집 만들기" onPress={onCreateHouse} />
-        <View style={styles.inviteArea}>
+        <Panel style={styles.newHome}><AppText style={styles.homeArt}>⌂</AppText><AppButton label="새 집 만들기" onPress={onCreateHouse} /></Panel>
+        <Panel style={styles.inviteArea}>
           <AppText variant="label">친구 초대로 입주하기</AppText>
           <TextInput
             accessibilityLabel="초대 코드 또는 링크"
@@ -50,7 +51,7 @@ export function HouseEntryChoiceScreen({ onCreateHouse, onOpenInvite }: HouseEnt
           {error ? <AppText tone="danger">{error}</AppText> : null}
           <AppButton label="초대 확인하기" onPress={openInvite} tone="secondary" />
           <AppText tone="muted" variant="caption">입주 가능 여부와 빈자리는 다음 화면에서 서버가 확인해요.</AppText>
-        </View>
+        </Panel>
       </View>
     </SafeAreaView>
   );
@@ -58,7 +59,9 @@ export function HouseEntryChoiceScreen({ onCreateHouse, onOpenInvite }: HouseEnt
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.cream },
-  content: { flex: 1, justifyContent: 'center', gap: spacing.md, padding: spacing.xl },
-  inviteArea: { gap: spacing.sm, marginTop: spacing.md },
+  content: { alignSelf: 'center', flex: 1, justifyContent: 'center', gap: spacing.md, maxWidth: 520, padding: spacing.xl, width: '100%' },
+  newHome: { alignItems: 'center', gap: spacing.sm, padding: spacing.lg },
+  homeArt: { color: '#F49A86', fontSize: 52, lineHeight: 54 },
+  inviteArea: { gap: spacing.sm, marginTop: spacing.md, padding: spacing.lg },
   input: { minHeight: 48, borderWidth: 1, borderColor: colors.line, borderRadius: 12, paddingHorizontal: 12, backgroundColor: colors.paper, color: colors.ink },
 });
