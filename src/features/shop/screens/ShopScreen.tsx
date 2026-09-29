@@ -16,6 +16,11 @@ import { useConnectionStatus } from '@/network/ConnectionProvider';
 import { useRepository } from '@/repositories/RepositoryContext';
 import { colors, spacing } from '@/theme/tokens';
 
+function createPurchaseRequestId() {
+  const cryptoWithUuid = globalThis.crypto as Crypto | undefined;
+  return cryptoWithUuid?.randomUUID?.() ?? `purchase-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
 export function ShopScreen() {
   const repository = useRepository();
   const isOnline = useConnectionStatus();
@@ -58,7 +63,7 @@ export function ShopScreen() {
         <CategoryChips categories={SHOP_CATEGORIES} onSelect={setCategory} selected={category} />
         <View style={styles.grid}>
           {items.map((item) => (
-            <ShopItemCard disabled={!isOnline || purchase.isPending} item={item} key={item.id} onPurchase={() => purchase.mutate({ itemDefinitionId: item.id, requestId: crypto.randomUUID() })} />
+            <ShopItemCard disabled={!isOnline || purchase.isPending} item={item} key={item.id} onPurchase={() => purchase.mutate({ itemDefinitionId: item.id, requestId: createPurchaseRequestId() })} />
           ))}
         </View>
         {message ? <AppText tone="muted" variant="caption">{message}</AppText> : null}
