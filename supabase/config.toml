@@ -10,12 +10,6 @@ max_rows = 1000
 port = 54322
 major_version = 15
 
-# Supabase CLI v2 executes seed files directly rather than through psql, so
-# ordered SQL paths replace the legacy `\\ir` include used by seed.sql.
-[db.seed]
-enabled = true
-sql_paths = ["./seed/001_item_definitions.sql", "./seed.sql"]
-
 [studio]
 port = 54323
 
