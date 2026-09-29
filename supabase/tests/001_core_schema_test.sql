@@ -32,13 +32,13 @@ values (
 select is(
   (select value from public.app_settings where key = 'house_capacity'),
   '4'::jsonb,
-  'house capacity is seeded as four',
+  'house capacity is seeded as four'
 );
 
 select is(
   (select value from public.app_settings where key = 'attendance_daily_reward'),
   '100'::jsonb,
-  'attendance daily reward is seeded as one hundred',
+  'attendance daily reward is seeded as one hundred'
 );
 
 select throws_ok(
