@@ -122,3 +122,69 @@ begin
   execute function_definition;
 end;
 $$;
+
+-- The notification outbox function returns a UUID and historically used the
+-- same `event_id` identifier for its local value and delivery-table column.
+-- Keep the event value distinct so runtime PL/pgSQL resolution remains
+-- explicit without changing the semantics of `on conflict` column names.
+create or replace function public.enqueue_notification_event(
+  p_event_key text,
+  p_event_type text,
+  p_house_id uuid,
+  p_actor_profile_id uuid default null,
+  p_memory_id uuid default null,
+  p_habit_learning_id uuid default null
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  created_event_id uuid;
+  inserted_event boolean := false;
+begin
+  if p_event_type not in ('house_joined', 'memory_completed', 'habit_learned') then
+    raise exception 'invalid_notification_event_type' using errcode = '22023';
+  end if;
+
+  insert into public.notification_events(event_key,event_type,house_id,actor_profile_id,memory_id,habit_learning_id)
+  values(p_event_key,p_event_type,p_house_id,p_actor_profile_id,p_memory_id,p_habit_learning_id)
+  on conflict(event_key) do nothing
+  returning id into created_event_id;
+  inserted_event := found;
+
+  if not inserted_event then
+    select queued_event.id into created_event_id
+    from public.notification_events queued_event
+    where queued_event.event_key = p_event_key;
+    return created_event_id;
+  end if;
+
+  insert into public.notification_deliveries(event_id,recipient_profile_id)
+  select created_event_id, membership.profile_id
+  from public.house_memberships membership
+  where membership.house_id = p_house_id
+    and membership.status = 'active'
+    and membership.profile_id is distinct from p_actor_profile_id
+    and (
+      p_event_type = 'house_joined'
+      or (p_event_type = 'memory_completed' and exists (
+        select 1 from public.memory_viewers viewer
+        where viewer.memory_id = p_memory_id
+          and viewer.profile_id = membership.profile_id
+          and viewer.access_ended_at is null
+      ))
+      or (p_event_type = 'habit_learned' and exists (
+        select 1 from public.habit_learning learning
+        join public.animals learner on learner.id = learning.learner_animal_id
+        join public.animals teacher on teacher.id = learning.teacher_animal_id
+        where learning.id = p_habit_learning_id
+          and membership.profile_id in (learner.profile_id, teacher.profile_id)
+      ))
+    )
+  on conflict(event_id,recipient_profile_id) do nothing;
+
+  return created_event_id;
+end;
+$$;
