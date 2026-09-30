@@ -13,6 +13,7 @@ import { useRepository } from '@/repositories/RepositoryContext';
 import { colors, spacing } from '@/theme/tokens';
 import { useOptionalAuth } from '@/auth/AuthProvider';
 import { HouseLeaveControls } from '@/features/house/screens/HouseLeaveControls';
+import { MobileBackButton } from '@/features/illustrated-ui/chrome/MobileBackButton';
 
 type ResettableRepository = HomeRepository & { resetDemo: () => Promise<void> };
 
@@ -73,6 +74,7 @@ export function SettingsScreen({
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <MobileBackButton fallbackHref="/" />
       <View style={styles.content}>
         <AppText variant="title">설정</AppText>
         <Panel style={styles.panel}>
@@ -138,7 +140,7 @@ export function SettingsScreen({
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.cream },
-  content: { width: '100%', maxWidth: 720, alignSelf: 'center', gap: spacing.lg, padding: spacing.lg },
+  content: { width: '100%', maxWidth: 720, alignSelf: 'center', gap: spacing.lg, padding: spacing.lg, paddingTop: 72 },
   panel: { gap: spacing.md, padding: spacing.lg },
   confirmation: { gap: spacing.sm },
   row: { flexDirection: 'row', gap: spacing.sm },

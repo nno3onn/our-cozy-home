@@ -7,6 +7,7 @@ import { AppButton } from '@/components/ui/AppButton';
 import { AppText } from '@/components/ui/AppText';
 import { colors, spacing } from '@/theme/tokens';
 import { illustratedColors, illustratedElevation, illustratedRadii } from '@/theme/illustratedTokens';
+import { MobileBackButton } from '@/features/illustrated-ui/chrome/MobileBackButton';
 
 import { validateHouseName } from '../houseValidation';
 
@@ -66,6 +67,7 @@ export function HouseCreateScreen({
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <MobileBackButton fallbackHref="/house/choose" />
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.keyboard}>
         <View style={styles.content}>
           <View style={styles.houseMark}><AppText style={styles.houseIcon}>⌂</AppText></View>

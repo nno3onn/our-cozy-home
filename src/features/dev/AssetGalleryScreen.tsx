@@ -6,12 +6,14 @@ import { AppText } from '@/components/ui/AppText';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Panel } from '@/components/ui/Panel';
 import { ItemThumbnail } from '@/features/illustrated-ui/scene/ItemThumbnail';
+import { MobileBackButton } from '@/features/illustrated-ui/chrome/MobileBackButton';
 import { colors, radii, spacing } from '@/theme/tokens';
 
 export function AssetGalleryScreen({ enabled }: { enabled: boolean }) {
   if (!enabled) {
     return (
       <SafeAreaView style={styles.centered}>
+        <MobileBackButton fallbackHref="/settings" />
         <EmptyState
           description="데모 또는 개발 모드에서만 임시 에셋을 확인할 수 있어요."
           title="개발용 화면이에요"
@@ -25,6 +27,7 @@ export function AssetGalleryScreen({ enabled }: { enabled: boolean }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <MobileBackButton fallbackHref="/settings" />
       <ScrollView contentContainerStyle={styles.content}>
         <AppText variant="title">에셋 목록</AppText>
         <AppText tone="muted">상점 {shopCount} · 추억 {memoryCount}</AppText>
@@ -58,7 +61,7 @@ export function AssetGalleryScreen({ enabled }: { enabled: boolean }) {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.cream },
   centered: { flex: 1, justifyContent: 'center', padding: spacing.lg, backgroundColor: colors.cream },
-  content: { width: '100%', maxWidth: 1120, alignSelf: 'center', gap: spacing.sm, padding: spacing.lg, paddingBottom: spacing.xxl },
+  content: { width: '100%', maxWidth: 1120, alignSelf: 'center', gap: spacing.sm, padding: spacing.lg, paddingBottom: spacing.xxl, paddingTop: 72 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginTop: spacing.md },
   card: { width: '47%', gap: spacing.xs, padding: spacing.md },
   preview: { width: '100%', height: 88, borderRadius: radii.md, borderWidth: 2, borderColor: colors.ink, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.floor },

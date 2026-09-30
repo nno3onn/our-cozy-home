@@ -6,6 +6,7 @@ import { AppButton } from '@/components/ui/AppButton';
 import { AppText } from '@/components/ui/AppText';
 import { colors, spacing } from '@/theme/tokens';
 import { Panel } from '@/components/ui/Panel';
+import { MobileBackButton } from '@/features/illustrated-ui/chrome/MobileBackButton';
 
 type HouseEntryChoiceScreenProps = {
   onCreateHouse(): void;
@@ -34,6 +35,7 @@ export function HouseEntryChoiceScreen({ onCreateHouse, onOpenInvite }: HouseEnt
 
   return (
     <SafeAreaView style={styles.safe}>
+      <MobileBackButton fallbackHref="/" />
       <View style={styles.content}>
         <AppText variant="title">어떤 집에서 시작할까요?</AppText>
         <AppText tone="muted">혼자 새 집을 만들거나 친구의 초대를 확인할 수 있어요.</AppText>
