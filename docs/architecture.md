@@ -1,6 +1,6 @@
 # 우리집 기술 아키텍처
 
-최종 수정일: 2026-09-24
+최종 수정일: 2026-09-30
 
 제품 규칙은 [`product-spec.md`](product-spec.md), 상세 설계와 테스트 행렬은
 [`superpowers/specs/2026-09-19-woorijip-design.md`](superpowers/specs/2026-09-19-woorijip-design.md),

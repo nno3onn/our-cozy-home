@@ -3,9 +3,11 @@
 친구 최대 4명이 한 집에서 각자의 동물을 키우고, 공동 방을 꾸미며, 함께한 추억을
 가구로 남기는 Expo 기반 웹·모바일 앱이다. 웹은 데스크톱과 모바일 폭에 대응하는
 정식 실행 대상이며, iOS·Android도 같은 코드베이스에서 유지한다. 현재 저장소는
-**명시적 데모 모드의 실행 가능한 기반**과 Supabase 이메일 세션·프로필/동물
-온보딩 코드를 포함한다. 집·초대·경제·추억·버릇의 실제 서버 기능은 아직 단계별로
-구현 중이므로 전체 연동 완료로 간주하면 안 된다.
+**명시적 데모 모드의 실행 가능한 경험**과 Supabase 이메일 세션·프로필·집·초대·경제·
+방 배치·추억·버릇을 위한 클라이언트, PostgreSQL migration/RPC/RLS 코드를 포함한다.
+로컬 PostgreSQL release gate는 GitHub Actions에서 검증한다. 다만 원격 Supabase에
+전체 migration을 적용하고 실제 다계정·실기기에서 검증하는 일은 별도의 외부 환경
+작업으로 남아 있으므로, 전체 실서비스 연동 완료로 간주하면 안 된다.
 
 제품 규칙은 [`docs/product-spec.md`](docs/product-spec.md), 기술 책임은
 [`docs/architecture.md`](docs/architecture.md), 현재 구현 범위는
