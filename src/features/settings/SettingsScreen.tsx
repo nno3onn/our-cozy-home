@@ -1,7 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { AppMode } from '@/config/appMode';
 import type { HomeRepository } from '@/domain/repository';
@@ -10,10 +9,10 @@ import { AppText } from '@/components/ui/AppText';
 import { Panel } from '@/components/ui/Panel';
 import { useDecorateStore } from '@/features/decorate/store/useDecorateStore';
 import { useRepository } from '@/repositories/RepositoryContext';
-import { colors, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
 import { useOptionalAuth } from '@/auth/AuthProvider';
 import { HouseLeaveControls } from '@/features/house/screens/HouseLeaveControls';
-import { MobileBackButton } from '@/features/illustrated-ui/chrome/MobileBackButton';
+import { ResponsivePage } from '@/components/layout/ResponsivePage';
 
 type ResettableRepository = HomeRepository & { resetDemo: () => Promise<void> };
 
@@ -73,8 +72,7 @@ export function SettingsScreen({
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <MobileBackButton fallbackHref="/" />
+    <ResponsivePage contentMaxWidth={720} fallbackHref="/" scroll testID="settings-page">
       <View style={styles.content}>
         <AppText variant="title">설정</AppText>
         <Panel style={styles.panel}>
@@ -134,13 +132,12 @@ export function SettingsScreen({
           </Panel>
         ) : null}
       </View>
-    </SafeAreaView>
+    </ResponsivePage>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: colors.cream },
-  content: { width: '100%', maxWidth: 720, alignSelf: 'center', gap: spacing.lg, padding: spacing.lg, paddingTop: 72 },
+  content: { gap: spacing.lg, paddingBottom: spacing.lg },
   panel: { gap: spacing.md, padding: spacing.lg },
   confirmation: { gap: spacing.sm },
   row: { flexDirection: 'row', gap: spacing.sm },

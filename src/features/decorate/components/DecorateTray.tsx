@@ -9,6 +9,7 @@ import type { HomeSnapshot, RoomPlacement } from '@/domain/models';
 import { colors, radii, spacing } from '@/theme/tokens';
 
 export function DecorateTray({
+  aside = false,
   isOnline,
   isPending,
   onOpenShop,
@@ -18,6 +19,7 @@ export function DecorateTray({
   selectedOwnedItemId,
   snapshot,
 }: {
+  aside?: boolean;
   snapshot: HomeSnapshot;
   placement: RoomPlacement | undefined;
   selectedOwnedItemId: string | null;
@@ -33,13 +35,13 @@ export function DecorateTray({
   const placedDefinition = placed ? ITEM_BY_ID.get(placed.itemDefinitionId) : undefined;
 
   return (
-    <View accessibilityLabel="꾸미기 보관함" style={styles.tray}>
+    <View accessibilityLabel={aside ? '꾸미기 보조 패널' : '꾸미기 보관함'} style={[styles.tray, aside && styles.aside]}>
       <View style={styles.header}>
         <AppText variant="heading">보관함</AppText>
         <AppButton label="상점" onPress={onOpenShop} tone="quiet" />
       </View>
       <AppText tone="muted" variant="caption">{placedDefinition ? `${placedDefinition.nameKo} 배치 중` : '이 자리는 비어 있어요'}</AppText>
-      <ScrollView contentContainerStyle={styles.items} horizontal showsHorizontalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={[styles.items, aside && styles.asideItems]} horizontal={!aside} showsHorizontalScrollIndicator={false}>
         {furniture.map((item) => {
           const definition = ITEM_BY_ID.get(item.itemDefinitionId);
           const owner = snapshot.members.find((member) => member.userId === item.ownerId);
@@ -67,8 +69,10 @@ export function DecorateTray({
 
 const styles = StyleSheet.create({
   tray: { backgroundColor: colors.paper, borderTopLeftRadius: radii.scene, borderTopRightRadius: radii.scene, borderWidth: 1.5, borderColor: colors.line, gap: spacing.sm, maxHeight: '52%', padding: spacing.md, shadowColor: '#8D684C', shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.12, shadowRadius: 12 },
+  aside: { borderBottomLeftRadius: radii.scene, borderBottomRightRadius: radii.scene, flexShrink: 0, maxHeight: undefined, width: 300 },
   header: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },
   items: { gap: spacing.sm, paddingVertical: spacing.xs },
+  asideItems: { paddingBottom: spacing.md },
   card: { gap: spacing.xs, padding: spacing.sm, width: 142 },
   selectedCard: { borderColor: colors.coral, borderWidth: 2 },
   preview: { alignItems: 'center', backgroundColor: colors.surface, borderRadius: radii.card, height: 82, justifyContent: 'center', width: '100%' },

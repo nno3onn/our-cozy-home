@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render } from '@testing-library/react-native';
+import * as ReactNative from 'react-native';
 
 import { RepositoryProvider } from '@/repositories/RepositoryContext';
 import { DemoRepository } from '@/repositories/demo/DemoRepository';
@@ -64,5 +65,15 @@ describe('memory screens', () => {
 
     expect(await view.findByText('개인 보관함')).toBeOnTheScreen();
     expect(view.getByText('보관한 산책')).toBeOnTheScreen();
+  });
+
+  it('turns the scrapbook into two readable tablet columns', async () => {
+    jest.spyOn(ReactNative, 'useWindowDimensions').mockReturnValue({ fontScale: 1, height: 1024, scale: 1, width: 768 });
+    const view = await render(wrapper(<MemoriesScreen onOpenMemory={jest.fn()} />));
+
+    expect(await view.findByTestId('memory-grid-current-2')).toBeOnTheScreen();
+    expect(view.getByTestId('memory-grid-current-2').props.children[0].props.style).toEqual(
+      expect.arrayContaining([expect.objectContaining({ minWidth: 156 })]),
+    );
   });
 });

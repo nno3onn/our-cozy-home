@@ -38,4 +38,11 @@ describe('DecorateTray', () => {
     expect(view.getByText('선택: 민트 매듭 쿠션')).toBeOnTheScreen();
     expect(view.getByRole('button', { name: '선택한 가구 놓기' })).toBeDisabled();
   });
+
+  it('uses a dedicated aside landmark for wide layouts', async () => {
+    const view = await render(<DecorateTray aside isOnline isPending={false} onOpenShop={jest.fn()} onPlace={jest.fn()} onSelect={jest.fn()} placement={placement} selectedOwnedItemId={null} snapshot={snapshot} />);
+
+    expect(view.getByLabelText('꾸미기 보조 패널')).toBeOnTheScreen();
+    expect(view.queryByLabelText('꾸미기 보관함')).not.toBeOnTheScreen();
+  });
 });

@@ -1,15 +1,16 @@
 import type { Href } from 'expo-router';
 import { useRouter } from 'expo-router';
-import { Platform, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
+import * as ReactNative from 'react-native';
 
 import { AppText } from '@/components/ui/AppText';
 import { illustratedColors, illustratedElevation, illustratedRadii } from '@/theme/illustratedTokens';
+import { getResponsiveLayout } from '@/theme/responsive';
 
 export function MobileBackButton({ fallbackHref }: { fallbackHref: Href }) {
   const router = useRouter();
-  const { width } = useWindowDimensions();
+  const { width } = ReactNative.useWindowDimensions();
 
-  if (Platform.OS === 'web' && width >= 768) return null;
+  if (getResponsiveLayout(width).breakpoint === 'wide') return null;
 
   function goBack() {
     if (router.canGoBack()) {
@@ -21,7 +22,7 @@ export function MobileBackButton({ fallbackHref }: { fallbackHref: Href }) {
   }
 
   return (
-    <Pressable
+    <ReactNative.Pressable
       accessibilityHint="이전 화면으로 돌아가요."
       accessibilityLabel="이전 화면으로 돌아가기"
       accessibilityRole="button"
@@ -30,11 +31,11 @@ export function MobileBackButton({ fallbackHref }: { fallbackHref: Href }) {
       style={({ pressed }) => [styles.button, pressed && styles.pressed]}
     >
       <AppText style={styles.icon}>‹</AppText>
-    </Pressable>
+    </ReactNative.Pressable>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = ReactNative.StyleSheet.create({
   button: {
     alignItems: 'center',
     alignSelf: 'flex-start',

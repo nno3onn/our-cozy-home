@@ -42,6 +42,10 @@
 - 완료: 모바일 스택 화면에 44×44pt 공통 뒤로가기 버튼을 추가했다. 이전 history가
   있으면 원래 화면으로 돌아가고, 직접 링크처럼 history가 없으면 각 화면의 안전한
   fallback(홈·추억 목록·상점·로그인)으로 이동한다. 웹 데스크톱 폭에서는 숨긴다.
+- 완료: 공통 반응형 계약을 추가했다. 600px 미만은 한 열, 600–899px는 두 열, 900px
+  이상은 데스크톱 방 레일·꾸미기 보조 패널과 세 열 목록(개발 에셋은 네 열)을 사용한다.
+  상점·보관함·추억·에셋 목록은 최소 카드 폭을 유지하고, 설정·인증·집/초대·추억 작성
+  화면은 스크롤·키보드 회피·safe-area 여백을 공유한다.
 - 완료: 상점 8개 카테고리 × 5종과 추억 가구 3개 종류 × 5외형의 데이터 카탈로그
 - 완료: Supabase CLI 고정, 로컬 `config.toml`, 추가 전용 migration·seed·SQL test
   디렉터리와 명시적 실행 명령 기반
@@ -115,6 +119,7 @@
 | 10.0 | 계정 삭제 | 삭제 요청 RPC, 집 탈퇴 재사용·개인 원문/토큰/비추억 인벤토리 정리, 비식별 tombstone, `delete-account` Edge Function·설정 확인 UI 작성 | repository·오프라인 guard Jest 통과, account deletion SQL 시나리오 추가 | Docker/local Supabase·Edge deploy·실제 Auth 삭제 미검증 |
 | 11.0 | 웹 배포·딥 링크 | Vercel SPA rewrite, Expo static export·artifact secret 검사, Auth redirect 설정 문서 작성 | demo 웹 export·artifact 검사 통과 | Vercel production 데모에서 `/`, `/invite/test-token`, `/memories/demo-memory` 200 확인. 실제 Supabase Auth redirect·로그인 흐름은 미검증 |
 | 11.1 | 반응형·접근성·모션 | 주요 route의 SafeArea/scroll·키보드 회피, 44pt 버튼 계약, 동물 대체 행동·reduced motion·offline/empty/error 접근성 상태를 감사 | Room layout·button·screen Jest 회귀와 typecheck/lint 통과 | 390/1280 실제 브라우저, iOS/Android 스크린리더·키보드·모션 감소 미검증 |
+| 11.2 | 반응형 UI/UX 정리 | 공통 1/2/3열 breakpoint, 목록 최소 폭, 넓은 화면 방/꾸미기 분할, 중앙 form/read 열과 공통 키보드 스크롤을 적용 | Node 22 `npm test -- --runInBand --no-watchman --forceExit` 47 suite/154 test, typecheck·lint·demo web export·SPA export 검사 통과 | 이 작업 환경의 브라우저 확장 차단 때문에 새 viewport 수동 확인 미수행; iOS/Android 검증 아님 |
 | 12.0 | DB release matrix | 기능별 pgTAP 시나리오와 reset→seed→test GitHub Actions release gate 구성 | workflow 정적 파일·Supabase foundation 검사 통과 | Docker가 없는 현재 환경에서는 병렬 DB/RLS/Storage 실제 실행 미검증 |
 | 12.1 | 실제 환경 E2E | 마스킹 규칙·A–E 다계정/production web/실기기 검증 matrix와 runbook 작성 | 자동화·문서 구분 확인 | migration 적용 권한·테스트 계정·production URL·iOS/Android 기기가 없어 실제 항목 미수행 |
 
@@ -123,6 +128,7 @@
 | 날짜 | 대상 | 명령 또는 환경 | 결과 | 범위 제한 |
 | --- | --- | --- | --- | --- |
 | 2026-09-30 | 모바일 뒤로가기 | `MobileBackButton` Jest, Node 22 전체 Jest·typecheck·lint·demo web export | 45 suite/139 test 통과. history back·직접 링크 fallback 자동화 검증, 타입·정적 검사·웹 export 통과 | in-app Browser가 localhost 접근을 확장으로 차단해 실제 브라우저 화면 검증은 미수행. iOS·Android 실기기 검증 아님 |
+| 2026-09-30 | 반응형 UI/UX | Node 22 `npm test -- --runInBand --no-watchman --forceExit`, `npm run typecheck`, `npm run lint`, `EXPO_PUBLIC_APP_MODE=demo npm run build:web`, `npm run verify:web:export` | 47 suite/154 test 통과. 390/768/1280 breakpoint 단위 테스트, 4마리 터치 영역, 상점/추억 그리드, 설정 중앙 열, typecheck·lint·정적 웹 export를 확인 | Jest는 기존 비동기 handle 경고 때문에 `--forceExit` 사용. 브라우저 확장 차단으로 이번 변경의 수동 viewport 확인은 미수행이며, iOS·Android 실기기 검증이 아님 |
 | 2026-09-30 | main DB release gate | GitHub Actions `Database release gate`: local Supabase 시작, `supabase db reset --local`, `supabase test db` | 성공. 현행 migration·결정적 seed·pgTAP matrix가 CI local PostgreSQL에서 통과 | 원격 `our-cozy-home` DB 적용, 실제 JWT 다계정·Storage API, iOS·Android 검증을 대체하지 않음 |
 | 2026-09-30 | 앱 회귀 | Node 22 `npm test -- --runInBand`, `npm run typecheck`, `npm run lint` | 44 suite/137 test 통과, typecheck·lint 통과 | Jest는 Watchman recrawl 및 비동기 handle 경고를 출력함. 실제 Supabase/실기기 검증 아님 |
 | 2026-09-29 | 게임형 우리집 셸·추억 앨범 | Node 22 `npm test -- --runInBand --forceExit`, typecheck, lint, demo export·artifact 검사; 로컬 브라우저 390×844·1280×720 | 41 suite/129 tests, 정적 검사·export·artifact 검사 통과. 네 동물·Sheet·꾸미기 트레이·스크랩북 경로를 브라우저에서 확인 | Jest는 기존 async handle 경고 때문에 `--forceExit` 사용. 웹 수동 검증이며 iOS·Android, 실제 Supabase 다계정 검증이 아님 |

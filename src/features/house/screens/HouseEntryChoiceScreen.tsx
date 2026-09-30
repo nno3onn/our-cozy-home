@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppButton } from '@/components/ui/AppButton';
 import { AppText } from '@/components/ui/AppText';
 import { colors, spacing } from '@/theme/tokens';
 import { Panel } from '@/components/ui/Panel';
-import { MobileBackButton } from '@/features/illustrated-ui/chrome/MobileBackButton';
+import { ResponsiveFormPage } from '@/components/layout/ResponsiveFormPage';
 
 type HouseEntryChoiceScreenProps = {
   onCreateHouse(): void;
@@ -34,8 +33,7 @@ export function HouseEntryChoiceScreen({ onCreateHouse, onOpenInvite }: HouseEnt
   }
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <MobileBackButton fallbackHref="/" />
+    <ResponsiveFormPage fallbackHref="/" maxWidth={640} testID="house-entry-page">
       <View style={styles.content}>
         <AppText variant="title">어떤 집에서 시작할까요?</AppText>
         <AppText tone="muted">혼자 새 집을 만들거나 친구의 초대를 확인할 수 있어요.</AppText>
@@ -55,13 +53,12 @@ export function HouseEntryChoiceScreen({ onCreateHouse, onOpenInvite }: HouseEnt
           <AppText tone="muted" variant="caption">입주 가능 여부와 빈자리는 다음 화면에서 서버가 확인해요.</AppText>
         </Panel>
       </View>
-    </SafeAreaView>
+    </ResponsiveFormPage>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.cream },
-  content: { alignSelf: 'center', flex: 1, justifyContent: 'center', gap: spacing.md, maxWidth: 520, padding: spacing.xl, width: '100%' },
+  content: { gap: spacing.md },
   newHome: { alignItems: 'center', gap: spacing.sm, padding: spacing.lg },
   homeArt: { color: '#F49A86', fontSize: 52, lineHeight: 54 },
   inviteArea: { gap: spacing.sm, marginTop: spacing.md, padding: spacing.lg },

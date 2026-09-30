@@ -1,4 +1,5 @@
 import { fireEvent, render } from '@testing-library/react-native';
+import * as ReactNative from 'react-native';
 
 import { MobileBackButton } from '../MobileBackButton';
 
@@ -34,5 +35,12 @@ describe('MobileBackButton', () => {
     fireEvent.press(view.getByRole('button', { name: '이전 화면으로 돌아가기' }));
 
     expect(mockReplace).toHaveBeenCalledWith('/(tabs)/memories');
+  });
+
+  it('is not rendered at wide widths', async () => {
+    jest.spyOn(ReactNative, 'useWindowDimensions').mockReturnValue({ fontScale: 1, height: 720, scale: 1, width: 900 });
+    const view = await render(<MobileBackButton fallbackHref="/" />);
+
+    expect(view.queryByRole('button', { name: '이전 화면으로 돌아가기' })).not.toBeOnTheScreen();
   });
 });

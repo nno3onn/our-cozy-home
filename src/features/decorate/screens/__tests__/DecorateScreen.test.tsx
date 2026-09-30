@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import * as ReactNative from 'react-native';
 
 import { RepositoryProvider } from '@/repositories/RepositoryContext';
 import { DemoRepository } from '@/repositories/demo/DemoRepository';
@@ -91,5 +92,21 @@ describe('DecorateScreen', () => {
 
     expect(await view.findByText('별 쿠션 배치 중')).toBeOnTheScreen();
     expect(view.queryByRole('button', { name: '별 쿠션 선택' })).not.toBeOnTheScreen();
+  });
+
+  it('keeps the offline notice above the wide room-and-aside layout', async () => {
+    jest.spyOn(ReactNative, 'useWindowDimensions').mockReturnValue({ fontScale: 1, height: 720, scale: 1, width: 1280 });
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: Infinity } } });
+    const offlineState: ConnectionState = { isOnline: () => false, subscribe: () => () => undefined };
+    const view = await render(
+      <ConnectionProvider state={offlineState}>
+        <QueryClientProvider client={client}>
+          <RepositoryProvider repository={new DemoRepository()}><DecorateScreen /></RepositoryProvider>
+        </QueryClientProvider>
+      </ConnectionProvider>,
+    );
+
+    expect(await view.findByText('오프라인 읽기 전용')).toBeOnTheScreen();
+    expect(view.getByTestId('wide-decorate-content')).toBeOnTheScreen();
   });
 });

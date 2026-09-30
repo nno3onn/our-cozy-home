@@ -1,13 +1,12 @@
 import { useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, TextInput, View } from 'react-native';
 
 import type { CreateHouseInput } from '@/domain/models';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppText } from '@/components/ui/AppText';
 import { colors, spacing } from '@/theme/tokens';
 import { illustratedColors, illustratedElevation, illustratedRadii } from '@/theme/illustratedTokens';
-import { MobileBackButton } from '@/features/illustrated-ui/chrome/MobileBackButton';
+import { ResponsiveFormPage } from '@/components/layout/ResponsiveFormPage';
 
 import { validateHouseName } from '../houseValidation';
 
@@ -66,9 +65,7 @@ export function HouseCreateScreen({
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <MobileBackButton fallbackHref="/house/choose" />
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.keyboard}>
+    <ResponsiveFormPage fallbackHref="/house/choose" maxWidth={640} testID="house-create-page">
         <View style={styles.content}>
           <View style={styles.houseMark}><AppText style={styles.houseIcon}>⌂</AppText></View>
           <AppText variant="title">새 우리집 만들기</AppText>
@@ -88,15 +85,12 @@ export function HouseCreateScreen({
             <AppButton label="기존 집 열기" onPress={onOpenExistingHouse} tone="secondary" />
           ) : null}
         </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+    </ResponsiveFormPage>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: colors.cream },
-  keyboard: { flex: 1 },
-  content: { alignSelf: 'center', flex: 1, justifyContent: 'center', gap: spacing.md, maxWidth: 520, padding: spacing.xl, width: '100%' },
+  content: { gap: spacing.md },
   houseMark: { alignItems: 'center', alignSelf: 'center', backgroundColor: '#FDE8E1', borderRadius: 46, height: 92, justifyContent: 'center', width: 92, ...illustratedElevation.card },
   houseIcon: { color: illustratedColors.peach, fontSize: 54, lineHeight: 58 },
   input: {
