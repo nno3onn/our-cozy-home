@@ -10,6 +10,7 @@ import { AppButton } from '@/components/ui/AppButton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { CategoryChips } from '@/features/illustrated-ui/catalog/CategoryChips';
 import { ShopItemCard } from '@/features/illustrated-ui/catalog/ShopItemCard';
+import { MobileBackButton } from '@/features/illustrated-ui/chrome/MobileBackButton';
 import { OfflineReadOnlyBanner } from '@/components/OfflineReadOnlyBanner';
 import { DomainError } from '@/domain/errors';
 import { useConnectionStatus } from '@/network/ConnectionProvider';
@@ -46,15 +47,16 @@ export function ShopScreen() {
   });
 
   if (shopQuery.isLoading) {
-    return <SafeAreaView style={styles.centered}><AppText>상점 목록을 불러오는 중이에요.</AppText></SafeAreaView>;
+    return <SafeAreaView style={styles.centered}><MobileBackButton fallbackHref="/" /><AppText>상점 목록을 불러오는 중이에요.</AppText></SafeAreaView>;
   }
   if (shopQuery.isError || !shopQuery.data) {
-    return <SafeAreaView style={styles.centered}><EmptyState title="상점을 열지 못했어요" description="네트워크를 확인한 뒤 다시 시도해 주세요." /></SafeAreaView>;
+    return <SafeAreaView style={styles.centered}><MobileBackButton fallbackHref="/" /><EmptyState title="상점을 열지 못했어요" description="네트워크를 확인한 뒤 다시 시도해 주세요." /></SafeAreaView>;
   }
 
   const items = shopQuery.data.filter((item) => item.category === category);
   return (
     <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
+      <MobileBackButton fallbackHref="/" />
       <ScrollView contentContainerStyle={styles.content}>
         <AppText variant="title">말랑 상점</AppText>
         {!isOnline ? <OfflineReadOnlyBanner /> : null}
@@ -75,6 +77,6 @@ export function ShopScreen() {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: colors.cream },
   centered: { flex: 1, justifyContent: 'center', padding: spacing.lg, backgroundColor: colors.cream },
-  content: { gap: spacing.md, padding: spacing.lg, paddingBottom: spacing.xxl, alignSelf: 'center', maxWidth: 960, width: '100%' },
+  content: { gap: spacing.md, padding: spacing.lg, paddingBottom: spacing.xxl, paddingTop: 72, alignSelf: 'center', maxWidth: 960, width: '100%' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
 });

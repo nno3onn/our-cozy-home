@@ -7,6 +7,7 @@ import { AppButton } from '@/components/ui/AppButton';
 import { AppText } from '@/components/ui/AppText';
 import { colors, spacing } from '@/theme/tokens';
 import { InviteCard } from '@/features/illustrated-ui/overlays/InviteCard';
+import { MobileBackButton } from '@/features/illustrated-ui/chrome/MobileBackButton';
 
 type InviteManagerScreenProps = {
   createLink: (token: string) => string;
@@ -47,6 +48,7 @@ export function InviteManagerScreen({ createLink, onCancelInvite, onCreateInvite
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <MobileBackButton fallbackHref="/" />
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.keyboard}>
         <View style={styles.content}>
           <AppText variant="title">친구 초대</AppText>

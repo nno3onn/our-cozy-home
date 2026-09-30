@@ -1,0 +1,56 @@
+import type { Href } from 'expo-router';
+import { useRouter } from 'expo-router';
+import { Platform, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
+
+import { AppText } from '@/components/ui/AppText';
+import { illustratedColors, illustratedElevation, illustratedRadii } from '@/theme/illustratedTokens';
+
+export function MobileBackButton({ fallbackHref }: { fallbackHref: Href }) {
+  const router = useRouter();
+  const { width } = useWindowDimensions();
+
+  if (Platform.OS === 'web' && width >= 768) return null;
+
+  function goBack() {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+
+    router.replace(fallbackHref);
+  }
+
+  return (
+    <Pressable
+      accessibilityHint="이전 화면으로 돌아가요."
+      accessibilityLabel="이전 화면으로 돌아가기"
+      accessibilityRole="button"
+      hitSlop={8}
+      onPress={goBack}
+      style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+    >
+      <AppText style={styles.icon}>‹</AppText>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  button: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: illustratedColors.paper,
+    borderColor: illustratedColors.line,
+    borderRadius: illustratedRadii.pill,
+    borderWidth: 1.5,
+    height: 44,
+    justifyContent: 'center',
+    left: 16,
+    position: 'absolute',
+    top: 12,
+    width: 44,
+    zIndex: 10,
+    ...illustratedElevation.card,
+  },
+  icon: { color: illustratedColors.cocoa, fontSize: 38, lineHeight: 39, marginTop: -4 },
+  pressed: { opacity: 0.72, transform: [{ scale: 0.96 }] },
+});

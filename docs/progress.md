@@ -39,6 +39,9 @@
   동물 터치 행동, 고정 슬롯 가구 교체, 추억 목록·상세, 데모 초기화
 - 완료: 게임형 우리집 셸 — 4개 멤버 자리·반응형 방 무대·동물 Bottom Sheet·방을
   유지하는 꾸미기 보관함·월별 스크랩북 추억 앨범을 데모/웹 공통 component contract로 구현
+- 완료: 모바일 스택 화면에 44×44pt 공통 뒤로가기 버튼을 추가했다. 이전 history가
+  있으면 원래 화면으로 돌아가고, 직접 링크처럼 history가 없으면 각 화면의 안전한
+  fallback(홈·추억 목록·상점·로그인)으로 이동한다. 웹 데스크톱 폭에서는 숨긴다.
 - 완료: 상점 8개 카테고리 × 5종과 추억 가구 3개 종류 × 5외형의 데이터 카탈로그
 - 완료: Supabase CLI 고정, 로컬 `config.toml`, 추가 전용 migration·seed·SQL test
   디렉터리와 명시적 실행 명령 기반
@@ -119,6 +122,7 @@
 
 | 날짜 | 대상 | 명령 또는 환경 | 결과 | 범위 제한 |
 | --- | --- | --- | --- | --- |
+| 2026-09-30 | 모바일 뒤로가기 | `MobileBackButton` Jest, Node 22 전체 Jest·typecheck·lint·demo web export | 45 suite/139 test 통과. history back·직접 링크 fallback 자동화 검증, 타입·정적 검사·웹 export 통과 | in-app Browser가 localhost 접근을 확장으로 차단해 실제 브라우저 화면 검증은 미수행. iOS·Android 실기기 검증 아님 |
 | 2026-09-30 | main DB release gate | GitHub Actions `Database release gate`: local Supabase 시작, `supabase db reset --local`, `supabase test db` | 성공. 현행 migration·결정적 seed·pgTAP matrix가 CI local PostgreSQL에서 통과 | 원격 `our-cozy-home` DB 적용, 실제 JWT 다계정·Storage API, iOS·Android 검증을 대체하지 않음 |
 | 2026-09-30 | 앱 회귀 | Node 22 `npm test -- --runInBand`, `npm run typecheck`, `npm run lint` | 44 suite/137 test 통과, typecheck·lint 통과 | Jest는 Watchman recrawl 및 비동기 handle 경고를 출력함. 실제 Supabase/실기기 검증 아님 |
 | 2026-09-29 | 게임형 우리집 셸·추억 앨범 | Node 22 `npm test -- --runInBand --forceExit`, typecheck, lint, demo export·artifact 검사; 로컬 브라우저 390×844·1280×720 | 41 suite/129 tests, 정적 검사·export·artifact 검사 통과. 네 동물·Sheet·꾸미기 트레이·스크랩북 경로를 브라우저에서 확인 | Jest는 기존 async handle 경고 때문에 `--forceExit` 사용. 웹 수동 검증이며 iOS·Android, 실제 Supabase 다계정 검증이 아님 |
