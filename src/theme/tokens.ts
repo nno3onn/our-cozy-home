@@ -57,3 +57,8 @@ export const motion = {
   standard: 220,
   relaxed: 420,
 } as const;
+
+export const responsiveBreakpoints = {
+  medium: 600,
+  wide: 900,
+} as const;
