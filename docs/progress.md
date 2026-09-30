@@ -1,6 +1,6 @@
 # 우리집 구현·검증 현황
 
-최종 수정일: 2026-09-29
+최종 수정일: 2026-09-30
 
 기능을 완료할 때 코드 경로, 검증 명령과 결과를 함께 갱신한다. 자동화 검증,
 로컬 Supabase 검증, 실제 계정·실기기 검증은 서로 대체하지 않는다.
@@ -14,6 +14,23 @@
   [`superpowers/specs/2026-09-19-woorijip-design.md`](superpowers/specs/2026-09-19-woorijip-design.md)
 
 문서가 충돌하면 구현을 멈추고 제품 명세와 기술 문서를 함께 고친다.
+
+## 2026-09-30 릴리스 게이트 정합화
+
+- 완료: `20260921000100`부터 `20260929000100`까지의 추가 전용 migration, 결정적
+  55종 seed, DB 함수/RLS/Storage 정책과 pgTAP release matrix를 저장소에 구현했다.
+- 완료: GitHub Actions `Database release gate`가 local Supabase를 시작하고
+  `db reset` → deterministic seed → `supabase test db`를 순서대로 수행하도록 구성했다.
+  이 자동화는 Docker가 없는 개발자 로컬 환경을 대체하는 CI 검증 경로다.
+- 완료: runtime hardening migration으로 return-table RPC의 열 이름 충돌, 탈퇴 시점
+  추억 revision cutoff, 공유 초안의 최초 기여 보존, 알림 outbox 멱등성을 보완했다.
+- 미완료(외부 환경): 원격 `our-cozy-home` DB의 전체 migration 적용, Edge Function
+  배포/스케줄러, 실제 이메일 계정 다중 사용자 검증, iOS·Android Development Build
+  검증. 현재 CLI 로그인은 가능하지만 원격 DB 비밀번호가 설정되어 있지 않아 migration
+  push를 실행하지 않았다.
+
+이 절의 상태가 아래 과거 단계별 기록보다 우선한다. 아래 기록은 각 기능을 처음
+작성했을 당시의 검증 이력을 보존한다.
 
 ## 현재 상태
 
@@ -58,7 +75,8 @@
   private-content-free payload를 작성했으나, 원격 migration/Function 배포·scheduler와
   실제 기기 push 검증 전
 - 앱 코드: Expo SDK 57 기반 데모가 실행 가능
-- Supabase 도메인 스키마·함수·정책: 미구현(로컬 CLI 기반만 완료)
+- Supabase 도메인 스키마·함수·정책: migration/RPC/RLS 구현 및 CI local release
+  matrix 완료, 원격 프로젝트 전체 적용·다계정 검증 대기
 - 데모 모드: 구현됨(메모리 기반이며 앱 재실행 시 초기화)
 - 자동화 테스트: 카탈로그·repository·배치·UI 흐름(아래 검증 원장 참고)
 - 실제 Supabase 계정 검증: 미수행
@@ -100,6 +118,8 @@
 
 | 날짜 | 대상 | 명령 또는 환경 | 결과 | 범위 제한 |
 | --- | --- | --- | --- | --- |
+| 2026-09-30 | main DB release gate | GitHub Actions `Database release gate`: local Supabase 시작, `supabase db reset --local`, `supabase test db` | 성공. 현행 migration·결정적 seed·pgTAP matrix가 CI local PostgreSQL에서 통과 | 원격 `our-cozy-home` DB 적용, 실제 JWT 다계정·Storage API, iOS·Android 검증을 대체하지 않음 |
+| 2026-09-30 | 앱 회귀 | Node 22 `npm test -- --runInBand`, `npm run typecheck`, `npm run lint` | 44 suite/137 test 통과, typecheck·lint 통과 | Jest는 Watchman recrawl 및 비동기 handle 경고를 출력함. 실제 Supabase/실기기 검증 아님 |
 | 2026-09-29 | 게임형 우리집 셸·추억 앨범 | Node 22 `npm test -- --runInBand --forceExit`, typecheck, lint, demo export·artifact 검사; 로컬 브라우저 390×844·1280×720 | 41 suite/129 tests, 정적 검사·export·artifact 검사 통과. 네 동물·Sheet·꾸미기 트레이·스크랩북 경로를 브라우저에서 확인 | Jest는 기존 async handle 경고 때문에 `--forceExit` 사용. 웹 수동 검증이며 iOS·Android, 실제 Supabase 다계정 검증이 아님 |
 | 2026-09-19 | 명세 문서 | `git diff --check` | 통과 | 코드 동작을 검증하지 않음 |
 | 2026-09-24 | 서버 카탈로그·상점 조회 | `npm test -- --runInBand src/repositories/supabase/__tests__/SupabaseRepository.test.ts src/catalog/__tests__/catalog.test.ts src/features/shop/screens/__tests__/ShopScreen.test.tsx`, `npm run catalog:seed` | 3 suite/25 test 통과, 결정적 seed 재생성 | 실제 Supabase migration/seed·RLS 조회는 별도 환경이 필요함 |
@@ -174,18 +194,20 @@ Build를 설치한 실제 기기에서 별도로 기록한다.
 
 ## 다음 작업
 
-1. `20260921000200_profile_animal_onboarding.sql`,
-   `20260921000300_house_creation.sql`, `20260921000400_invite_lifecycle.sql`을 원격에
-   순서대로 적용하고 생성 타입·실제 이메일 계정 온보딩·집 생성·초대 미리보기를 검증한다.
-2. 유효 초대의 다중 수락, 마지막 자리 동시성, 초대 종료를 처리하는 입주 RPC를 구현한다.
-3. 초대 수락 migration을 원격에 적용하고 생성 타입·실제 다계정 수락·마지막 자리
-   동시성을 검증한다.
-4. 탈퇴 migration을 원격에 적용하고 실제 탈퇴 직후 접근 차단·승계를 검증한다.
-5. item/placement schema 도입 시 탈퇴 RPC에 개인 소유 가구 배치 회수를 추가한다.
-6. `20260921001400`과 `20260921001500`을 원격에 적용하고, A/B 계정으로 탈퇴
-   시점 이후 revision·사진 차단, 원작자 삭제 전파, 재입주 grant 미복원을 확인한다.
-7. 이후 2인 추억 가구 완성, 쌍별 버릇 학습 순서로 연결한다.
+1. 프로젝트 소유자가 원격 DB 비밀번호를 안전한 로컬 환경에 제공한 뒤,
+   `supabase link --project-ref cbyikdryogktctskvzzk`와 `supabase db push`를 실행하고
+   migration history를 확인한다. 비밀번호·service-role key는 저장소, 앱 `.env`, CI log에
+   남기지 않는다.
+2. 원격 schema 반영 후 `npm run supabase:types`로 생성 타입을 갱신하고, 테스트 계정
+   A–E로 온보딩·집 생성·3명 초대·다섯 번째 차단·마지막 자리 동시 수락을 검증한다.
+3. 동일 계정 세트로 출석/구매/배치/탈퇴/추억/버릇 RLS와 멱등성 E2E matrix를 수행한다.
+   특히 탈퇴 시점의 추억 snapshot, 원본 삭제 전파, 재입주 grant 미복원을 확인한다.
+4. `send-push` 및 `delete-account` Edge Function을 원격에 배포하고, scheduler secret,
+   Expo Push/APNs/FCM 설정 뒤 실기기에서 token·push·딥 링크를 확인한다.
+5. placeholder 상점/추억 가구 에셋을 제작 규칙에 맞는 최종 에셋으로 순차 교체하고,
+   iOS·Android 접근성/모션 감소/작은 화면을 실제 기기에서 확인한다.
 
-아직 자동 검증하지 못한 핵심 규칙은 출석·구매 동시성, 활성 집 하나, 정원 초과,
-탈퇴 후 RLS 차단, 추억 가구 멱등 생성, 같은 날짜 학습 중복 방지와 타 사용자 비공개
-데이터 차단이다. PostgreSQL 마이그레이션과 원격 Supabase 환경이 추가된 뒤 검증한다.
+자동 DB release matrix가 커버하는 핵심 규칙은 출석·구매 동시성, 활성 집 하나,
+정원 초과, 탈퇴 후 RLS 차단, 추억 가구 멱등 생성, 같은 날짜 학습 중복 방지와 타
+사용자 비공개 데이터 차단이다. 이는 local Supabase CI 결과이며, 원격 서비스와
+실기기 검증을 대체하지 않는다.
