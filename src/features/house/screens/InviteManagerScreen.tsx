@@ -1,13 +1,12 @@
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, View } from 'react-native';
 
 import type { CreatedInvite } from '@/domain/models';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppText } from '@/components/ui/AppText';
-import { colors, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
 import { InviteCard } from '@/features/illustrated-ui/overlays/InviteCard';
-import { MobileBackButton } from '@/features/illustrated-ui/chrome/MobileBackButton';
+import { ResponsiveFormPage } from '@/components/layout/ResponsiveFormPage';
 
 type InviteManagerScreenProps = {
   createLink: (token: string) => string;
@@ -47,9 +46,7 @@ export function InviteManagerScreen({ createLink, onCancelInvite, onCreateInvite
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <MobileBackButton fallbackHref="/" />
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.keyboard}>
+    <ResponsiveFormPage fallbackHref="/" maxWidth={640} testID="invite-manager-page">
         <View style={styles.content}>
           <AppText variant="title">친구 초대</AppText>
           <AppText tone="muted">초대를 본다고 자리가 예약되지는 않아요. 수락 순서대로 입주해요.</AppText>
@@ -62,13 +59,10 @@ export function InviteManagerScreen({ createLink, onCancelInvite, onCreateInvite
           />
           {invite ? <AppButton disabled={submitting} label="초대 취소" onPress={() => void cancelInvite()} tone="quiet" /> : null}
         </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+    </ResponsiveFormPage>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: colors.cream },
-  keyboard: { flex: 1 },
-  content: { flex: 1, gap: spacing.md, justifyContent: 'center', padding: spacing.xl },
+  content: { gap: spacing.md },
 });

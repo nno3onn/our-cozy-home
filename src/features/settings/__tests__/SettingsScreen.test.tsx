@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, userEvent, waitFor } from '@testing-library/react-native';
+import * as ReactNative from 'react-native';
 
 import { RepositoryProvider } from '@/repositories/RepositoryContext';
 import { DemoRepository } from '@/repositories/demo/DemoRepository';
@@ -44,5 +45,14 @@ describe('SettingsScreen', () => {
 
     expect(view.queryByRole('button', { name: '데모 데이터 초기화' })).not.toBeOnTheScreen();
     expect(view.queryByRole('button', { name: '초기화 확인' })).not.toBeOnTheScreen();
+  });
+
+  it('keeps settings in a readable centered column on a wide viewport', async () => {
+    jest.spyOn(ReactNative, 'useWindowDimensions').mockReturnValue({ fontScale: 1.3, height: 720, scale: 1, width: 1280 });
+    const { view } = await renderSettings('demo');
+
+    expect(view.getByTestId('settings-page-scroll').props.contentContainerStyle[0]).toEqual(
+      expect.arrayContaining([expect.objectContaining({ maxWidth: 720 })]),
+    );
   });
 });

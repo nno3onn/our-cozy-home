@@ -10,6 +10,7 @@ import { colors } from '@/theme/tokens';
 type ResponsivePageProps = PropsWithChildren<{
   contentMaxWidth?: number;
   fallbackHref?: Href;
+  fill?: boolean;
   scroll?: boolean;
   testID?: string;
 }>;
@@ -23,6 +24,7 @@ export function ResponsivePage({
   children,
   contentMaxWidth = 760,
   fallbackHref,
+  fill = false,
   scroll = false,
   testID,
 }: ResponsivePageProps) {
@@ -47,7 +49,7 @@ export function ResponsivePage({
           <ReactNative.View style={styles.scrollContent} testID={testID ? `${testID}-content` : undefined}>{children}</ReactNative.View>
         </ReactNative.ScrollView>
       ) : (
-        <ReactNative.View style={contentStyle} testID={testID ? `${testID}-content` : undefined}>{children}</ReactNative.View>
+        <ReactNative.View style={[contentStyle, fill && styles.fill]} testID={testID ? `${testID}-content` : undefined}>{children}</ReactNative.View>
       )}
     </SafeAreaView>
   );
@@ -56,5 +58,6 @@ export function ResponsivePage({
 const styles = ReactNative.StyleSheet.create({
   safeArea: { backgroundColor: colors.cream, flex: 1, position: 'relative' },
   content: { alignSelf: 'center', minWidth: 0, width: '100%' },
+  fill: { flex: 1 },
   scrollContent: { width: '100%' },
 });
