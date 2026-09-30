@@ -44,14 +44,13 @@ select is(
 );
 
 set local role authenticated;
-select throws_ok(
+select throws_like(
   $$insert into public.profiles (id, display_name, point_color)
     values ('00000000-0000-0000-0000-000000000012', 'direct', '#FF99AA')$$,
-  '42501',
-  '.*',
+  '%row-level security policy%',
   'direct profile writes are blocked by RLS'
 );
-reset role;
+set local role postgres;
 
 select * from finish();
 rollback;

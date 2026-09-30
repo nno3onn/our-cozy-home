@@ -2,11 +2,24 @@ begin;
 
 select plan(22);
 
-select has_table('public', 'memory_completion_events');
+select has_table('public', 'memory_completion_events', 'memory completion events exists');
 select has_function('public', 'complete_memory_if_ready', array['uuid']);
-select col_is_unique('public', 'memory_completion_events', array['memory_id']);
-select has_column('public', 'memories', 'generated_item_id');
-select has_column('public', 'owned_items', 'memory_id');
+select ok(
+  exists (
+    select 1
+    from pg_constraint constraint_metadata
+    where constraint_metadata.conrelid = 'public.memory_completion_events'::regclass
+      and constraint_metadata.contype in ('p', 'u')
+      and constraint_metadata.conkey = array[
+        (select attribute.attnum from pg_attribute attribute
+         where attribute.attrelid = 'public.memory_completion_events'::regclass
+           and attribute.attname = 'memory_id')
+      ]
+  ),
+  'memory completion events are unique per memory'
+);
+select has_column('public', 'memories', 'generated_item_id', 'memories store generated furniture definition');
+select has_column('public', 'owned_items', 'memory_id', 'owned items link memory furniture to memories');
 
 insert into auth.users (id) values
   ('00000000-0000-0000-0000-000000000050'),
@@ -32,12 +45,14 @@ select is((select result from public.accept_house_invite((select token from comp
 
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000050', true);
 select lives_ok($$select public.share_memory_draft((select id from completion_memory))$$, 'writer shares the first contribution');
+set local role postgres;
 select is((select status::text from public.memories where id=(select id from completion_memory)), 'shared', 'one contributor leaves the memory shared');
 select is((select count(*) from public.memory_completion_events), 0::bigint, 'one contributor has no furniture event');
 
+set local role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000051', true);
 select lives_ok($$select public.add_memory_contribution((select id from completion_memory), '두 번째 기여')$$, 'second distinct contributor completes the memory');
-reset role;
+set local role postgres;
 select is((select status::text from public.memories where id=(select id from completion_memory)), 'completed', 'two contributors complete the memory');
 select is((select count(*) from public.memory_completion_events where memory_id=(select id from completion_memory)), 1::bigint, 'completion event is emitted once');
 select is((select count(*) from public.owned_items where memory_id=(select id from completion_memory)), 1::bigint, 'one memory furniture item is generated');
@@ -47,7 +62,7 @@ select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000052
 select lives_ok($$select public.add_memory_contribution((select id from completion_memory), '세 번째 기여')$$, 'a third contributor can add content');
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000051', true);
 select lives_ok($$select public.add_memory_contribution((select id from completion_memory), '두 번째 기여 수정')$$, 'a revision retry is accepted');
-reset role;
+set local role postgres;
 select is((select count(*) from public.memory_completion_events where memory_id=(select id from completion_memory)), 1::bigint, 'later contributions do not duplicate the event');
 select is((select count(*) from public.owned_items where memory_id=(select id from completion_memory)), 1::bigint, 'later contributions do not duplicate furniture');
 

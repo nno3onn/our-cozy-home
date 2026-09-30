@@ -2,8 +2,8 @@ begin;
 
 select plan(18);
 
-select has_table('public', 'invite_acceptances');
-select has_table('public', 'invite_acceptance_requests');
+select has_table('public', 'invite_acceptances', 'invite acceptances exists');
+select has_table('public', 'invite_acceptance_requests', 'invite acceptance requests exists');
 select has_function('public', 'accept_house_invite', array['text', 'text']);
 
 insert into auth.users (id) values
@@ -65,7 +65,7 @@ select throws_ok(
   'a fifth user cannot enter the full house'
 );
 
-reset role;
+set local role postgres;
 select is(
   (select count(*) from public.house_memberships where status = 'active'),
   4::bigint,

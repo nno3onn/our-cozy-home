@@ -2,9 +2,9 @@ begin;
 
 select plan(30);
 
-select has_table('public', 'memory_contributions');
-select has_table('public', 'memory_contribution_revisions');
-select has_table('public', 'memory_photos');
+select has_table('public', 'memory_contributions', 'memory contributions exists');
+select has_table('public', 'memory_contribution_revisions', 'memory contribution revisions exists');
+select has_table('public', 'memory_photos', 'memory photos exists');
 select has_function('public', 'revise_memory_contribution', array['uuid', 'text']);
 select has_function('public', 'delete_memory_contribution', array['uuid']);
 select has_function('public', 'list_memory_summaries', array['text']);
@@ -36,7 +36,7 @@ select is((select result from public.accept_house_invite((select token from cont
 
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000040', true);
 select lives_ok($$select public.share_memory_draft((select id from contribution_memory))$$, 'sharing creates the writer contribution');
-reset role;
+set local role postgres;
 select is((select count(*) from public.memory_contributions where memory_id=(select id from contribution_memory)), 1::bigint, 'the original draft counts as one contribution');
 set local role authenticated;
 
@@ -44,7 +44,7 @@ select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000041
 create temporary table friend_contribution (id uuid not null);
 insert into friend_contribution select public.add_memory_contribution((select id from contribution_memory), '두 번째 기록');
 select lives_ok($$select public.revise_memory_contribution((select id from friend_contribution), '수정한 두 번째 기록')$$, 'a contributor can revise their own contribution');
-reset role;
+set local role postgres;
 select is((select count(*) from public.memory_contributions where memory_id=(select id from contribution_memory) and deleted_at is null), 2::bigint, 'revisions do not add contributors');
 set local role authenticated;
 
@@ -59,7 +59,9 @@ select is((select count(*) from public.get_memory_contribution_detail((select id
 
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000040', true);
 create temporary table writer_contribution (id uuid not null);
+set local role postgres;
 insert into writer_contribution select id from public.memory_contributions where memory_id=(select id from contribution_memory) and author_profile_id='00000000-0000-0000-0000-000000000040';
+set local role authenticated;
 select lives_ok($$select public.revise_memory_contribution((select id from writer_contribution), '퇴장 뒤 새 기록')$$, 'a current member can revise after another member leaves');
 
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000041', true);
@@ -79,6 +81,6 @@ select is((select result from public.accept_house_invite((select token from rejo
 select is((select count(*) from public.list_memory_summaries('current')), 0::bigint, 'rejoining does not restore the old current-memory grant');
 select is((select count(*) from public.list_memory_summaries('archive')), 1::bigint, 'rejoining preserves only the original personal archive scope');
 
-reset role;
+set local role postgres;
 select * from finish();
 rollback;
