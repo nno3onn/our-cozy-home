@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import * as ReactNative from 'react-native';
 import { useRouter } from 'expo-router';
 
 import { SHOP_CATEGORIES, type ShopCategory } from '@/catalog/items';
@@ -10,12 +9,13 @@ import { AppButton } from '@/components/ui/AppButton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { CategoryChips } from '@/features/illustrated-ui/catalog/CategoryChips';
 import { ShopItemCard } from '@/features/illustrated-ui/catalog/ShopItemCard';
-import { MobileBackButton } from '@/features/illustrated-ui/chrome/MobileBackButton';
 import { OfflineReadOnlyBanner } from '@/components/OfflineReadOnlyBanner';
+import { ResponsiveGrid } from '@/components/layout/ResponsiveGrid';
+import { ResponsivePage } from '@/components/layout/ResponsivePage';
 import { DomainError } from '@/domain/errors';
 import { useConnectionStatus } from '@/network/ConnectionProvider';
 import { useRepository } from '@/repositories/RepositoryContext';
-import { colors, spacing } from '@/theme/tokens';
+import { spacing } from '@/theme/tokens';
 
 function createPurchaseRequestId() {
   const cryptoWithUuid = globalThis.crypto as Crypto | undefined;
@@ -46,37 +46,31 @@ export function ShopScreen() {
     },
   });
 
-  if (shopQuery.isLoading) {
-    return <SafeAreaView style={styles.centered}><MobileBackButton fallbackHref="/" /><AppText>상점 목록을 불러오는 중이에요.</AppText></SafeAreaView>;
-  }
+  if (shopQuery.isLoading) return <ResponsivePage fallbackHref="/"><AppText>상점 목록을 불러오는 중이에요.</AppText></ResponsivePage>;
   if (shopQuery.isError || !shopQuery.data) {
-    return <SafeAreaView style={styles.centered}><MobileBackButton fallbackHref="/" /><EmptyState title="상점을 열지 못했어요" description="네트워크를 확인한 뒤 다시 시도해 주세요." /></SafeAreaView>;
+    return <ResponsivePage fallbackHref="/"><EmptyState title="상점을 열지 못했어요" description="네트워크를 확인한 뒤 다시 시도해 주세요." /></ResponsivePage>;
   }
 
   const items = shopQuery.data.filter((item) => item.category === category);
   return (
-    <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
-      <MobileBackButton fallbackHref="/" />
-      <ScrollView contentContainerStyle={styles.content}>
+    <ResponsivePage contentMaxWidth={1120} fallbackHref="/" scroll testID="shop-page">
+      <ReactNative.View style={styles.content}>
         <AppText variant="title">말랑 상점</AppText>
         {!isOnline ? <OfflineReadOnlyBanner /> : null}
         <AppButton label="내 보관함 보기" onPress={() => router.push('/inventory')} tone="secondary" />
         <AppText tone="muted" variant="caption">가격과 상품 정보는 서버 카탈로그를 기준으로 표시돼요.</AppText>
         <CategoryChips categories={SHOP_CATEGORIES} onSelect={setCategory} selected={category} />
-        <View style={styles.grid}>
+        <ResponsiveGrid testID="shop-grid">
           {items.map((item) => (
             <ShopItemCard disabled={!isOnline || purchase.isPending} item={item} key={item.id} onPurchase={() => purchase.mutate({ itemDefinitionId: item.id, requestId: createPurchaseRequestId() })} />
           ))}
-        </View>
+        </ResponsiveGrid>
         {message ? <AppText tone="muted" variant="caption">{message}</AppText> : null}
-      </ScrollView>
-    </SafeAreaView>
+      </ReactNative.View>
+    </ResponsivePage>
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: colors.cream },
-  centered: { flex: 1, justifyContent: 'center', padding: spacing.lg, backgroundColor: colors.cream },
-  content: { gap: spacing.md, padding: spacing.lg, paddingBottom: spacing.xxl, paddingTop: 72, alignSelf: 'center', maxWidth: 960, width: '100%' },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
+const styles = ReactNative.StyleSheet.create({
+  content: { gap: spacing.md, paddingBottom: spacing.lg },
 });

@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, fireEvent, render } from '@testing-library/react-native';
+import * as ReactNative from 'react-native';
 
 import { RepositoryProvider } from '@/repositories/RepositoryContext';
 import { DemoRepository } from '@/repositories/demo/DemoRepository';
@@ -66,5 +67,40 @@ describe('ShopScreen', () => {
     });
 
     expect(view.getByText('코인이 220만큼 부족해요.')).toBeOnTheScreen();
+  });
+
+  it('uses two catalogue columns at tablet width with cards wide enough to read', async () => {
+    jest.spyOn(ReactNative, 'useWindowDimensions').mockReturnValue({ fontScale: 1, height: 1024, scale: 1, width: 768 });
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: Infinity } } });
+    const view = await render(
+      <QueryClientProvider client={client}>
+        <RepositoryProvider repository={new DemoRepository()}><ShopScreen /></RepositoryProvider>
+      </QueryClientProvider>,
+    );
+
+    expect(await view.findByTestId('shop-grid-2')).toBeOnTheScreen();
+    expect(view.getByTestId('shop-grid-2').props.children[0].props.style).toEqual(
+      expect.arrayContaining([expect.objectContaining({ minWidth: 156 })]),
+    );
+  });
+
+  it('keeps one compact column and expands to three desktop columns', async () => {
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: Infinity } } });
+    const dimensions = jest.spyOn(ReactNative, 'useWindowDimensions');
+    dimensions.mockReturnValue({ fontScale: 1, height: 844, scale: 1, width: 390 });
+    const view = await render(
+      <QueryClientProvider client={client}>
+        <RepositoryProvider repository={new DemoRepository()}><ShopScreen /></RepositoryProvider>
+      </QueryClientProvider>,
+    );
+    expect(await view.findByTestId('shop-grid-1')).toBeOnTheScreen();
+
+    dimensions.mockReturnValue({ fontScale: 1, height: 800, scale: 1, width: 1280 });
+    view.rerender(
+      <QueryClientProvider client={client}>
+        <RepositoryProvider repository={new DemoRepository()}><ShopScreen /></RepositoryProvider>
+      </QueryClientProvider>,
+    );
+    expect(await view.findByTestId('shop-grid-3')).toBeOnTheScreen();
   });
 });

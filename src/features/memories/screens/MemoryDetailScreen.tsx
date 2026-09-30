@@ -1,12 +1,11 @@
 import { StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 
 import { AppText } from '@/components/ui/AppText';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Panel } from '@/components/ui/Panel';
-import { MobileBackButton } from '@/features/illustrated-ui/chrome/MobileBackButton';
-import { colors, spacing } from '@/theme/tokens';
+import { ResponsivePage } from '@/components/layout/ResponsivePage';
+import { spacing } from '@/theme/tokens';
 
 import { useArchivedMemories, useMemories, useMemoryContributions } from '../hooks/useMemories';
 
@@ -18,21 +17,19 @@ export function MemoryDetailScreen({ memoryId }: { memoryId: string }) {
 
   if (!memory) {
     return (
-      <SafeAreaView style={styles.centered}>
-        <MobileBackButton fallbackHref="/(tabs)/memories" />
+      <ResponsivePage fallbackHref="/(tabs)/memories">
         <EmptyState
           description="현재 계정의 열람 권한이 없거나 삭제된 추억이에요."
           title="추억을 열 수 없어요"
           actionLabel="추억 목록으로"
           onAction={() => router.replace('/(tabs)/memories')}
         />
-      </SafeAreaView>
+      </ResponsivePage>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <MobileBackButton fallbackHref="/(tabs)/memories" />
+    <ResponsivePage fallbackHref="/(tabs)/memories" scroll testID="memory-detail-page">
       <View style={styles.content}>
         <AppText variant="title">{memory.title}</AppText>
         <AppText tone="muted">{memory.occurredOn}</AppText>
@@ -47,13 +44,11 @@ export function MemoryDetailScreen({ memoryId }: { memoryId: string }) {
           데모에서는 글만 표시해요. 실제 사진은 비공개 Storage와 열람 권한 확인 후 제공할 예정이에요.
         </AppText>
       </View>
-    </SafeAreaView>
+    </ResponsivePage>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: colors.cream },
-  centered: { flex: 1, justifyContent: 'center', padding: spacing.lg, backgroundColor: colors.cream },
-  content: { width: '100%', maxWidth: 760, alignSelf: 'center', gap: spacing.md, padding: spacing.lg, paddingTop: 72 },
+  content: { gap: spacing.md, paddingBottom: spacing.lg },
   card: { gap: spacing.md, padding: spacing.lg },
 });

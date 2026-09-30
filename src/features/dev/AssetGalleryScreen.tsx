@@ -1,24 +1,23 @@
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, View } from 'react-native';
 
 import { ITEM_CATALOG } from '@/catalog/items';
 import { AppText } from '@/components/ui/AppText';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Panel } from '@/components/ui/Panel';
 import { ItemThumbnail } from '@/features/illustrated-ui/scene/ItemThumbnail';
-import { MobileBackButton } from '@/features/illustrated-ui/chrome/MobileBackButton';
+import { ResponsiveGrid } from '@/components/layout/ResponsiveGrid';
+import { ResponsivePage } from '@/components/layout/ResponsivePage';
 import { colors, radii, spacing } from '@/theme/tokens';
 
 export function AssetGalleryScreen({ enabled }: { enabled: boolean }) {
   if (!enabled) {
     return (
-      <SafeAreaView style={styles.centered}>
-        <MobileBackButton fallbackHref="/settings" />
+      <ResponsivePage fallbackHref="/settings">
         <EmptyState
           description="데모 또는 개발 모드에서만 임시 에셋을 확인할 수 있어요."
           title="개발용 화면이에요"
         />
-      </SafeAreaView>
+      </ResponsivePage>
     );
   }
 
@@ -26,15 +25,14 @@ export function AssetGalleryScreen({ enabled }: { enabled: boolean }) {
   const memoryCount = ITEM_CATALOG.length - shopCount;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <MobileBackButton fallbackHref="/settings" />
-      <ScrollView contentContainerStyle={styles.content}>
+    <ResponsivePage contentMaxWidth={1200} fallbackHref="/settings" scroll testID="asset-gallery-page">
+      <View style={styles.content}>
         <AppText variant="title">에셋 목록</AppText>
         <AppText tone="muted">상점 {shopCount} · 추억 {memoryCount}</AppText>
         <AppText tone="muted" variant="caption">
           완성된 파일은 실제 일러스트로, 나머지는 교체 가능한 제작용 자리표시자로 표시해요.
         </AppText>
-        <View style={styles.grid}>
+        <ResponsiveGrid maxColumns={4} minItemWidth={180} testID="asset-gallery-grid">
           {ITEM_CATALOG.map((item) => (
             <Panel key={item.id} style={styles.card}>
               <View style={styles.preview}>
@@ -52,18 +50,15 @@ export function AssetGalleryScreen({ enabled }: { enabled: boolean }) {
               </View>
             </Panel>
           ))}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+        </ResponsiveGrid>
+      </View>
+    </ResponsivePage>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: colors.cream },
-  centered: { flex: 1, justifyContent: 'center', padding: spacing.lg, backgroundColor: colors.cream },
-  content: { width: '100%', maxWidth: 1120, alignSelf: 'center', gap: spacing.sm, padding: spacing.lg, paddingBottom: spacing.xxl, paddingTop: 72 },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginTop: spacing.md },
-  card: { width: '47%', gap: spacing.xs, padding: spacing.md },
+  content: { gap: spacing.sm, paddingBottom: spacing.lg },
+  card: { gap: spacing.xs, padding: spacing.md },
   preview: { width: '100%', height: 88, borderRadius: radii.md, borderWidth: 2, borderColor: colors.ink, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.floor },
   thumbnail: { width: '92%', height: '92%' },
   badge: { alignSelf: 'flex-start', marginTop: spacing.xs, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: radii.pill, backgroundColor: colors.floor },
