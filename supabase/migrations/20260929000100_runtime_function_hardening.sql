@@ -203,7 +203,7 @@ declare
   current_membership public.house_memberships%rowtype;
   successor_membership public.house_memberships%rowtype;
   remaining_members integer;
-  departure_at timestamptz := timezone('utc', now());
+  departure_at timestamptz := clock_timestamp();
 begin
   if current_user_id is null then raise exception 'authentication required' using errcode = '42501'; end if;
   perform pg_advisory_xact_lock(hashtextextended(current_user_id::text, 0));
