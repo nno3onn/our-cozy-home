@@ -1,4 +1,5 @@
 import { fireEvent, render } from '@testing-library/react-native';
+import * as ReactNative from 'react-native';
 
 import type { Animal, Member } from '@/domain/models';
 
@@ -47,5 +48,16 @@ describe('RoomScene', () => {
 
     expect(view.getByText('다온이')).toBeOnTheScreen();
     expect(view.queryByLabelText(/접속/)).toBeNull();
+  });
+
+  it('uses the wide scene bounds from the shared responsive breakpoint', async () => {
+    jest.spyOn(ReactNative, 'useWindowDimensions').mockReturnValue({ fontScale: 1, height: 720, scale: 1, width: 900 });
+    const view = await render(
+      <RoomScene animals={animals} isActive members={members} onOpenMemory={jest.fn()} onSelectAnimal={jest.fn()} selectedAnimalId={null} />,
+    );
+
+    expect(view.getByLabelText('네 동물이 함께 지내는 방').props.style).toEqual(
+      expect.arrayContaining([expect.objectContaining({ height: 530, width: 530 })]),
+    );
   });
 });

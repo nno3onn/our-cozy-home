@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import * as ReactNative from 'react-native';
 
 import type { Animal, Member } from '@/domain/models';
 import { sortRoomActors } from '@/game/room/layers';
 import { getAnimalAnchors, toViewport } from '@/game/room/roomLayout';
 import { illustratedColors, illustratedRadii } from '@/theme/illustratedTokens';
+import { getResponsiveLayout } from '@/theme/responsive';
 
 import { AnimalActor } from '@/features/room/components/AnimalActor';
 import { AppText } from '@/components/ui/AppText';
@@ -25,33 +26,35 @@ type Props = {
 };
 
 export function RoomScene({ animals, accentFurniture, isActive, members, memoryFurniture, onOpenMemory, onSelectAnimal, selectedAnimalId }: Props) {
-  const window = useWindowDimensions();
+  const window = ReactNative.useWindowDimensions();
   const [viewport, setViewport] = useState({ width: 320, height: 320 });
-  const desktopSceneSize = window.width >= 900 ? Math.min(720, Math.max(360, window.height - 190)) : undefined;
+  const desktopSceneSize = getResponsiveLayout(window.width).breakpoint === 'wide'
+    ? Math.min(720, Math.max(360, window.height - 190))
+    : undefined;
   const anchors = getAnimalAnchors(Math.min(Math.max(animals.length, 1), 4) as 1 | 2 | 3 | 4);
   const actors = sortRoomActors(animals.map((animal, index) => ({ animal, anchor: anchors[index], id: animal.id, footY: anchors[index].foot.y })));
   const scale = Math.min(viewport.width, viewport.height) / 1000;
   const memory = toViewport({ x: 104, y: 390 }, viewport);
 
   return (
-    <View
+    <ReactNative.View
       accessibilityLabel="네 동물이 함께 지내는 방"
       onLayout={(event) => setViewport(event.nativeEvent.layout)}
       style={[styles.room, desktopSceneSize ? { aspectRatio: undefined, height: desktopSceneSize, width: desktopSceneSize } : undefined]}
     >
       <RoomBackdrop />
-      <View pointerEvents="none" style={[styles.rug, { left: 190 * scale, top: 685 * scale, width: 620 * scale, height: 180 * scale }]} />
-      <View style={[styles.furniture, { left: 365 * scale, top: 475 * scale, width: 280 * scale, height: 230 * scale }]}>
-        {accentFurniture?.itemId ? <FurnitureSprite itemId={accentFurniture.itemId} /> : <View style={[styles.placeholderTable, { backgroundColor: accentFurniture?.color ?? illustratedColors.peach }]} />}
-      </View>
-      <View pointerEvents="none" style={[styles.plant, { left: 780 * scale, top: 335 * scale, width: 180 * scale, height: 270 * scale }]}>
+      <ReactNative.View pointerEvents="none" style={[styles.rug, { left: 190 * scale, top: 685 * scale, width: 620 * scale, height: 180 * scale }]} />
+      <ReactNative.View style={[styles.furniture, { left: 365 * scale, top: 475 * scale, width: 280 * scale, height: 230 * scale }]}>
+        {accentFurniture?.itemId ? <FurnitureSprite itemId={accentFurniture.itemId} /> : <ReactNative.View style={[styles.placeholderTable, { backgroundColor: accentFurniture?.color ?? illustratedColors.peach }]} />}
+      </ReactNative.View>
+      <ReactNative.View pointerEvents="none" style={[styles.plant, { left: 780 * scale, top: 335 * scale, width: 180 * scale, height: 270 * scale }]}>
         <FurnitureSprite itemId="plant-round-rubber-tree" />
-      </View>
+      </ReactNative.View>
       {memoryFurniture ? (
-        <Pressable accessibilityLabel={`${memoryFurniture.name} 추억 열기`} accessibilityRole="button" onPress={() => onOpenMemory(memoryFurniture.memoryId)} style={[styles.memory, { left: memory.x, top: memory.y, width: Math.max(58, 175 * scale), height: Math.max(58, 148 * scale) }]}>
+        <ReactNative.Pressable accessibilityLabel={`${memoryFurniture.name} 추억 열기`} accessibilityRole="button" onPress={() => onOpenMemory(memoryFurniture.memoryId)} style={[styles.memory, { left: memory.x, top: memory.y, width: Math.max(58, 175 * scale), height: Math.max(58, 148 * scale) }]}>
           <AppText variant="heading">▣</AppText>
           <AppText numberOfLines={1} variant="caption">추억</AppText>
-        </Pressable>
+        </ReactNative.Pressable>
       ) : null}
       {actors.map(({ animal, anchor }) => {
         const member = members.find((candidate) => candidate.userId === animal.ownerId);
@@ -61,11 +64,11 @@ export function RoomScene({ animals, accentFurniture, isActive, members, memoryF
         const member = members.find((candidate) => candidate.userId === animal.ownerId);
         return member ? <AnimalActor anchor={anchor} animal={animal} isActive={isActive} key={animal.id} member={member} onPress={() => onSelectAnimal(animal.id)} selected={selectedAnimalId === animal.id} viewport={viewport} /> : null;
       })}
-    </View>
+    </ReactNative.View>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = ReactNative.StyleSheet.create({
   room: { width: '100%', maxWidth: 720, alignSelf: 'center', aspectRatio: 1, overflow: 'hidden', borderRadius: illustratedRadii.room, borderWidth: 2, borderColor: illustratedColors.line, backgroundColor: illustratedColors.wall },
   rug: { position: 'absolute', borderRadius: 999, backgroundColor: 'rgba(255, 246, 226, 0.74)', borderWidth: 2, borderColor: 'rgba(158, 111, 76, 0.18)' },
   furniture: { position: 'absolute' },

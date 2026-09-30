@@ -61,6 +61,16 @@ describe('room layout', () => {
     expect(targets.every((target) => target.width >= 44 && target.height >= 44)).toBe(true);
   });
 
+  it('keeps four touch targets separate at tablet width', () => {
+    const targets = getAnimalHitTargets(4, { width: 768, height: 1024 });
+
+    for (let left = 0; left < targets.length; left += 1) {
+      for (let right = left + 1; right < targets.length; right += 1) {
+        expect(intersects(targets[left], targets[right])).toBe(false);
+      }
+    }
+  });
+
   it('places each name label in a dedicated band above its animal', () => {
     const anchors = getAnimalAnchors(4);
 

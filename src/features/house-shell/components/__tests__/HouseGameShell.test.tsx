@@ -60,6 +60,19 @@ describe('HouseGameShell', () => {
     expect(view.getByLabelText('데스크톱 방 탐색')).toBeOnTheScreen();
   });
 
+  it('keeps bottom navigation at medium viewport widths', async () => {
+    jest.spyOn(ReactNative, 'useWindowDimensions').mockReturnValue({ fontScale: 1, height: 1024, scale: 1, width: 768 });
+
+    const view = await render(
+      <HouseGameShell activeTab="home" onOpenInvite={jest.fn()} onOpenSettings={jest.fn()} snapshot={snapshot}>
+        테스트 방
+      </HouseGameShell>,
+    );
+
+    expect(view.getByLabelText('우리집 탐색')).toBeOnTheScreen();
+    expect(view.queryByLabelText('데스크톱 방 탐색')).not.toBeOnTheScreen();
+  });
+
   it('uses labelled shell navigation controls to change sections', async () => {
     const onNavigate = jest.fn();
     const view = await render(

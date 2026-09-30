@@ -10,6 +10,7 @@ import { RoomCanvas } from '@/features/room/components/RoomCanvas';
 import { useHomeSnapshot } from '@/features/room/hooks/useHomeSnapshot';
 import { useConnectionStatus } from '@/network/ConnectionProvider';
 import { colors, spacing } from '@/theme/tokens';
+import { useResponsiveLayout } from '@/components/layout/ResponsivePage';
 
 import { DecorateTray } from '../components/DecorateTray';
 import { usePlaceItem } from '../hooks/usePlaceItem';
@@ -24,6 +25,8 @@ export function DecorateScreen() {
   const placeMutation = usePlaceItem();
   const selectedOwnedItemId = useDecorateStore((state) => state.selectedOwnedItemId);
   const setSelectedOwnedItemId = useDecorateStore((state) => state.setSelectedOwnedItemId);
+  const { breakpoint } = useResponsiveLayout();
+  const isWide = breakpoint === 'wide';
 
   if (!homeQuery.data) {
     return <SafeAreaView style={styles.centered}><EmptyState description="보관함을 불러온 뒤 다시 시도해 주세요." title="가구를 찾지 못했어요" /></SafeAreaView>;
@@ -50,25 +53,28 @@ export function DecorateScreen() {
     >
       <View style={styles.stage}>
         {!isOnline ? <OfflineReadOnlyBanner /> : null}
-        <RoomCanvas
-          accentFurniture={accentDefinition ? { name: accentDefinition.nameKo, color: accentDefinition.previewColor, itemId: accentDefinition.id } : undefined}
-          animals={homeQuery.data.animals}
-          isActive
-          members={homeQuery.data.members}
-          onOpenMemory={(id) => router.push({ pathname: '/memories/[id]', params: { id } })}
-          onSelectAnimal={() => undefined}
-          selectedAnimalId={null}
-        />
-        <DecorateTray
-          isOnline={isOnline}
-          isPending={placeMutation.isPending}
-          onOpenShop={() => router.push('/shop')}
-          onPlace={placeSelected}
-          onSelect={setSelectedOwnedItemId}
-          placement={placement}
-          selectedOwnedItemId={selected?.id ?? null}
-          snapshot={homeQuery.data}
-        />
+        <View style={[styles.content, isWide && styles.wideContent]} testID={isWide ? 'wide-decorate-content' : undefined}>
+          <View style={styles.roomStage}><RoomCanvas
+            accentFurniture={accentDefinition ? { name: accentDefinition.nameKo, color: accentDefinition.previewColor, itemId: accentDefinition.id } : undefined}
+            animals={homeQuery.data.animals}
+            isActive
+            members={homeQuery.data.members}
+            onOpenMemory={(id) => router.push({ pathname: '/memories/[id]', params: { id } })}
+            onSelectAnimal={() => undefined}
+            selectedAnimalId={null}
+          /></View>
+          <DecorateTray
+            aside={isWide}
+            isOnline={isOnline}
+            isPending={placeMutation.isPending}
+            onOpenShop={() => router.push('/shop')}
+            onPlace={placeSelected}
+            onSelect={setSelectedOwnedItemId}
+            placement={placement}
+            selectedOwnedItemId={selected?.id ?? null}
+            snapshot={homeQuery.data}
+          />
+        </View>
       </View>
     </HouseGameShell>
   );
@@ -76,5 +82,8 @@ export function DecorateScreen() {
 
 const styles = StyleSheet.create({
   centered: { backgroundColor: colors.cream, flex: 1, justifyContent: 'center', padding: spacing.lg },
-  stage: { flex: 1, justifyContent: 'flex-end' },
+  stage: { flex: 1, minHeight: 0 },
+  content: { flex: 1, justifyContent: 'flex-end', minHeight: 0 },
+  wideContent: { alignItems: 'stretch', flexDirection: 'row', gap: spacing.md, padding: spacing.md },
+  roomStage: { flex: 1, justifyContent: 'flex-end', minWidth: 0 },
 });

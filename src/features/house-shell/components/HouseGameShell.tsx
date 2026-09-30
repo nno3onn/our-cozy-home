@@ -7,6 +7,7 @@ import type { HomeSnapshot } from '@/domain/models';
 import { AppText } from '@/components/ui/AppText';
 import { GameTabBar } from '@/features/illustrated-ui/chrome/GameTabBar';
 import { colors, spacing } from '@/theme/tokens';
+import { getResponsiveLayout } from '@/theme/responsive';
 
 import { HouseChrome } from './HouseChrome';
 
@@ -29,7 +30,7 @@ export function HouseGameShell({
   snapshot,
 }: HouseGameShellProps) {
   const { width } = ReactNative.useWindowDimensions();
-  const isDesktop = width >= 900;
+  const isDesktop = getResponsiveLayout(width).breakpoint === 'wide';
 
   return (
     <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
