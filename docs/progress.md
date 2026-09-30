@@ -26,8 +26,9 @@
   추억 revision cutoff, 공유 초안의 최초 기여 보존, 알림 outbox 멱등성을 보완했다.
 - 미완료(외부 환경): 원격 `our-cozy-home` DB의 전체 migration 적용, Edge Function
   배포/스케줄러, 실제 이메일 계정 다중 사용자 검증, iOS·Android Development Build
-  검증. 현재 CLI 로그인은 가능하지만 원격 DB 비밀번호가 설정되어 있지 않아 migration
-  push를 실행하지 않았다.
+  검증. 현재 CLI 로그인은 가능하지만 이 작업 트리는 아직 원격 프로젝트에 link되지
+  않았고 DB 비밀번호도 설정되어 있지 않아 `db push --dry-run` 단계에서 안전하게
+  중단됐다. migration push는 실행하지 않았다.
 
 이 절의 상태가 아래 과거 단계별 기록보다 우선한다. 아래 기록은 각 기능을 처음
 작성했을 당시의 검증 이력을 보존한다.
