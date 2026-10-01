@@ -1,6 +1,6 @@
 # 우리집 구현·검증 현황
 
-최종 수정일: 2026-09-30
+최종 수정일: 2026-10-01
 
 기능을 완료할 때 코드 경로, 검증 명령과 결과를 함께 갱신한다. 자동화 검증,
 로컬 Supabase 검증, 실제 계정·실기기 검증은 서로 대체하지 않는다.
@@ -24,11 +24,13 @@
   이 자동화는 Docker가 없는 개발자 로컬 환경을 대체하는 CI 검증 경로다.
 - 완료: runtime hardening migration으로 return-table RPC의 열 이름 충돌, 탈퇴 시점
   추억 revision cutoff, 공유 초안의 최초 기여 보존, 알림 outbox 멱등성을 보완했다.
+- 진행: 원격 `our-cozy-home` 프로젝트는 CLI에 link됐고, 고정 ref·명시 확인값·repository
+  secret을 사용하는 수동 GitHub Actions migration workflow를 추가했다. 현재 개발 환경은
+  원격 DB의 IPv6 주소에 route가 없어 `db push --dry-run` 직접 실행이 연결 전에 중단됐고,
+  browser Dashboard는 로그인 세션이 없어 대체 적용하지 않았다. GitHub Actions도 secret
+  미설정 상태라 dispatch하지 않았으며, migration push는 실행하지 않았다.
 - 미완료(외부 환경): 원격 `our-cozy-home` DB의 전체 migration 적용, Edge Function
-  배포/스케줄러, 실제 이메일 계정 다중 사용자 검증, iOS·Android Development Build
-  검증. 현재 CLI 로그인은 가능하지만 이 작업 트리는 아직 원격 프로젝트에 link되지
-  않았고 DB 비밀번호도 설정되어 있지 않아 `db push --dry-run` 단계에서 안전하게
-  중단됐다. migration push는 실행하지 않았다.
+  배포/스케줄러, 실제 이메일 계정 다중 사용자 검증, iOS·Android Development Build 검증.
 
 이 절의 상태가 아래 과거 단계별 기록보다 우선한다. 아래 기록은 각 기능을 처음
 작성했을 당시의 검증 이력을 보존한다.
@@ -205,10 +207,10 @@ Build를 설치한 실제 기기에서 별도로 기록한다.
 
 ## 다음 작업
 
-1. 프로젝트 소유자가 원격 DB 비밀번호를 안전한 로컬 환경에 제공한 뒤,
-   `supabase link --project-ref cbyikdryogktctskvzzk`와 `supabase db push`를 실행하고
-   migration history를 확인한다. 비밀번호·service-role key는 저장소, 앱 `.env`, CI log에
-   남기지 않는다.
+1. 프로젝트 소유자가 GitHub repository secret `SUPABASE_ACCESS_TOKEN`과
+   `SUPABASE_DB_PASSWORD`를 설정한 뒤, Actions의 **Apply remote Supabase migrations**를
+   `APPLY-MIGRATIONS` 확인값으로 수동 실행하고 migration history를 확인한다. 비밀번호·
+   service-role key는 저장소, 앱 `.env`, CI log에 남기지 않는다.
 2. 원격 schema 반영 후 `npm run supabase:types`로 생성 타입을 갱신하고, 테스트 계정
    A–E로 온보딩·집 생성·3명 초대·다섯 번째 차단·마지막 자리 동시 수락을 검증한다.
 3. 동일 계정 세트로 출석/구매/배치/탈퇴/추억/버릇 RLS와 멱등성 E2E matrix를 수행한다.

@@ -1,0 +1,37 @@
+name: Apply remote Supabase migrations
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: Type APPLY-MIGRATIONS to apply pending migrations to the production Supabase project.
+        required: true
+        type: string
+
+jobs:
+  apply:
+    if: ${{ inputs.confirm == 'APPLY-MIGRATIONS' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.118.0
+      - name: Check deployment secrets
+        run: |
+          if [ -z "$SUPABASE_ACCESS_TOKEN" ] || [ -z "$SUPABASE_DB_PASSWORD" ]; then
+            echo "::error::SUPABASE_ACCESS_TOKEN and SUPABASE_DB_PASSWORD repository secrets are required."
+            exit 1
+          fi
+      - name: Link the fixed production project
+        run: supabase link --project-ref cbyikdryogktctskvzzk --password "$SUPABASE_DB_PASSWORD"
+      - name: Apply pending migrations
+        run: supabase db push
+      - name: Verify migration history is current
+        run: supabase db push --dry-run

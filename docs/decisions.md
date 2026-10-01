@@ -163,7 +163,8 @@
   migration history 정합 확인을 선행한다.
 - 이유: 실제 RLS·생성 타입 검증을 진행하면서 DB 비밀번호를 저장소·앱에 노출하지 않기
   위해서다.
-- 비용: CLI가 적용 이력을 자동 기록하기 전까지 원격 배포 자동화는 진행하지 않는다.
+- 비용: 적용 이력 정합 전에는 원격 배포를 실행하지 않는다. 정합을 확인한 뒤에도
+  수동 확인값과 repository secret을 요구하는 CI workflow만 사용할 수 있다.
 
 ## D-018 온보딩 완료 기준
 
@@ -276,3 +277,17 @@
   가로 공간을 목록 밀도에만 사용해 내용을 과도하게 넓히지 않기 위해서다.
 - 비용: 브라우저 창 크기 변경은 화면 구성만 바꾸고 저장된 방 좌표·가구 배치·서버
   데이터에는 영향을 주지 않는다. 실제 iOS/Android 키보드·스크린리더 검증은 별도다.
+
+## D-030 원격 migration의 수동 CI 실행
+
+- 상태: 채택
+- 결정: 원격 Supabase migration 적용은 고정 프로젝트 ref를 사용하는
+  `workflow_dispatch` GitHub Actions에서만 실행한다. 확인 문자열과
+  `SUPABASE_ACCESS_TOKEN`·`SUPABASE_DB_PASSWORD` repository secret이 모두 있어야 하며,
+  push·PR로 자동 실행하지 않는다.
+- 이유: 현재 개발 환경의 IPv6 직접 DB 경로에 의존하지 않으면서, DB password와 personal
+  access token을 로컬 `.env`·앱 번들·workflow log에 노출하지 않고 재현 가능한 적용 경로를
+  만들기 위해서다.
+- 비용: workflow source를 추가한 것만으로 원격 schema가 적용되지는 않는다. 관리자가
+  secrets 설정과 명시적 dispatch를 완료한 뒤, 실제 migration history와 다계정 E2E를 따로
+  확인해야 한다.

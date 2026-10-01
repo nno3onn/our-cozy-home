@@ -162,6 +162,27 @@ Docker local DB가 실행 중인 경우에는 `npm run supabase:types:local`을 
 Dashboard SQL Editor로 적용됐으므로, 자동 배포를 시작하기 전에 `supabase link`와 migration
 history 정합을 한 번 확인해야 한다.
 
+### 수동 원격 migration 배포
+
+로컬 네트워크가 원격 DB의 직접 연결을 지원하지 않을 때는 GitHub Actions의 **Apply remote
+Supabase migrations**를 수동으로 실행할 수 있다. 이 workflow는 push·PR에 연결되지 않으며,
+고정된 `cbyikdryogktctskvzzk` 프로젝트에만 적용된다. 실행 전 저장소 관리자만 아래
+repository secret을 설정한다.
+
+- `SUPABASE_ACCESS_TOKEN`: database write 권한이 있는 Supabase personal access token
+- `SUPABASE_DB_PASSWORD`: 해당 프로젝트의 database password
+
+Actions 화면에서 workflow를 선택하고 확인값으로 정확히 `APPLY-MIGRATIONS`를 입력한다.
+workflow는 secret을 출력하지 않고 `supabase db push` 뒤 `--dry-run`으로 남은 migration이
+없는지만 확인한다. seed, Edge Function, 앱 타입 파일은 변경하거나 배포하지 않는다.
+실행 전에는 PR의 Database release gate가 통과했는지 확인하고, 실행 뒤에는 원격 migration
+history와 실제 다계정 E2E 결과를 별도로 기록한다. workflow 계약은 로컬에서 다음 명령으로
+점검한다.
+
+```bash
+npm run supabase:verify-remote-release
+```
+
 모든 schema 변경은 `supabase/migrations`에 새 파일로 추가하며 적용한 migration을
 수정하지 않는다. `npm run supabase:check`는 local Docker 없이 파일 구조와 명령 계약을
 검사한다.
