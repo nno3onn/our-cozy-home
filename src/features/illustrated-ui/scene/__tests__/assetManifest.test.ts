@@ -25,4 +25,18 @@ describe('illustrated asset manifest', () => {
     expect(cushion?.thumbnailKey).toBe('illustrated:furniture:cushion-shell');
     expect(cushion?.roomAssetKey).toBe(cushion?.thumbnailKey);
   });
+
+  it('uses the finished birthday memory table art in both catalog contexts', () => {
+    const birthdayTable = ITEM_BY_ID.get('memory-dining-table-birthday-table');
+
+    expect(birthdayTable).toMatchObject({
+      assetStatus: 'final',
+      thumbnailKey: 'illustrated:memory:birthday-table',
+      roomAssetKey: 'illustrated:memory:birthday-table',
+    });
+    expect(getIllustratedAsset('illustrated:memory:birthday-table')).toMatchObject({
+      kind: 'furniture',
+      status: 'final',
+    });
+  });
 });
