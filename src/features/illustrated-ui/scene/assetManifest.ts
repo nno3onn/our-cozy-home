@@ -56,6 +56,12 @@ const assets: Record<string, IllustratedAsset> = {
     status: 'final',
     source: require('../../../../assets/illustrated/furniture/plant-rubber-tree.png'),
   },
+  'illustrated:furniture:bed-moon-sleep': {
+    key: 'illustrated:furniture:bed-moon-sleep',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/bed-moon-sleep.png'),
+  },
   'illustrated:memory:birthday-table': {
     key: 'illustrated:memory:birthday-table',
     kind: 'furniture',

@@ -130,6 +130,7 @@ const pilotAssetKeys: Record<string, string> = {
   'table-round-cookie': 'illustrated:furniture:table-cookie',
   'cushion-shell': 'illustrated:furniture:cushion-shell',
   'plant-round-rubber-tree': 'illustrated:furniture:plant-rubber-tree',
+  'bed-moon-headboard': 'illustrated:furniture:bed-moon-sleep',
 };
 
 function createShopItems(): ItemDefinition[] {
