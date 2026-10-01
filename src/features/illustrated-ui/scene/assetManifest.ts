@@ -74,6 +74,12 @@ const assets: Record<string, IllustratedAsset> = {
     status: 'final',
     source: require('../../../../assets/illustrated/furniture/rug-soft-oval.png'),
   },
+  'illustrated:furniture:curtain-sunlight-ribbon': {
+    key: 'illustrated:furniture:curtain-sunlight-ribbon',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/curtain-sunlight-ribbon.png'),
+  },
   'illustrated:memory:birthday-table': {
     key: 'illustrated:memory:birthday-table',
     kind: 'furniture',

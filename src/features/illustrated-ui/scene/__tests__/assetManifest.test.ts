@@ -15,6 +15,7 @@ describe('illustrated asset manifest', () => {
     expect(getIllustratedAsset('illustrated:furniture:bed-moon-sleep')).toMatchObject({ status: 'final' });
     expect(getIllustratedAsset('illustrated:furniture:lighting-firefly-stand')).toMatchObject({ status: 'final' });
     expect(getIllustratedAsset('illustrated:furniture:rug-soft-oval')).toMatchObject({ status: 'final' });
+    expect(getIllustratedAsset('illustrated:furniture:curtain-sunlight-ribbon')).toMatchObject({ status: 'final' });
   });
 
   it('provides a thumbnail fallback for every catalog item', () => {
@@ -58,6 +59,16 @@ describe('illustrated asset manifest', () => {
       assetStatus: 'final',
       thumbnailKey: 'illustrated:furniture:rug-soft-oval',
       roomAssetKey: 'illustrated:furniture:rug-soft-oval',
+    });
+  });
+
+  it('uses the finished sunlight ribbon curtain art in the catalog and room', () => {
+    const curtain = ITEM_BY_ID.get('curtain-ribbon-pair');
+
+    expect(curtain).toMatchObject({
+      assetStatus: 'final',
+      thumbnailKey: 'illustrated:furniture:curtain-sunlight-ribbon',
+      roomAssetKey: 'illustrated:furniture:curtain-sunlight-ribbon',
     });
   });
 
