@@ -42,9 +42,9 @@ export function RoomScene({ animals, accentFurniture, isActive, members, memoryF
     >
       <RoomBackdrop />
       <ReactNative.View pointerEvents="none" style={[styles.rug, { left: 190 * scale, top: 685 * scale, width: 620 * scale, height: 180 * scale }]} />
-      <ReactNative.View style={[styles.furniture, { left: 365 * scale, top: 475 * scale, width: 280 * scale, height: 230 * scale }]}>
-        {accentFurniture?.itemId ? <FurnitureSprite itemId={accentFurniture.itemId} /> : <ReactNative.View style={[styles.placeholderTable, { backgroundColor: accentFurniture?.color ?? illustratedColors.peach }]} />}
-      </ReactNative.View>
+      {accentFurniture ? <ReactNative.View style={[styles.furniture, { left: 365 * scale, top: 475 * scale, width: 280 * scale, height: 230 * scale }]}>
+        {accentFurniture.itemId ? <FurnitureSprite itemId={accentFurniture.itemId} /> : <ReactNative.View style={[styles.placeholderTable, { backgroundColor: accentFurniture.color }]} />}
+      </ReactNative.View> : null}
       <ReactNative.View pointerEvents="none" style={[styles.plant, { left: 780 * scale, top: 335 * scale, width: 180 * scale, height: 270 * scale }]}>
         <FurnitureSprite itemId="plant-round-rubber-tree" />
       </ReactNative.View>
