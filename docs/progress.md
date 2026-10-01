@@ -29,6 +29,9 @@
   원격 DB의 IPv6 주소에 route가 없어 `db push --dry-run` 직접 실행이 연결 전에 중단됐고,
   browser Dashboard는 로그인 세션이 없어 대체 적용하지 않았다. GitHub Actions도 secret
   미설정 상태라 dispatch하지 않았으며, migration push는 실행하지 않았다.
+- 완료: Actions에서 의도적으로 다른 확인값(`VERIFY-ONLY`)으로 workflow dispatch를 실행해
+  run `36807294039`가 `skipped`로 끝나는 것을 확인했다. migration job은 시작되지 않았고
+  원격 DB에는 변경이 없었다.
 - 미완료(외부 환경): 원격 `our-cozy-home` DB의 전체 migration 적용, Edge Function
   배포/스케줄러, 실제 이메일 계정 다중 사용자 검증, iOS·Android Development Build 검증.
 
