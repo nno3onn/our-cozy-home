@@ -12,6 +12,7 @@ describe('illustrated asset manifest', () => {
     expect(getIllustratedAsset('illustrated:furniture:cushion-shell')).toMatchObject({ status: 'final' });
     expect(getIllustratedAsset('illustrated:furniture:table-cookie')).toMatchObject({ status: 'final' });
     expect(getIllustratedAsset('illustrated:furniture:plant-rubber-tree')).toMatchObject({ status: 'final' });
+    expect(getIllustratedAsset('illustrated:furniture:bed-moon-sleep')).toMatchObject({ status: 'final' });
   });
 
   it('provides a thumbnail fallback for every catalog item', () => {
@@ -26,6 +27,16 @@ describe('illustrated asset manifest', () => {
 
     expect(cushion?.thumbnailKey).toBe('illustrated:furniture:cushion-shell');
     expect(cushion?.roomAssetKey).toBe(cushion?.thumbnailKey);
+  });
+
+  it('uses the finished moon-sleep bed art in the catalog and room', () => {
+    const bed = ITEM_BY_ID.get('bed-moon-headboard');
+
+    expect(bed).toMatchObject({
+      assetStatus: 'final',
+      thumbnailKey: 'illustrated:furniture:bed-moon-sleep',
+      roomAssetKey: 'illustrated:furniture:bed-moon-sleep',
+    });
   });
 
   it('uses the finished birthday memory table art in both catalog contexts', () => {
