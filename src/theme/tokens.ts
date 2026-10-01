@@ -10,7 +10,7 @@ export const colors = {
   mint: '#91C9AF',
   sky: '#94BFE0',
   lilac: '#B7A8D8',
-  line: '#D8C8AB',
+  line: '#E8DECF',
   danger: '#B5534D',
   white: '#FFFFFF',
 } as const;
@@ -27,8 +27,8 @@ export const spacing = {
 export const radii = {
   sm: 8,
   md: 14,
-  card: 16,
-  sheet: 20,
+  card: 18,
+  sheet: 24,
   lg: 22,
   scene: 24,
   pill: 999,
@@ -45,10 +45,10 @@ export const elevation = {
 } as const;
 
 export const typeScale = {
-  title: { fontSize: 30, lineHeight: 36, fontWeight: '700' as const },
-  heading: { fontSize: 21, lineHeight: 28, fontWeight: '700' as const },
-  body: { fontSize: 16, lineHeight: 24, fontWeight: '400' as const },
-  label: { fontSize: 15, lineHeight: 20, fontWeight: '700' as const },
+  title: { fontSize: 24, lineHeight: 30, fontWeight: '700' as const },
+  heading: { fontSize: 18, lineHeight: 25, fontWeight: '700' as const },
+  body: { fontSize: 15, lineHeight: 22, fontWeight: '400' as const },
+  label: { fontSize: 15, lineHeight: 21, fontWeight: '700' as const },
   caption: { fontSize: 13, lineHeight: 18, fontWeight: '400' as const },
 } as const;
 
