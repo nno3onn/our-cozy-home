@@ -2,7 +2,7 @@ import type { Href } from 'expo-router';
 import type { PropsWithChildren } from 'react';
 import * as ReactNative from 'react-native';
 
-import { spacing } from '@/theme/tokens';
+import { colors, elevation, radii, spacing } from '@/theme/tokens';
 
 import { ResponsivePage, useResponsiveLayout } from './ResponsivePage';
 
@@ -29,5 +29,14 @@ export function ResponsiveFormPage({ children, fallbackHref, maxWidth = 640, tes
 const styles = ReactNative.StyleSheet.create({
   keyboard: { flex: 1 },
   scroll: { flexGrow: 1, justifyContent: 'center' },
-  content: { gap: spacing.md, paddingBottom: spacing.lg },
+  content: {
+    backgroundColor: colors.paper,
+    borderColor: colors.line,
+    borderRadius: radii.sheet,
+    borderWidth: 1,
+    gap: spacing.md,
+    padding: spacing.xl,
+    paddingBottom: spacing.xl,
+    ...elevation.soft,
+  },
 });
