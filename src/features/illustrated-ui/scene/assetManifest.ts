@@ -86,6 +86,12 @@ const assets: Record<string, IllustratedAsset> = {
     status: 'final',
     source: require('../../../../assets/illustrated/furniture/memory-birthday-table.png'),
   },
+  'illustrated:memory:picnic-radio': {
+    key: 'illustrated:memory:picnic-radio',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/memory-picnic-radio.png'),
+  },
   'illustrated:placeholder:item': {
     key: 'illustrated:placeholder:item',
     kind: 'placeholder',
