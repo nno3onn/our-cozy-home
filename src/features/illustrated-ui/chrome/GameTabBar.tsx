@@ -15,10 +15,10 @@ export function GameTabBar({ activeTab, onNavigate, vertical = false }: { active
 }
 
 const styles = StyleSheet.create({
-  bar: { alignItems: 'center', backgroundColor: illustratedColors.paper, borderTopColor: illustratedColors.line, borderTopWidth: 1, flexDirection: 'row', justifyContent: 'space-around', minHeight: 66, paddingHorizontal: 8 },
+  bar: { alignItems: 'center', backgroundColor: illustratedColors.paper, borderTopColor: illustratedColors.line, borderTopWidth: 1, flexDirection: 'row', justifyContent: 'space-around', minHeight: 70, paddingHorizontal: 12 },
   vertical: { alignItems: 'stretch', backgroundColor: 'transparent', borderTopWidth: 0, flexDirection: 'column', justifyContent: 'flex-start', minHeight: undefined, paddingHorizontal: 0, paddingTop: 88, width: 72 },
-  tab: { alignItems: 'center', borderRadius: 15, gap: 1, justifyContent: 'center', minHeight: 48, minWidth: 66, paddingHorizontal: 7 },
-  active: { backgroundColor: '#FDE8E1' },
+  tab: { alignItems: 'center', borderRadius: 14, gap: 2, justifyContent: 'center', minHeight: 48, minWidth: 72, paddingHorizontal: 8 },
+  active: { backgroundColor: '#FFF0E9' },
   icon: { color: illustratedColors.cocoa, fontSize: 19, lineHeight: 20 },
   label: { color: '#806A5D' },
   activeText: { color: illustratedColors.peach, fontWeight: '700' },
