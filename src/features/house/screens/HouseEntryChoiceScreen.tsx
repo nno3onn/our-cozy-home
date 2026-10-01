@@ -37,7 +37,7 @@ export function HouseEntryChoiceScreen({ onCreateHouse, onOpenInvite }: HouseEnt
       <View style={styles.content}>
         <AppText variant="title">어떤 집에서 시작할까요?</AppText>
         <AppText tone="muted">혼자 새 집을 만들거나 친구의 초대를 확인할 수 있어요.</AppText>
-        <Panel style={styles.newHome}><AppText style={styles.homeArt}>⌂</AppText><AppButton label="새 집 만들기" onPress={onCreateHouse} /></Panel>
+        <Panel style={styles.newHome}><View style={styles.optionHeading}><AppText style={styles.homeArt}>⌂</AppText><View style={styles.optionCopy}><AppText variant="heading">새 우리집</AppText><AppText tone="muted" variant="caption">혼자서 먼저 시작해요</AppText></View></View><AppButton label="새 집 만들기" onPress={onCreateHouse} /></Panel>
         <Panel style={styles.inviteArea}>
           <AppText variant="label">친구 초대로 입주하기</AppText>
           <TextInput
@@ -59,8 +59,10 @@ export function HouseEntryChoiceScreen({ onCreateHouse, onOpenInvite }: HouseEnt
 
 const styles = StyleSheet.create({
   content: { gap: spacing.md },
-  newHome: { alignItems: 'center', gap: spacing.sm, padding: spacing.lg },
-  homeArt: { color: '#F49A86', fontSize: 52, lineHeight: 54 },
+  newHome: { gap: spacing.sm, padding: spacing.lg },
+  optionHeading: { alignItems: 'center', flexDirection: 'row', gap: spacing.md },
+  homeArt: { color: '#F49A86', fontSize: 40, lineHeight: 42 },
+  optionCopy: { flex: 1, gap: 1 },
   inviteArea: { gap: spacing.sm, marginTop: spacing.md, padding: spacing.lg },
   input: { minHeight: 48, borderWidth: 1, borderColor: colors.line, borderRadius: 12, paddingHorizontal: 12, backgroundColor: colors.paper, color: colors.ink },
 });
