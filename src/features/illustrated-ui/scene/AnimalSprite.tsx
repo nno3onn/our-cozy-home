@@ -12,7 +12,13 @@ export function AnimalSprite({ animal, anchor, member, viewport }: Props) {
   const foot = toViewport(anchor.foot, viewport);
   const scale = Math.min(viewport.width, viewport.height) / 1000;
   const size = Math.max(82, 220 * scale);
-  const key = animal.species === 'rabbit' ? 'illustrated:animal:rabbit' : animal.species === 'cat' ? 'illustrated:animal:cat' : 'illustrated:placeholder:animal';
+  const key = animal.species === 'rabbit'
+    ? 'illustrated:animal:rabbit'
+    : animal.species === 'cat'
+      ? 'illustrated:animal:cat'
+      : animal.species === 'bear'
+        ? 'illustrated:animal:bear'
+        : 'illustrated:placeholder:animal';
   const asset = getIllustratedAsset(key);
 
   return (
