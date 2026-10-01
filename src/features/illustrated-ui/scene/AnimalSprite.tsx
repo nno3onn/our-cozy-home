@@ -18,6 +18,8 @@ export function AnimalSprite({ animal, anchor, member, viewport }: Props) {
       ? 'illustrated:animal:cat'
       : animal.species === 'bear'
         ? 'illustrated:animal:bear'
+        : animal.species === 'dog'
+          ? 'illustrated:animal:dog'
         : 'illustrated:placeholder:animal';
   const asset = getIllustratedAsset(key);
 

@@ -281,7 +281,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      animal_species: "rabbit" | "bear" | "cat"
+      animal_species: "rabbit" | "bear" | "cat" | "dog"
       animal_state: "idle" | "eating" | "resting" | "playing" | "reacting"
       house_member_role: "admin" | "member"
       house_status: "active" | "archived"
@@ -413,7 +413,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      animal_species: ["rabbit", "bear", "cat"],
+      animal_species: ["rabbit", "bear", "cat", "dog"],
       animal_state: ["idle", "eating", "resting", "playing", "reacting"],
       house_member_role: ["admin", "member"],
       house_status: ["active", "archived"],

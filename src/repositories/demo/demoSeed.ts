@@ -54,7 +54,7 @@ export const demoSeed: DemoState = {
         id: 'animal-tori',
         ownerId: 'user-narae',
         name: '토리',
-        species: 'rabbit',
+        species: 'dog',
         state: 'idle',
       },
       {
