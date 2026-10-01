@@ -177,10 +177,15 @@ const memorySeeds: Record<MemoryCategory, ItemSeed[]> = {
   ],
 };
 
+const memoryPilotAssetKeys: Record<string, string> = {
+  'memory-dining-table-birthday-table': 'illustrated:memory:birthday-table',
+};
+
 function createMemoryItems(): ItemDefinition[] {
   return MEMORY_CATEGORIES.flatMap((category) =>
     memorySeeds[category].map((seed, index) => {
       const id = `memory-${category}-${seed.silhouette}`;
+      const illustratedAssetKey = memoryPilotAssetKeys[id];
       return {
         id,
         source: 'memory',
@@ -189,14 +194,14 @@ function createMemoryItems(): ItemDefinition[] {
         ...seed,
         price: 0,
         consumable: false,
-        thumbnailKey: `placeholder:thumb:${id}`,
-        roomAssetKey: `placeholder:room:${id}`,
+        thumbnailKey: illustratedAssetKey ?? `placeholder:thumb:${id}`,
+        roomAssetKey: illustratedAssetKey ?? `placeholder:room:${id}`,
         size: category === 'frame' ? { width: 150, height: 170 } : { width: 220, height: 160 },
         anchor: category === 'frame' ? { x: 75, y: 160 } : { x: 110, y: 150 },
         allowedSlotIds: category === 'frame' ? ['memory-wall'] : ['memory-shelf'],
         layerBias: category === 'frame' ? -15 : 3,
         interaction: 'memory-detail',
-        assetStatus: 'placeholder',
+        assetStatus: illustratedAssetKey ? 'final' : 'placeholder',
       };
     }),
   );

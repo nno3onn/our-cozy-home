@@ -44,6 +44,12 @@ const assets: Record<string, IllustratedAsset> = {
     status: 'final',
     source: require('../../../../assets/illustrated/furniture/plant-rubber-tree.png'),
   },
+  'illustrated:memory:birthday-table': {
+    key: 'illustrated:memory:birthday-table',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/memory-birthday-table.png'),
+  },
   'illustrated:placeholder:item': {
     key: 'illustrated:placeholder:item',
     kind: 'placeholder',
