@@ -27,7 +27,15 @@ export function AnimalDetailSheet({
   onDismiss: () => void;
 }) {
   const ownerLabel = owner ? `${owner.displayName}이의 동물` : '알 수 없는 친구의 동물';
-  const sprite = getIllustratedAsset(animal.species === 'rabbit' ? 'illustrated:animal:rabbit' : animal.species === 'cat' ? 'illustrated:animal:cat' : 'illustrated:placeholder:animal');
+  const sprite = getIllustratedAsset(
+    animal.species === 'rabbit'
+      ? 'illustrated:animal:rabbit'
+      : animal.species === 'cat'
+        ? 'illustrated:animal:cat'
+        : animal.species === 'bear'
+          ? 'illustrated:animal:bear'
+          : 'illustrated:placeholder:animal',
+  );
 
   return (
     <View style={styles.content}>
