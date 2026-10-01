@@ -80,7 +80,7 @@ export function HomeScreen({
     const placement = homeQuery.data?.placements.find((candidate) => candidate.slotId === 'floor-accent-left');
     const ownedItem = homeQuery.data?.ownedItems.find((candidate) => candidate.id === placement?.ownedItemId);
     const definition = ownedItem ? ITEM_BY_ID.get(ownedItem.itemDefinitionId) : undefined;
-    return definition ? { name: definition.nameKo, color: definition.previewColor } : undefined;
+    return definition ? { name: definition.nameKo, color: definition.previewColor, itemId: definition.id } : undefined;
   }, [homeQuery.data]);
 
   if (homeQuery.isPending) {
