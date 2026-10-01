@@ -8,6 +8,7 @@ describe('illustrated asset manifest', () => {
     expect(getIllustratedAsset('illustrated:animal:rabbit')).toMatchObject({ status: 'final' });
     expect(getIllustratedAsset('illustrated:animal:cat')).toMatchObject({ status: 'final' });
     expect(getIllustratedAsset('illustrated:animal:bear')).toMatchObject({ status: 'final' });
+    expect(getIllustratedAsset('illustrated:animal:dog')).toMatchObject({ status: 'final' });
     expect(getIllustratedAsset('illustrated:furniture:cushion-shell')).toMatchObject({ status: 'final' });
     expect(getIllustratedAsset('illustrated:furniture:table-cookie')).toMatchObject({ status: 'final' });
     expect(getIllustratedAsset('illustrated:furniture:plant-rubber-tree')).toMatchObject({ status: 'final' });

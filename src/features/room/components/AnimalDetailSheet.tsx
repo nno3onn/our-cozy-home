@@ -34,6 +34,8 @@ export function AnimalDetailSheet({
         ? 'illustrated:animal:cat'
         : animal.species === 'bear'
           ? 'illustrated:animal:bear'
+          : animal.species === 'dog'
+            ? 'illustrated:animal:dog'
           : 'illustrated:placeholder:animal',
   );
 

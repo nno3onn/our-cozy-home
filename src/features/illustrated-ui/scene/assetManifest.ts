@@ -32,6 +32,12 @@ const assets: Record<string, IllustratedAsset> = {
     status: 'final',
     source: require('../../../../assets/illustrated/animals/bear.png'),
   },
+  'illustrated:animal:dog': {
+    key: 'illustrated:animal:dog',
+    kind: 'animal',
+    status: 'final',
+    source: require('../../../../assets/illustrated/animals/dog.png'),
+  },
   'illustrated:furniture:cushion-shell': {
     key: 'illustrated:furniture:cushion-shell',
     kind: 'furniture',

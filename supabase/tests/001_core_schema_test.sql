@@ -55,7 +55,7 @@ select throws_like(
 
 select throws_like(
   $$insert into public.animals (profile_id, name, species)
-    values ('00000000-0000-0000-0000-000000000001', 'Momo', 'dog')$$,
+    values ('00000000-0000-0000-0000-000000000001', 'Momo', 'fox')$$,
   '%invalid input value for enum%',
   'animal species must be an allowed enum'
 );

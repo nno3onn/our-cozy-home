@@ -1,14 +1,14 @@
 import { DemoRepository } from '../DemoRepository';
 
 describe('DemoRepository', () => {
-  it('starts with four distinct members and allows repeated animal species', async () => {
+  it('starts with four distinct members and includes every available companion species', async () => {
     const repository = new DemoRepository();
     const snapshot = await repository.getHomeSnapshot();
 
     expect(snapshot.members).toHaveLength(4);
     expect(new Set(snapshot.members.map((member) => member.id)).size).toBe(4);
     expect(new Set(snapshot.members.map((member) => member.pointColor)).size).toBe(4);
-    expect(snapshot.animals.filter((animal) => animal.species === 'rabbit')).toHaveLength(2);
+    expect(snapshot.animals.map((animal) => animal.species).sort()).toEqual(['bear', 'cat', 'dog', 'rabbit']);
   });
 
   it('updates only the animal that receives an action', async () => {

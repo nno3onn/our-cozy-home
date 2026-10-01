@@ -1,4 +1,4 @@
-export type AnimalSpecies = 'rabbit' | 'bear' | 'cat';
+export type AnimalSpecies = 'rabbit' | 'bear' | 'cat' | 'dog';
 export type AnimalState = 'idle' | 'eating' | 'resting' | 'playing' | 'reacting';
 export type AnimalAction = Exclude<AnimalState, 'idle'>;
 
