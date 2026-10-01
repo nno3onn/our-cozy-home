@@ -253,6 +253,10 @@ curl --fail-with-body -X POST \
 
 ## 에셋 상태
 
+웹 공유 카드와 탭 아이콘은 `public/og-image.png`와 `assets/images/favicon.png`으로 관리한다.
+Open Graph·Twitter 메타데이터는 `app/+html.tsx`에서 생성하며, production canonical URL을 바꿀 때는
+같은 파일의 `siteUrl`도 함께 갱신한다.
+
 상점 40종과 추억 가구 15종의 카탈로그·크기·기준점·슬롯·상호작용 데이터와 DB seed는
 있다. 실제 Supabase에 migration·seed를 적용하기 전에는 실제 계정 상점이 동작하지 않는다.
 현재는 햇살 방·토끼·고양이·곰·강아지·쿠션/탁자/고무나무/달잠 침대/반딧불 스탠드/포근 타원 러그/햇살 리본 커튼/소풍 라디오의 파일럿 일러스트만 완성 파일로 연결되어
