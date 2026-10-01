@@ -13,6 +13,7 @@ describe('illustrated asset manifest', () => {
     expect(getIllustratedAsset('illustrated:furniture:table-cookie')).toMatchObject({ status: 'final' });
     expect(getIllustratedAsset('illustrated:furniture:plant-rubber-tree')).toMatchObject({ status: 'final' });
     expect(getIllustratedAsset('illustrated:furniture:bed-moon-sleep')).toMatchObject({ status: 'final' });
+    expect(getIllustratedAsset('illustrated:furniture:lighting-firefly-stand')).toMatchObject({ status: 'final' });
   });
 
   it('provides a thumbnail fallback for every catalog item', () => {
@@ -36,6 +37,16 @@ describe('illustrated asset manifest', () => {
       assetStatus: 'final',
       thumbnailKey: 'illustrated:furniture:bed-moon-sleep',
       roomAssetKey: 'illustrated:furniture:bed-moon-sleep',
+    });
+  });
+
+  it('uses the finished firefly stand art in the catalog and room', () => {
+    const lamp = ITEM_BY_ID.get('lighting-firefly-stand');
+
+    expect(lamp).toMatchObject({
+      assetStatus: 'final',
+      thumbnailKey: 'illustrated:furniture:lighting-firefly-stand',
+      roomAssetKey: 'illustrated:furniture:lighting-firefly-stand',
     });
   });
 
