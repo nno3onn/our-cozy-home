@@ -29,6 +29,7 @@ describe('HouseGameShell', () => {
     );
 
     expect(view.getByLabelText('우리집 식구 2 / 4명')).toBeOnTheScreen();
+    expect(view.getByText('2 / 4명')).toBeOnTheScreen();
     expect(view.getAllByLabelText(/식구 자리/)).toHaveLength(4);
     expect(view.getAllByRole('button', { name: '빈 자리로 친구 초대' })).toHaveLength(2);
   });

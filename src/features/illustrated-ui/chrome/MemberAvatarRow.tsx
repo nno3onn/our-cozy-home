@@ -10,8 +10,9 @@ export function MemberAvatarRow({ capacity, currentUserId, members, onInvite }: 
   const canInvite = isAdmin && members.length < capacity && Boolean(onInvite);
 
   return (
-    <View accessibilityLabel={`우리집 식구 ${members.length} / ${capacity}명`} style={styles.row}>
-      {slots.map((member, index) => (
+    <View accessibilityLabel={`우리집 식구 ${members.length} / ${capacity}명`} style={styles.container}>
+      <View style={styles.summary}><AppText variant="label">우리 식구</AppText><AppText tone="muted" variant="caption">{members.length} / {capacity}명</AppText></View>
+      <View style={styles.row}>{slots.map((member, index) => (
         <View accessibilityLabel={`식구 자리 ${index + 1}: ${member?.displayName ?? '빈 자리'}`} key={member?.id ?? `empty-${index}`} style={styles.slot}>
           {member ? (
             <>
@@ -24,12 +25,14 @@ export function MemberAvatarRow({ capacity, currentUserId, members, onInvite }: 
             </Pressable>
           ) : <View style={styles.empty} />}
         </View>
-      ))}
+      ))}</View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: { gap: 6 },
+  summary: { alignItems: 'baseline', flexDirection: 'row', gap: 6 },
   row: { alignItems: 'flex-start', flexDirection: 'row', gap: 8 },
   slot: { alignItems: 'center', minHeight: 64, width: 48 },
   avatar: { alignItems: 'center', backgroundColor: illustratedColors.paper, borderRadius: illustratedRadii.pill, borderWidth: 2, height: 42, justifyContent: 'center', width: 42 },
