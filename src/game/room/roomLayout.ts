@@ -58,11 +58,14 @@ export function toViewport(point: Point, viewport: Viewport): Point {
 
 export function getHitTarget(anchor: AnimalAnchor, viewport: Viewport): Rect {
   const foot = toViewport(anchor.foot, viewport);
+  const scale = Math.min(viewport.width / ROOM_SIZE.width, viewport.height / ROOM_SIZE.height);
+  const width = Math.max(44, ANIMAL_HIT_TARGET.width * scale);
+  const height = Math.max(44, ANIMAL_HIT_TARGET.height * scale);
   return {
-    x: foot.x - ANIMAL_HIT_TARGET.width / 2,
-    y: foot.y - ANIMAL_HIT_TARGET.height - ANIMAL_HIT_TARGET.topOffset,
-    width: ANIMAL_HIT_TARGET.width,
-    height: ANIMAL_HIT_TARGET.height,
+    x: foot.x - width / 2,
+    y: foot.y - height - Math.max(8, ANIMAL_HIT_TARGET.topOffset * scale),
+    width,
+    height,
   };
 }
 

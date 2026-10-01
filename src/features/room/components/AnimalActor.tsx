@@ -73,6 +73,7 @@ export function AnimalActor({
       <Animated.View
         style={[
           styles.nameTag,
+          { left: hitTarget.width / 2 - 44, top: hitTarget.height + Math.max(8, viewport.width / 90) },
           { borderColor: member.pointColor },
           selected && styles.selectedTag,
           animatedStyle,
@@ -90,11 +91,9 @@ export function AnimalActor({
 const styles = StyleSheet.create({
   target: {
     position: 'absolute',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingTop: 0,
   },
   nameTag: {
+    position: 'absolute',
     minHeight: 28,
     maxWidth: 88,
     flexDirection: 'row',
