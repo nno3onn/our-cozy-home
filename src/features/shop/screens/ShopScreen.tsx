@@ -7,6 +7,7 @@ import { SHOP_CATEGORIES, type ShopCategory } from '@/catalog/items';
 import { AppText } from '@/components/ui/AppText';
 import { AppButton } from '@/components/ui/AppButton';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { Panel } from '@/components/ui/Panel';
 import { CategoryChips } from '@/features/illustrated-ui/catalog/CategoryChips';
 import { ShopItemCard } from '@/features/illustrated-ui/catalog/ShopItemCard';
 import { OfflineReadOnlyBanner } from '@/components/OfflineReadOnlyBanner';
@@ -55,9 +56,14 @@ export function ShopScreen() {
   return (
     <ResponsivePage contentMaxWidth={1120} fallbackHref="/" scroll testID="shop-page">
       <ReactNative.View style={styles.content}>
-        <AppText variant="title">말랑 상점</AppText>
+        <ReactNative.View style={styles.header}>
+          <ReactNative.View style={styles.titleBlock}>
+            <AppText variant="title">말랑 상점</AppText>
+            <AppText tone="muted">마음에 드는 가구를 골라 우리집을 채워 보세요.</AppText>
+          </ReactNative.View>
+          <AppButton label="내 보관함" onPress={() => router.push('/inventory')} tone="quiet" />
+        </ReactNative.View>
         {!isOnline ? <OfflineReadOnlyBanner /> : null}
-        <AppButton label="내 보관함 보기" onPress={() => router.push('/inventory')} tone="secondary" />
         <AppText tone="muted" variant="caption">가격과 상품 정보는 서버 카탈로그를 기준으로 표시돼요.</AppText>
         <CategoryChips categories={SHOP_CATEGORIES} onSelect={setCategory} selected={category} />
         <ResponsiveGrid testID="shop-grid">
@@ -65,7 +71,7 @@ export function ShopScreen() {
             <ShopItemCard disabled={!isOnline || purchase.isPending} item={item} key={item.id} onPurchase={() => purchase.mutate({ itemDefinitionId: item.id, requestId: createPurchaseRequestId() })} />
           ))}
         </ResponsiveGrid>
-        {message ? <AppText tone="muted" variant="caption">{message}</AppText> : null}
+        {message ? <Panel accessibilityLiveRegion="polite" style={styles.message}><AppText variant="label">구매 안내</AppText><AppText tone="muted">{message}</AppText></Panel> : null}
       </ReactNative.View>
     </ResponsivePage>
   );
@@ -73,4 +79,7 @@ export function ShopScreen() {
 
 const styles = ReactNative.StyleSheet.create({
   content: { gap: spacing.md, paddingBottom: spacing.lg },
+  header: { alignItems: 'flex-start', flexDirection: 'row', gap: spacing.md, justifyContent: 'space-between' },
+  titleBlock: { flex: 1, gap: spacing.xs },
+  message: { gap: spacing.xs, padding: spacing.md },
 });
