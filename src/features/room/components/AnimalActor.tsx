@@ -1,13 +1,4 @@
-import { useEffect } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import Animated, {
-  cancelAnimation,
-  useAnimatedStyle,
-  useReducedMotion,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
 
 import type { Animal, Member } from '@/domain/models';
 import type { AnimalAnchor, Viewport } from '@/game/room/roomLayout';
@@ -30,29 +21,11 @@ export function AnimalActor({
   animal,
   member,
   anchor,
-  isActive,
   viewport,
   selected,
   onPress,
 }: AnimalActorProps) {
   const hitTarget = getHitTarget(anchor, viewport);
-  const reducedMotion = useReducedMotion();
-  const lift = useSharedValue(0);
-
-  useEffect(() => {
-    if (!isActive || reducedMotion) {
-      cancelAnimation(lift);
-      lift.value = 0;
-      return;
-    }
-
-    lift.value = withRepeat(withTiming(-3, { duration: 1100 }), -1, true);
-    return () => cancelAnimation(lift);
-  }, [isActive, lift, reducedMotion]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: lift.value }],
-  }));
 
   return (
     <Pressable
@@ -70,20 +43,19 @@ export function AnimalActor({
         },
       ]}
     >
-      <Animated.View
+      <View
         style={[
           styles.nameTag,
-          { left: hitTarget.width / 2 - 44, top: hitTarget.height + Math.max(8, viewport.width / 90) },
+          { left: hitTarget.width / 2 - 44, top: hitTarget.height + Math.max(6, viewport.width / 100) },
           { borderColor: member.pointColor },
           selected && styles.selectedTag,
-          animatedStyle,
         ]}
       >
         <View style={[styles.point, { backgroundColor: member.pointColor }]} />
         <AppText numberOfLines={1} variant="caption">
           {animal.name}
         </AppText>
-      </Animated.View>
+      </View>
     </Pressable>
   );
 }
@@ -101,9 +73,14 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
     paddingHorizontal: spacing.sm,
     borderRadius: radii.pill,
-    borderWidth: 2,
-    backgroundColor: colors.paper,
+    borderWidth: 1,
+    backgroundColor: 'rgba(255, 253, 249, 0.96)',
+    shadowColor: colors.ink,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  selectedTag: { borderColor: colors.ink, transform: [{ scale: 1.04 }] },
+  selectedTag: { borderColor: colors.ink, borderWidth: 1.5 },
   point: { width: 8, height: 8, borderRadius: 4 },
 });

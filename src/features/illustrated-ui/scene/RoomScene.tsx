@@ -41,7 +41,9 @@ export function RoomScene({ animals, accentFurniture, isActive, members, memoryF
       style={[styles.room, desktopSceneSize ? { aspectRatio: undefined, height: desktopSceneSize, width: desktopSceneSize } : undefined]}
     >
       <RoomBackdrop />
-      <ReactNative.View pointerEvents="none" style={[styles.rug, { left: 190 * scale, top: 685 * scale, width: 620 * scale, height: 180 * scale }]} />
+      <ReactNative.View pointerEvents="none" style={[styles.rug, { left: 160 * scale, top: 635 * scale, width: 680 * scale, height: 250 * scale }]}>
+        <FurnitureSprite itemId="rug-soft-oval" />
+      </ReactNative.View>
       {accentFurniture ? <ReactNative.View style={[styles.furniture, { left: 365 * scale, top: 475 * scale, width: 280 * scale, height: 230 * scale }]}>
         {accentFurniture.itemId ? <FurnitureSprite itemId={accentFurniture.itemId} /> : <ReactNative.View style={[styles.placeholderTable, { backgroundColor: accentFurniture.color }]} />}
       </ReactNative.View> : null}
@@ -67,7 +69,7 @@ export function RoomScene({ animals, accentFurniture, isActive, members, memoryF
 
 const styles = ReactNative.StyleSheet.create({
   room: { width: '100%', maxWidth: 720, alignSelf: 'center', aspectRatio: 1, overflow: 'hidden', borderRadius: illustratedRadii.room, borderWidth: 2, borderColor: illustratedColors.line, backgroundColor: illustratedColors.wall },
-  rug: { position: 'absolute', borderRadius: 999, backgroundColor: 'rgba(255, 246, 226, 0.74)', borderWidth: 2, borderColor: 'rgba(158, 111, 76, 0.18)' },
+  rug: { position: 'absolute' },
   furniture: { position: 'absolute' },
   placeholderTable: { width: '74%', height: '56%', alignSelf: 'center', marginTop: '22%', borderRadius: 48, borderWidth: 2, borderColor: illustratedColors.cocoa },
   plant: { position: 'absolute' },

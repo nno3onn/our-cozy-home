@@ -26,6 +26,7 @@ describe('RoomScene', () => {
     const onSelectAnimal = jest.fn();
     const view = await render(
       <RoomScene
+        accentFurniture={{ color: '#D9AD85', itemId: 'table-round-cookie', name: '쿠키 탁자' }}
         animals={animals}
         isActive
         members={members}
@@ -39,7 +40,9 @@ describe('RoomScene', () => {
     for (const animal of animals) expect(view.getByLabelText(`${animal.name} 동물 선택`)).toBeOnTheScreen();
     fireEvent.press(view.getByLabelText('소풍 라디오 추억 열기'));
     expect(onOpenMemory).toHaveBeenCalledWith('memory-1');
-    expect(view.getByLabelText('소풍 라디오 미니어처 라디오')).toBeOnTheScreen();
+    expect(view.getByLabelText('소풍 라디오')).toBeOnTheScreen();
+    expect(view.getByLabelText('둥근 쿠키 탁자')).toBeOnTheScreen();
+    expect(view.getByLabelText('포근 타원 러그')).toBeOnTheScreen();
   });
 
   it('uses a coloured name ribbon, not an online-state indicator', async () => {
