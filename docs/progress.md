@@ -36,6 +36,8 @@
 
 - 완료: `df04195` 기본 브랜치의 Vercel production deployment가 성공했다.
 - 완료: 배포 URL의 `/` 요청이 HTTP 200, `text/html` 응답을 반환하는 것을 확인했다.
+- 완료: 같은 deployment에서 `/decorate`, `/shop`, `/memories`, `/house/invite` 직접 요청도
+  모두 HTTP 200, `text/html` 응답을 반환해 SPA rewrite 경로를 확인했다.
 - 미검증: 이 확인은 HTTP 응답 수준의 smoke test이며, 실제 Supabase 로그인·초대·구매·사진
   업로드나 iOS·Android 동작을 검증하지 않는다.
 
