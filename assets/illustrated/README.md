@@ -1,8 +1,9 @@
 # Illustrated pilot assets
 
 The current finished furniture pilot set contains the shell cushion, cookie
-table, round rubber tree, moon-sleep bed, and firefly stand. Every file is a
-transparent PNG used by both catalog thumbnails and the room renderer.
+table, round rubber tree, moon-sleep bed, firefly stand, and soft oval rug.
+Every file is a transparent PNG used by both catalog thumbnails and the room
+renderer.
 
 This is the first finished visual set for the room redesign: a sunny miniature dollhouse room, rabbit, cat, bear, and dog companions, three reusable shop furniture sprites, and one birthday memory-table sprite. The visual direction is a miniature dollhouse product set: compact rounded geometry, soft plush animal bodies, pale wood and muted pastel materials, and uncluttered isometric presentation. The three shop sprites are a low bouclé shell cushion, a pale-wood cookie-edge table, and a matte clay rubber tree; they deliberately avoid busy illustrated scenes and product-photo backgrounds. The room keeps its central rug open for four companion sprites; all other PNG files are transparent where they are rendered as sprites.
 

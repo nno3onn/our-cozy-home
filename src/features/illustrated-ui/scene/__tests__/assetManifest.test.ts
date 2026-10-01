@@ -14,6 +14,7 @@ describe('illustrated asset manifest', () => {
     expect(getIllustratedAsset('illustrated:furniture:plant-rubber-tree')).toMatchObject({ status: 'final' });
     expect(getIllustratedAsset('illustrated:furniture:bed-moon-sleep')).toMatchObject({ status: 'final' });
     expect(getIllustratedAsset('illustrated:furniture:lighting-firefly-stand')).toMatchObject({ status: 'final' });
+    expect(getIllustratedAsset('illustrated:furniture:rug-soft-oval')).toMatchObject({ status: 'final' });
   });
 
   it('provides a thumbnail fallback for every catalog item', () => {
@@ -47,6 +48,16 @@ describe('illustrated asset manifest', () => {
       assetStatus: 'final',
       thumbnailKey: 'illustrated:furniture:lighting-firefly-stand',
       roomAssetKey: 'illustrated:furniture:lighting-firefly-stand',
+    });
+  });
+
+  it('uses the finished soft oval rug art in the catalog and room', () => {
+    const rug = ITEM_BY_ID.get('rug-soft-oval');
+
+    expect(rug).toMatchObject({
+      assetStatus: 'final',
+      thumbnailKey: 'illustrated:furniture:rug-soft-oval',
+      roomAssetKey: 'illustrated:furniture:rug-soft-oval',
     });
   });
 

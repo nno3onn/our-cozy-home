@@ -132,6 +132,7 @@ const pilotAssetKeys: Record<string, string> = {
   'plant-round-rubber-tree': 'illustrated:furniture:plant-rubber-tree',
   'bed-moon-headboard': 'illustrated:furniture:bed-moon-sleep',
   'lighting-firefly-stand': 'illustrated:furniture:lighting-firefly-stand',
+  'rug-soft-oval': 'illustrated:furniture:rug-soft-oval',
 };
 
 function createShopItems(): ItemDefinition[] {
