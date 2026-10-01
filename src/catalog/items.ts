@@ -131,6 +131,7 @@ const pilotAssetKeys: Record<string, string> = {
   'cushion-shell': 'illustrated:furniture:cushion-shell',
   'plant-round-rubber-tree': 'illustrated:furniture:plant-rubber-tree',
   'bed-moon-headboard': 'illustrated:furniture:bed-moon-sleep',
+  'lighting-firefly-stand': 'illustrated:furniture:lighting-firefly-stand',
 };
 
 function createShopItems(): ItemDefinition[] {

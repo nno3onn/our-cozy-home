@@ -62,6 +62,12 @@ const assets: Record<string, IllustratedAsset> = {
     status: 'final',
     source: require('../../../../assets/illustrated/furniture/bed-moon-sleep.png'),
   },
+  'illustrated:furniture:lighting-firefly-stand': {
+    key: 'illustrated:furniture:lighting-firefly-stand',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/lighting-firefly-stand.png'),
+  },
   'illustrated:memory:birthday-table': {
     key: 'illustrated:memory:birthday-table',
     kind: 'furniture',
