@@ -73,7 +73,7 @@ export function HomeScreen({
     const ownedItem = homeQuery.data?.ownedItems.find((candidate) => candidate.id === placement?.ownedItemId);
     const memory = memoriesQuery.data?.find((candidate) => candidate.furnitureOwnedItemId === ownedItem?.id);
     const definition = ownedItem ? ITEM_BY_ID.get(ownedItem.itemDefinitionId) : undefined;
-    return memory && definition ? { memoryId: memory.id, name: definition.nameKo } : undefined;
+    return memory && definition ? { itemId: definition.id, memoryId: memory.id, name: definition.nameKo } : undefined;
   }, [homeQuery.data, memoriesQuery.data]);
 
   const accentFurniture = useMemo(() => {

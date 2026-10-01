@@ -8,8 +8,6 @@ import { illustratedColors, illustratedRadii } from '@/theme/illustratedTokens';
 import { getResponsiveLayout } from '@/theme/responsive';
 
 import { AnimalActor } from '@/features/room/components/AnimalActor';
-import { AppText } from '@/components/ui/AppText';
-
 import { AnimalSprite } from './AnimalSprite';
 import { FurnitureSprite } from './FurnitureSprite';
 import { RoomBackdrop } from './RoomBackdrop';
@@ -19,7 +17,7 @@ type Props = {
   members: Member[];
   selectedAnimalId: string | null;
   isActive: boolean;
-  memoryFurniture?: { name: string; memoryId: string };
+  memoryFurniture?: { itemId: string; name: string; memoryId: string };
   accentFurniture?: { name: string; color: string; itemId?: string };
   onOpenMemory: (memoryId: string) => void;
   onSelectAnimal: (animalId: string) => void;
@@ -52,8 +50,7 @@ export function RoomScene({ animals, accentFurniture, isActive, members, memoryF
       </ReactNative.View>
       {memoryFurniture ? (
         <ReactNative.Pressable accessibilityLabel={`${memoryFurniture.name} 추억 열기`} accessibilityRole="button" onPress={() => onOpenMemory(memoryFurniture.memoryId)} style={[styles.memory, { left: memory.x, top: memory.y, width: Math.max(58, 175 * scale), height: Math.max(58, 148 * scale) }]}>
-          <AppText variant="heading">▣</AppText>
-          <AppText numberOfLines={1} variant="caption">추억</AppText>
+          <FurnitureSprite itemId={memoryFurniture.itemId} />
         </ReactNative.Pressable>
       ) : null}
       {actors.map(({ animal, anchor }) => {
@@ -74,5 +71,5 @@ const styles = ReactNative.StyleSheet.create({
   furniture: { position: 'absolute' },
   placeholderTable: { width: '74%', height: '56%', alignSelf: 'center', marginTop: '22%', borderRadius: 48, borderWidth: 2, borderColor: illustratedColors.cocoa },
   plant: { position: 'absolute' },
-  memory: { position: 'absolute', alignItems: 'center', justifyContent: 'center', borderRadius: 16, borderWidth: 2, borderColor: illustratedColors.cocoa, backgroundColor: 'rgba(255, 253, 248, 0.92)' },
+  memory: { position: 'absolute', alignItems: 'center', justifyContent: 'center' },
 });

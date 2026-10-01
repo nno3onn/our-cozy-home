@@ -29,7 +29,7 @@ describe('RoomScene', () => {
         animals={animals}
         isActive
         members={members}
-        memoryFurniture={{ memoryId: 'memory-1', name: '소풍 라디오' }}
+        memoryFurniture={{ itemId: 'memory-radio-picnic-radio', memoryId: 'memory-1', name: '소풍 라디오' }}
         onOpenMemory={onOpenMemory}
         onSelectAnimal={onSelectAnimal}
         selectedAnimalId={null}
@@ -39,6 +39,7 @@ describe('RoomScene', () => {
     for (const animal of animals) expect(view.getByLabelText(`${animal.name} 동물 선택`)).toBeOnTheScreen();
     fireEvent.press(view.getByLabelText('소풍 라디오 추억 열기'));
     expect(onOpenMemory).toHaveBeenCalledWith('memory-1');
+    expect(view.getByLabelText('소풍 라디오 미니어처 라디오')).toBeOnTheScreen();
   });
 
   it('uses a coloured name ribbon, not an online-state indicator', async () => {
