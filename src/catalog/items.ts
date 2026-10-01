@@ -183,6 +183,7 @@ const memorySeeds: Record<MemoryCategory, ItemSeed[]> = {
 
 const memoryPilotAssetKeys: Record<string, string> = {
   'memory-dining-table-birthday-table': 'illustrated:memory:birthday-table',
+  'memory-radio-picnic-radio': 'illustrated:memory:picnic-radio',
 };
 
 function createMemoryItems(): ItemDefinition[] {

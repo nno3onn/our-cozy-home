@@ -85,4 +85,18 @@ describe('illustrated asset manifest', () => {
       status: 'final',
     });
   });
+
+  it('uses the finished picnic radio art in both catalog contexts', () => {
+    const radio = ITEM_BY_ID.get('memory-radio-picnic-radio');
+
+    expect(radio).toMatchObject({
+      assetStatus: 'final',
+      thumbnailKey: 'illustrated:memory:picnic-radio',
+      roomAssetKey: 'illustrated:memory:picnic-radio',
+    });
+    expect(getIllustratedAsset('illustrated:memory:picnic-radio')).toMatchObject({
+      kind: 'furniture',
+      status: 'final',
+    });
+  });
 });
