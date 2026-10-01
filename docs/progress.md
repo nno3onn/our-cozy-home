@@ -32,6 +32,13 @@
 - 미완료(외부 환경): 원격 `our-cozy-home` DB의 전체 migration 적용, Edge Function
   배포/스케줄러, 실제 이메일 계정 다중 사용자 검증, iOS·Android Development Build 검증.
 
+## 2026-10-01 웹 프로덕션 smoke 검증
+
+- 완료: `df04195` 기본 브랜치의 Vercel production deployment가 성공했다.
+- 완료: 배포 URL의 `/` 요청이 HTTP 200, `text/html` 응답을 반환하는 것을 확인했다.
+- 미검증: 이 확인은 HTTP 응답 수준의 smoke test이며, 실제 Supabase 로그인·초대·구매·사진
+  업로드나 iOS·Android 동작을 검증하지 않는다.
+
 이 절의 상태가 아래 과거 단계별 기록보다 우선한다. 아래 기록은 각 기능을 처음
 작성했을 당시의 검증 이력을 보존한다.
 
