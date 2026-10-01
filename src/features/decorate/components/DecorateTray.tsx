@@ -37,7 +37,10 @@ export function DecorateTray({
   return (
     <View accessibilityLabel={aside ? '꾸미기 보조 패널' : '꾸미기 보관함'} style={[styles.tray, aside && styles.aside]}>
       <View style={styles.header}>
-        <AppText variant="heading">보관함</AppText>
+        <View style={styles.headingCopy}>
+          <AppText variant="heading">내 보관함</AppText>
+          <AppText tone="muted" variant="caption">배치할 가구 {furniture.length}개</AppText>
+        </View>
         <AppButton label="상점" onPress={onOpenShop} tone="quiet" />
       </View>
       <AppText tone="muted" variant="caption">{placedDefinition ? `${placedDefinition.nameKo} 배치 중` : '이 자리는 비어 있어요'}</AppText>
@@ -68,12 +71,13 @@ export function DecorateTray({
 }
 
 const styles = StyleSheet.create({
-  tray: { backgroundColor: colors.paper, borderTopLeftRadius: radii.scene, borderTopRightRadius: radii.scene, borderWidth: 1.5, borderColor: colors.line, gap: spacing.sm, maxHeight: '52%', padding: spacing.md, shadowColor: '#8D684C', shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.12, shadowRadius: 12 },
+  tray: { backgroundColor: colors.paper, borderTopLeftRadius: radii.sheet, borderTopRightRadius: radii.sheet, borderWidth: 1, borderColor: colors.line, gap: spacing.sm, maxHeight: '52%', padding: spacing.md, shadowColor: '#8D684C', shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.1, shadowRadius: 12 },
   aside: { borderBottomLeftRadius: radii.scene, borderBottomRightRadius: radii.scene, flexShrink: 0, maxHeight: undefined, width: 300 },
   header: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },
+  headingCopy: { gap: 1 },
   items: { gap: spacing.sm, paddingVertical: spacing.xs },
   asideItems: { paddingBottom: spacing.md },
-  card: { gap: spacing.xs, padding: spacing.sm, width: 142 },
+  card: { gap: spacing.xs, padding: spacing.sm, width: 150 },
   selectedCard: { borderColor: colors.coral, borderWidth: 2 },
   preview: { alignItems: 'center', backgroundColor: colors.surface, borderRadius: radii.card, height: 82, justifyContent: 'center', width: '100%' },
   thumbnail: { height: '92%', width: '92%' },
