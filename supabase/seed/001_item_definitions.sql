@@ -24,7 +24,7 @@ insert into public.item_definitions (
   silhouette, size, anchor, allowed_slot_ids, layer_bias, interaction, asset_status, preview_color, active
 )
 values
-  ('curtain-ribbon-pair', 'shop', 'curtain', 'sunny', '햇살 리본 커튼', 320, false, 'placeholder:thumb:curtain-ribbon-pair', 'placeholder:room:curtain-ribbon-pair', 'ribbon-pair', '{"width":260,"height":250}'::jsonb, '{"x":130,"y":250}'::jsonb, '["window"]'::jsonb, -20, 'none', 'placeholder', '#F4C6A8', true),
+  ('curtain-ribbon-pair', 'shop', 'curtain', 'sunny', '햇살 리본 커튼', 320, false, 'illustrated:furniture:curtain-sunlight-ribbon', 'illustrated:furniture:curtain-sunlight-ribbon', 'ribbon-pair', '{"width":260,"height":250}'::jsonb, '{"x":130,"y":250}'::jsonb, '["window"]'::jsonb, -20, 'none', 'final', '#F4C6A8', true),
   ('curtain-cloud-valance', 'shop', 'curtain', 'forest', '구름 주름 커튼', 340, false, 'placeholder:thumb:curtain-cloud-valance', 'placeholder:room:curtain-cloud-valance', 'cloud-valance', '{"width":260,"height":250}'::jsonb, '{"x":130,"y":250}'::jsonb, '["window"]'::jsonb, -20, 'none', 'placeholder', '#B9D8EC', true),
   ('curtain-leaf-panels', 'shop', 'curtain', 'cloud', '숲잎 커튼', 360, false, 'placeholder:thumb:curtain-leaf-panels', 'placeholder:room:curtain-leaf-panels', 'leaf-panels', '{"width":260,"height":250}'::jsonb, '{"x":130,"y":250}'::jsonb, '["window"]'::jsonb, -20, 'none', 'placeholder', '#A8D2B4', true),
   ('curtain-star-drape', 'shop', 'curtain', 'night', '별밤 커튼', 380, false, 'placeholder:thumb:curtain-star-drape', 'placeholder:room:curtain-star-drape', 'star-drape', '{"width":260,"height":250}'::jsonb, '{"x":130,"y":250}'::jsonb, '["window"]'::jsonb, -20, 'none', 'placeholder', '#B9ACD8', true),
