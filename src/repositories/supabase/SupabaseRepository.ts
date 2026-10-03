@@ -310,10 +310,10 @@ export class SupabaseRepository implements HomeRepository {
   }
 
   async performAnimalAction(animalId: string, action: AnimalAction): Promise<Animal> {
-    const { data, error } = await this.client.rpc('perform_animal_action' as never, {
+    const { data, error } = await this.client.rpc('perform_animal_action', {
       p_animal_id: animalId,
       p_action: action,
-    } as never);
+    });
     if (error) throw mapSupabaseError(error);
     const row = (data as Database['public']['Tables']['animals']['Row'][] | null)?.[0];
     if (!row) throw new DomainError('unknown', 'animal_action_result_missing');
