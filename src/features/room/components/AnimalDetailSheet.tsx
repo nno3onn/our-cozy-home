@@ -17,12 +17,14 @@ const stateLabels = {
 export function AnimalDetailSheet({
   animal,
   disabled,
+  errorMessage,
   onAction,
   owner,
 }: {
   animal: Animal;
   owner: Member | undefined;
   disabled: boolean;
+  errorMessage?: string | null;
   onAction: (action: AnimalAction) => void;
   onDismiss: () => void;
 }) {
@@ -57,10 +59,33 @@ export function AnimalDetailSheet({
         <AppText>{stateLabels[animal.state]}</AppText>
       </View>
       <View style={styles.actions}>
-        <AppButton disabled={disabled} label="간식 주기" onPress={() => onAction('eating')} tone="quiet" />
-        <AppButton disabled={disabled} label="놀아주기" onPress={() => onAction('playing')} tone="secondary" />
-        <AppButton disabled={disabled} label="쉬게 하기" onPress={() => onAction('resting')} tone="quiet" />
+        <AppButton
+          disabled={disabled}
+          label="간식 주기"
+          onPress={() => onAction('eating')}
+          selected={animal.state === 'eating'}
+          tone={animal.state === 'eating' ? 'secondary' : 'quiet'}
+        />
+        <AppButton
+          disabled={disabled}
+          label="놀아주기"
+          onPress={() => onAction('playing')}
+          selected={animal.state === 'playing'}
+          tone={animal.state === 'playing' ? 'secondary' : 'quiet'}
+        />
+        <AppButton
+          disabled={disabled}
+          label="쉬게 하기"
+          onPress={() => onAction('resting')}
+          selected={animal.state === 'resting'}
+          tone={animal.state === 'resting' ? 'secondary' : 'quiet'}
+        />
       </View>
+      {errorMessage ? (
+        <AppText accessibilityLiveRegion="polite" style={styles.error} tone="danger" variant="caption">
+          {errorMessage}
+        </AppText>
+      ) : null}
       <View style={styles.habit}>
         <AppText variant="label">최근 배운 버릇</AppText>
         <AppText tone="muted" variant="caption">아직 배운 버릇이 없어요</AppText>
@@ -76,5 +101,6 @@ const styles = StyleSheet.create({
   sprite: { height: 106, width: 106 },
   statusRow: { borderBottomColor: colors.line, borderBottomWidth: 1, flexDirection: 'row', justifyContent: 'space-between', paddingBottom: spacing.sm },
   actions: { flexDirection: 'row', gap: spacing.sm },
+  error: { textAlign: 'center' },
   habit: { backgroundColor: colors.surface, borderRadius: radii.card, gap: spacing.xs, padding: spacing.md },
 });
