@@ -11,7 +11,7 @@ describe('FurnitureSprite', () => {
 
   it('uses a matching structured placeholder for each catalog object family', async () => {
     const cases = [
-      ['curtain-ribbon-pair', '커튼'],
+      ['curtain-cloud-valance', '커튼'],
       ['cushion-knot', '쿠션'],
       ['rug-wavy', '러그'],
       ['bed-log-bed', '침대'],

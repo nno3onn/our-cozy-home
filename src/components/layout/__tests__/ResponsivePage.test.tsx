@@ -16,6 +16,8 @@ describe('ResponsivePage', () => {
     const view = await render(<ResponsivePage fallbackHref="/" scroll testID="responsive-page"><Text>content</Text></ResponsivePage>);
 
     expect(view.getByLabelText('이전 화면으로 돌아가기')).toBeOnTheScreen();
+    expect(view.getByTestId('responsive-page-navigation')).toBeOnTheScreen();
+    expect(ReactNative.StyleSheet.flatten(view.getByTestId('responsive-page-navigation').props.style).position).not.toBe('absolute');
     expect(ReactNative.StyleSheet.flatten(view.getByTestId('responsive-page-scroll').props.contentContainerStyle).paddingBottom).toBe(88);
   });
 

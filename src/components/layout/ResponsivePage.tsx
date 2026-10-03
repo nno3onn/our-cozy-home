@@ -40,7 +40,14 @@ export function ResponsivePage({
 
   return (
     <SafeAreaView edges={['left', 'right']} style={styles.safeArea}>
-      {fallbackHref ? <MobileBackButton fallbackHref={fallbackHref} /> : null}
+      {fallbackHref && layout.breakpoint !== 'wide' ? (
+        <ReactNative.View
+          style={[styles.navigation, { maxWidth: contentMaxWidth, paddingHorizontal: layout.pageGutter }]}
+          testID={testID ? `${testID}-navigation` : undefined}
+        >
+          <MobileBackButton fallbackHref={fallbackHref} />
+        </ReactNative.View>
+      ) : null}
       {scroll ? (
         <ReactNative.ScrollView
           contentContainerStyle={[contentStyle, { paddingBottom: layout.bottomSafeSpace }]}
@@ -57,6 +64,7 @@ export function ResponsivePage({
 
 const styles = ReactNative.StyleSheet.create({
   safeArea: { backgroundColor: colors.cream, flex: 1, position: 'relative' },
+  navigation: { alignSelf: 'center', paddingTop: 12, width: '100%' },
   content: { alignSelf: 'center', minWidth: 0, width: '100%' },
   fill: { flex: 1 },
   scrollContent: { width: '100%' },
