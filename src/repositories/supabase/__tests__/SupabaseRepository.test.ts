@@ -110,6 +110,34 @@ describe('SupabaseRepository', () => {
     });
     expect(rpc).toHaveBeenCalledWith('leave_house', {});
   });
+
+  it('persists an animal action through the server-owned RPC', async () => {
+    const rpc = jest.fn().mockResolvedValue({
+      data: [{
+        id: 'animal-1',
+        profile_id: 'profile-1',
+        name: '토리',
+        species: 'dog',
+        state: 'eating',
+        created_at: '2026-10-03T00:00:00Z',
+        updated_at: '2026-10-03T00:00:00Z',
+      }],
+      error: null,
+    });
+    const repository = new SupabaseRepository({ rpc } as unknown as SupabaseClient<Database>);
+
+    await expect(repository.performAnimalAction('animal-1', 'eating')).resolves.toEqual({
+      id: 'animal-1',
+      ownerId: 'profile-1',
+      name: '토리',
+      species: 'dog',
+      state: 'eating',
+    });
+    expect(rpc).toHaveBeenCalledWith('perform_animal_action', {
+      p_animal_id: 'animal-1',
+      p_action: 'eating',
+    });
+  });
   it('maps the server-confirmed attendance balance', async () => {
     const rpc = jest.fn().mockResolvedValue({ data: [{ balance: 100, game_date: '2026-09-23', granted: true }], error: null });
     const repository = new SupabaseRepository({ rpc } as unknown as SupabaseClient<Database>);

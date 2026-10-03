@@ -309,8 +309,15 @@ export class SupabaseRepository implements HomeRepository {
     };
   }
 
-  async performAnimalAction(_animalId: string, _action: AnimalAction): Promise<Animal> {
-    throw new DomainError('not_implemented', 'animal_action_rpc_not_implemented');
+  async performAnimalAction(animalId: string, action: AnimalAction): Promise<Animal> {
+    const { data, error } = await this.client.rpc('perform_animal_action' as never, {
+      p_animal_id: animalId,
+      p_action: action,
+    } as never);
+    if (error) throw mapSupabaseError(error);
+    const row = (data as Database['public']['Tables']['animals']['Row'][] | null)?.[0];
+    if (!row) throw new DomainError('unknown', 'animal_action_result_missing');
+    return mapAnimalRow(row);
   }
 
   async placeItem(input: PlaceItemInput): Promise<RoomPlacement> {
