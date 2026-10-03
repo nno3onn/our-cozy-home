@@ -12,7 +12,15 @@ const vercel = JSON.parse(readFileSync(join(process.cwd(), 'vercel.json'), 'utf8
 if (vercel.buildCommand !== 'npm run build:web') throw new Error('vercel build command must export the Expo web app');
 if (vercel.outputDirectory !== 'dist') throw new Error('vercel output directory must be dist');
 if (vercel.rewrites?.[0]?.destination !== '/index.html') throw new Error('vercel SPA rewrite is missing');
-for (const value of ['og:title', 'og:description', 'og:image', 'twitter:card', 'og-image.png']) {
+for (const value of [
+  'og:title',
+  'og:description',
+  'og:image',
+  'twitter:card',
+  'og-image.png',
+  '<link rel="canonical" href="https://our-cozy-home-eight.vercel.app"',
+  '<meta property="og:url" content="https://our-cozy-home-eight.vercel.app"',
+]) {
   if (!indexHtml.includes(value)) throw new Error(`web export is missing ${value}`);
 }
 const forbidden = ['SUPABASE_SERVICE_ROLE_KEY', 'NOTIFICATION_WORKER_SECRET', 'ACCOUNT_DELETION_WORKER_SECRET'];
