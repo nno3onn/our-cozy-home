@@ -106,7 +106,10 @@ export function HomeScreen({
   }
 
   const handleAction = (action: AnimalAction) => {
-    if (selectedAnimal) actionMutation.mutate({ animalId: selectedAnimal.id, action });
+    if (selectedAnimal) {
+      actionMutation.reset();
+      actionMutation.mutate({ animalId: selectedAnimal.id, action });
+    }
   };
 
   const handleAnimalPress = (animalId: string) => {
@@ -148,6 +151,7 @@ export function HomeScreen({
           <AnimalDetailSheet
             animal={selectedAnimal}
             disabled={!isActive || !isOnline || actionMutation.isPending}
+            errorMessage={actionMutation.isError ? '행동을 저장하지 못했어요. 다시 시도해 주세요.' : null}
             onAction={handleAction}
             onDismiss={closeOverlay}
             owner={selectedOwner}

@@ -4,11 +4,19 @@ import { fireEvent, render, userEvent, waitFor } from '@testing-library/react-na
 import { RepositoryProvider } from '@/repositories/RepositoryContext';
 import { DemoRepository } from '@/repositories/demo/DemoRepository';
 import { DomainError } from '@/domain/errors';
+import type { Animal, AnimalAction } from '@/domain/models';
 import type { HomeRepository } from '@/domain/repository';
 import { ConnectionProvider } from '@/network/ConnectionProvider';
 import type { ConnectionState } from '@/network/connectionState';
 
 import { HomeScreen } from '../HomeScreen';
+
+class FailingSnackRepository extends DemoRepository {
+  override async performAnimalAction(animalId: string, action: AnimalAction): Promise<Animal> {
+    if (action === 'eating') throw new DomainError('unknown', 'animal_action_failed');
+    return super.performAnimalAction(animalId, action);
+  }
+}
 
 async function renderHome(options: { onOpenMemory?: jest.Mock; onOpenInvite?: jest.Mock; repository?: HomeRepository; connectionState?: ConnectionState } = {}) {
   const repository = options.repository ?? new DemoRepository();
@@ -59,6 +67,19 @@ describe('HomeScreen', () => {
     });
     await user.press(view.getByRole('button', { name: '동물 상세 닫기' }));
     expect(view.queryByLabelText('토리 동물 상세')).not.toBeOnTheScreen();
+  });
+
+  it('keeps the detail open and explains when an animal action cannot be saved', async () => {
+    const { view } = await renderHome({ repository: new FailingSnackRepository() });
+    const user = userEvent.setup();
+    await view.findByLabelText('우리집 식구 4 / 4명');
+
+    await user.press(view.getByRole('button', { name: '토리 동물 선택' }));
+    await waitFor(() => expect(view.getByRole('button', { name: '간식 주기' })).toBeEnabled());
+    await user.press(view.getByRole('button', { name: '간식 주기' }));
+
+    expect(await view.findByText('행동을 저장하지 못했어요. 다시 시도해 주세요.')).toBeOnTheScreen();
+    expect(view.getByLabelText('토리 동물 상세')).toBeOnTheScreen();
   });
 
   it('opens the memory detail from its room furniture', async () => {

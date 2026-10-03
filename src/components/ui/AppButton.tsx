@@ -9,6 +9,7 @@ import { AppText } from './AppText';
 type AppButtonProps = Omit<PressableProps, 'children' | 'style'> & {
   label?: string;
   icon?: ReactNode;
+  selected?: boolean;
   tone?: 'primary' | 'secondary' | 'quiet' | 'danger';
 };
 
@@ -18,6 +19,7 @@ export function AppButton({
   icon,
   label,
   onPress,
+  selected = false,
   tone = 'primary',
   ...props
 }: AppButtonProps) {
@@ -32,7 +34,7 @@ export function AppButton({
       {...props}
       accessibilityLabel={accessibleName}
       accessibilityRole="button"
-      accessibilityState={{ disabled: Boolean(disabled) }}
+      accessibilityState={{ disabled: Boolean(disabled), selected }}
       disabled={disabled}
       onPress={onPress}
       style={({ pressed }) => [

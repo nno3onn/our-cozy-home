@@ -15,9 +15,27 @@ describe('AnimalDetailSheet', () => {
     expect(view.getByText('말랑이')).toBeOnTheScreen();
     expect(view.getByText('다은이의 동물')).toBeOnTheScreen();
     expect(view.getByText('놀고 있어요')).toBeOnTheScreen();
+    expect(view.getByRole('button', { name: '놀아주기' }).props.accessibilityState).toEqual({ disabled: false, selected: true });
+    expect(view.getByRole('button', { name: '간식 주기' }).props.accessibilityState).toEqual({ disabled: false, selected: false });
     fireEvent.press(view.getByRole('button', { name: '놀아주기' }));
 
     expect(onAction).toHaveBeenCalledWith('playing');
+  });
+
+  it('announces a server action failure without hiding the animal detail', async () => {
+    const view = await render(
+      <AnimalDetailSheet
+        animal={animal}
+        disabled={false}
+        errorMessage="행동을 저장하지 못했어요. 다시 시도해 주세요."
+        onAction={jest.fn()}
+        onDismiss={jest.fn()}
+        owner={owner}
+      />,
+    );
+
+    expect(view.getByText('말랑이')).toBeOnTheScreen();
+    expect(view.getByText('행동을 저장하지 못했어요. 다시 시도해 주세요.')).toBeOnTheScreen();
   });
 
   it('keeps action controls disabled when a server-confirmed action is unavailable', async () => {
