@@ -1,6 +1,6 @@
 # 우리집 구현·검증 현황
 
-최종 수정일: 2026-10-01
+최종 수정일: 2026-10-03
 
 기능을 완료할 때 코드 경로, 검증 명령과 결과를 함께 갱신한다. 자동화 검증,
 로컬 Supabase 검증, 실제 계정·실기기 검증은 서로 대체하지 않는다.
@@ -14,6 +14,23 @@
   [`superpowers/specs/2026-09-19-woorijip-design.md`](superpowers/specs/2026-09-19-woorijip-design.md)
 
 문서가 충돌하면 구현을 멈추고 제품 명세와 기술 문서를 함께 고친다.
+
+## 2026-10-03 동물 행동 RPC·실제 계정 검증
+
+- 완료: `perform_animal_action` RPC가 활성 집과 구성원 권한을 확인한 뒤 동물 상태를
+  저장한다. 다른 집 사용자와 탈퇴자는 같은 RPC로 동물 상태를 변경할 수 없다.
+- 완료: 간식·놀이·휴식 버튼은 현재 저장 상태인 행동만 선택 색상으로 표시하고,
+  저장 실패 시 동물 상세를 닫지 않은 채 재시도 안내를 노출한다.
+- 완료: Database release gate run `37108585366`에서 전체 migration reset과 pgTAP matrix가
+  통과했고, remote migration run `37108808179`에서 원격 적용과 dry-run 최신 상태 확인이
+  모두 성공했다.
+- 완료: Chrome의 기존 실제 Supabase 로그인 세션에서 동물 상세 열기(`reacting`)와
+  `간식 주기`(`eating`) 저장을 실행했다. 상태 문구와 선택 버튼이 갱신됐으며, 브라우저
+  새로고침 후에도 `간식이 먹고 싶어해요!` 상태가 유지되는 것을 확인했다.
+- 완료: 공개 데모 주소 `https://our-cozy-home-eight.vercel.app`에서 동일한 간식 행동과
+  선택 색상 전환을 확인했다. 이 공개 배포는 명시적 Demo Mode이므로 실제 DB 검증은
+  위 로컬 실제 계정 결과와 구분한다.
+- 미검증: iOS·Android Development Build에서의 동물 행동과 두 계정 간 Realtime 갱신.
 
 ## 2026-09-30 릴리스 게이트 정합화
 

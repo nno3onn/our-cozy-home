@@ -72,7 +72,7 @@ rewrite 계약을 확인한다.
 
 Vercel 프로젝트의 Build Command는 `npm run build:web`, Output Directory는 `dist`로
 설정한다. Supabase Dashboard의 **Auth → URL Configuration**에는 production 도메인과
-preview 도메인(예: `https://our-cozy-home.vercel.app`, `https://*.vercel.app`)을 Redirect
+preview 도메인(예: `https://our-cozy-home-eight.vercel.app`, `https://*.vercel.app`)을 Redirect
 URLs로 추가한다. 앱에는 `EXPO_PUBLIC_SUPABASE_URL`과 publishable key만 설정하며,
 service-role·worker secret은 Vercel 환경 변수에도 넣지 않는다. production URL에서
 초대/추억 상세 주소를 직접 열고 새로고침하는 검증은 아직 수행하지 않았다.
@@ -254,8 +254,9 @@ curl --fail-with-body -X POST \
 ## 에셋 상태
 
 웹 공유 카드와 탭 아이콘은 `public/og-image.png`와 `assets/images/favicon.png`으로 관리한다.
-Open Graph·Twitter 메타데이터는 `app/+html.tsx`에서 생성하며, production canonical URL을 바꿀 때는
-같은 파일의 `siteUrl`도 함께 갱신한다.
+Open Graph·Twitter·canonical 메타데이터는 `scripts/inject-web-metadata.mjs`가 웹 export에
+주입한다. 프로덕션 주소는 `https://our-cozy-home-eight.vercel.app`이며, 주소를 바꿀 때는
+주입 스크립트와 `scripts/verify-web-export.mjs`의 검증값을 함께 갱신한다.
 
 상점 40종과 추억 가구 15종의 카탈로그·크기·기준점·슬롯·상호작용 데이터와 DB seed는
 있다. 실제 Supabase에 migration·seed를 적용하기 전에는 실제 계정 상점이 동작하지 않는다.
