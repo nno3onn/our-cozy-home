@@ -86,6 +86,54 @@ const assets: Record<string, IllustratedAsset> = {
     status: 'final',
     source: require('../../../../assets/illustrated/furniture/curtain-cloud-valance.png'),
   },
+  'illustrated:furniture:curtain-leaf-panels': {
+    key: 'illustrated:furniture:curtain-leaf-panels',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/curtain-leaf-panels.png'),
+  },
+  'illustrated:furniture:table-cloud-low': {
+    key: 'illustrated:furniture:table-cloud-low',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/table-cloud-low.png'),
+  },
+  'illustrated:furniture:cushion-star': {
+    key: 'illustrated:furniture:cushion-star',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/cushion-star.png'),
+  },
+  'illustrated:furniture:rug-daisy': {
+    key: 'illustrated:furniture:rug-daisy',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/rug-daisy.png'),
+  },
+  'illustrated:furniture:bed-cloud-nest': {
+    key: 'illustrated:furniture:bed-cloud-nest',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/bed-cloud-nest.png'),
+  },
+  'illustrated:furniture:lighting-cloud-pendant': {
+    key: 'illustrated:furniture:lighting-cloud-pendant',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/lighting-cloud-pendant.png'),
+  },
+  'illustrated:furniture:plant-cactus-trio': {
+    key: 'illustrated:furniture:plant-cactus-trio',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/plant-cactus-trio.png'),
+  },
+  'illustrated:furniture:snack-acorn-cookie': {
+    key: 'illustrated:furniture:snack-acorn-cookie',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/snack-acorn-cookie.png'),
+  },
   'illustrated:furniture:table-tulip-pedestal': {
     key: 'illustrated:furniture:table-tulip-pedestal',
     kind: 'furniture',
@@ -139,6 +187,18 @@ const assets: Record<string, IllustratedAsset> = {
     kind: 'furniture',
     status: 'final',
     source: require('../../../../assets/illustrated/furniture/memory-picnic-table.png'),
+  },
+  'illustrated:memory:night-radio': {
+    key: 'illustrated:memory:night-radio',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/memory-night-radio.png'),
+  },
+  'illustrated:memory:leaf-frame': {
+    key: 'illustrated:memory:leaf-frame',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/memory-leaf-frame.png'),
   },
   'illustrated:memory:birthday-table': {
     key: 'illustrated:memory:birthday-table',

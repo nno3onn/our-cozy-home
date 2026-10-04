@@ -141,6 +141,14 @@ const finishedShopAssetKeys: Record<string, string> = {
   'rug-wavy': 'illustrated:furniture:rug-wavy',
   'curtain-ribbon-pair': 'illustrated:furniture:curtain-sunlight-ribbon',
   'curtain-cloud-valance': 'illustrated:furniture:curtain-cloud-valance',
+  'curtain-leaf-panels': 'illustrated:furniture:curtain-leaf-panels',
+  'table-cloud-low': 'illustrated:furniture:table-cloud-low',
+  'cushion-star': 'illustrated:furniture:cushion-star',
+  'rug-daisy': 'illustrated:furniture:rug-daisy',
+  'bed-cloud-nest': 'illustrated:furniture:bed-cloud-nest',
+  'lighting-cloud-pendant': 'illustrated:furniture:lighting-cloud-pendant',
+  'plant-cactus-trio': 'illustrated:furniture:plant-cactus-trio',
+  'snack-acorn-cookie': 'illustrated:furniture:snack-acorn-cookie',
   'snack-carrot-stars': 'illustrated:furniture:snack-carrot-stars',
 };
 
@@ -194,6 +202,8 @@ const finishedMemoryAssetKeys: Record<string, string> = {
   'memory-dining-table-picnic-table': 'illustrated:memory:picnic-table',
   'memory-radio-picnic-radio': 'illustrated:memory:picnic-radio',
   'memory-frame-ribbon-frame': 'illustrated:memory:ribbon-frame',
+  'memory-radio-night-radio': 'illustrated:memory:night-radio',
+  'memory-frame-leaf-frame': 'illustrated:memory:leaf-frame',
 };
 
 function createMemoryItems(): ItemDefinition[] {
