@@ -26,6 +26,7 @@ const requiredFragments = [
   'supabase link --project-ref cbyikdryogktctskvzzk --password "$SUPABASE_DB_PASSWORD"',
   'supabase db push',
   'supabase db push --dry-run',
+  'supabase test db --linked supabase/tests/017_catalog_publish_test.sql',
 ];
 
 for (const fragment of requiredFragments) {
