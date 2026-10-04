@@ -3,6 +3,19 @@ import { ITEM_BY_ID } from '@/catalog/items';
 import { getIllustratedAsset } from '../assetManifest';
 
 describe('illustrated asset manifest', () => {
+  const secondFurnitureSet = [
+    ['curtain-cloud-valance', 'illustrated:furniture:curtain-cloud-valance'],
+    ['table-tulip-pedestal', 'illustrated:furniture:table-tulip-pedestal'],
+    ['cushion-knot', 'illustrated:furniture:cushion-mint-knot'],
+    ['rug-wavy', 'illustrated:furniture:rug-wavy'],
+    ['bed-log-bed', 'illustrated:furniture:bed-log'],
+    ['lighting-mushroom-lamp', 'illustrated:furniture:lighting-mushroom'],
+    ['plant-hanging-ivy', 'illustrated:furniture:plant-hanging-ivy'],
+    ['snack-carrot-stars', 'illustrated:furniture:snack-carrot-stars'],
+    ['memory-frame-ribbon-frame', 'illustrated:memory:ribbon-frame'],
+    ['memory-dining-table-picnic-table', 'illustrated:memory:picnic-table'],
+  ] as const;
+
   it('resolves the pilot room, animals, and furniture assets', () => {
     expect(getIllustratedAsset('illustrated:room:sunny')).toMatchObject({ status: 'final' });
     expect(getIllustratedAsset('illustrated:animal:rabbit')).toMatchObject({ status: 'final' });
@@ -23,6 +36,18 @@ describe('illustrated asset manifest', () => {
     for (const item of ITEM_BY_ID.values()) {
       expect(getIllustratedAsset(item.thumbnailKey) ?? getIllustratedAsset('illustrated:placeholder:item')).toBeDefined();
     }
+  });
+
+  it.each(secondFurnitureSet)('uses finished art for %s', (itemId, assetKey) => {
+    expect(ITEM_BY_ID.get(itemId)).toMatchObject({
+      assetStatus: 'final',
+      thumbnailKey: assetKey,
+      roomAssetKey: assetKey,
+    });
+    expect(getIllustratedAsset(assetKey)).toMatchObject({
+      kind: 'furniture',
+      status: 'final',
+    });
   });
 
   it('keeps the pilot cushion thumbnail and room asset on one shared art key', () => {

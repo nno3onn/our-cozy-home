@@ -123,24 +123,32 @@ const categoryPrices: Record<ShopCategory, number> = {
   snack: 80,
 };
 
-// The first illustrated set is intentionally small. Every remaining catalog
-// entry continues to resolve through the same keys and falls back to a
+// Finished art is rolled out incrementally. Every remaining catalog entry
+// continues to resolve through the same contract and falls back to a
 // placeholder until its production art is ready.
-const pilotAssetKeys: Record<string, string> = {
+const finishedShopAssetKeys: Record<string, string> = {
   'table-round-cookie': 'illustrated:furniture:table-cookie',
+  'table-tulip-pedestal': 'illustrated:furniture:table-tulip-pedestal',
   'cushion-shell': 'illustrated:furniture:cushion-shell',
+  'cushion-knot': 'illustrated:furniture:cushion-mint-knot',
   'plant-round-rubber-tree': 'illustrated:furniture:plant-rubber-tree',
+  'plant-hanging-ivy': 'illustrated:furniture:plant-hanging-ivy',
   'bed-moon-headboard': 'illustrated:furniture:bed-moon-sleep',
+  'bed-log-bed': 'illustrated:furniture:bed-log',
   'lighting-firefly-stand': 'illustrated:furniture:lighting-firefly-stand',
+  'lighting-mushroom-lamp': 'illustrated:furniture:lighting-mushroom',
   'rug-soft-oval': 'illustrated:furniture:rug-soft-oval',
+  'rug-wavy': 'illustrated:furniture:rug-wavy',
   'curtain-ribbon-pair': 'illustrated:furniture:curtain-sunlight-ribbon',
+  'curtain-cloud-valance': 'illustrated:furniture:curtain-cloud-valance',
+  'snack-carrot-stars': 'illustrated:furniture:snack-carrot-stars',
 };
 
 function createShopItems(): ItemDefinition[] {
   return SHOP_CATEGORIES.flatMap((category) =>
     commonSeeds[category].map((seed, index) => {
       const id = `${category}-${seed.silhouette}`;
-      const illustratedAssetKey = pilotAssetKeys[id];
+      const illustratedAssetKey = finishedShopAssetKeys[id];
       return {
         id,
         source: 'shop',
@@ -181,16 +189,18 @@ const memorySeeds: Record<MemoryCategory, ItemSeed[]> = {
   ],
 };
 
-const memoryPilotAssetKeys: Record<string, string> = {
+const finishedMemoryAssetKeys: Record<string, string> = {
   'memory-dining-table-birthday-table': 'illustrated:memory:birthday-table',
+  'memory-dining-table-picnic-table': 'illustrated:memory:picnic-table',
   'memory-radio-picnic-radio': 'illustrated:memory:picnic-radio',
+  'memory-frame-ribbon-frame': 'illustrated:memory:ribbon-frame',
 };
 
 function createMemoryItems(): ItemDefinition[] {
   return MEMORY_CATEGORIES.flatMap((category) =>
     memorySeeds[category].map((seed, index) => {
       const id = `memory-${category}-${seed.silhouette}`;
-      const illustratedAssetKey = memoryPilotAssetKeys[id];
+      const illustratedAssetKey = finishedMemoryAssetKeys[id];
       return {
         id,
         source: 'memory',
