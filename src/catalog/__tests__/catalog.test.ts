@@ -73,4 +73,18 @@ describe('ITEM_CATALOG', () => {
       renderCatalogSeed(ITEM_CATALOG),
     );
   });
+
+  it('publishes the complete catalog through migrations without requiring seed execution', () => {
+    const migration = readFileSync(
+      'supabase/migrations/20261003000200_publish_item_catalog.sql',
+      'utf8',
+    );
+    const itemSection = migration.split('insert into public.item_definitions')[1];
+
+    expect((migration.split('insert into public.item_definitions')[0].match(/\n  \('/g) ?? [])).toHaveLength(12);
+    expect((itemSection.match(/\n  \('/g) ?? [])).toHaveLength(55);
+    for (const item of ITEM_CATALOG) {
+      expect(migration).toContain(`'${item.id}'`);
+    }
+  });
 });

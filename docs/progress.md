@@ -139,7 +139,7 @@
 | 4.0 | RLS/RPC hardening | active membership helper, direct write revoke, RPC execute 제한과 전체 table 권한 매트릭스 작성 완료 | 정책 checklist·pgTAP 파일 추가 | local Supabase 부재로 다중 JWT RLS test 미실행 |
 | 4.1 | 비공개 추억 Storage 기반 | private bucket, 무작위 photo key, uploader/viewer/archive cutoff RLS와 lifecycle 경계 문서화 완료 | private bucket·deny-by-default·정책 문서 추가 | local Supabase 부재로 Storage API 테스트 미실행; signed URL 실제 발급·viewer grant 다계정 검증은 후속 photo flow에서 필요 |
 | 5.0 | wallet·출석 | 개인 wallet·ledger, KST 하루 100코인 RPC와 홈 UI 작성 완료 | RPC mapping·홈 출석 UI Jest, 첫 지급/동일 일자 재시도·원장 SQL 시나리오 작성 | local Supabase 부재로 KST·동시 출석 SQL test 미실행 |
-| 5.1 | 서버 카탈로그 | `item_definitions`·`room_slots`, 55종 결정적 seed, 실제 repository 상점 조회·8개 필터 화면 작성 완료 | seed drift·repository mapping·상점 UI Jest 통과 | local/remote migration·seed와 실제 Supabase 상점 조회 미검증 |
+| 5.1 | 서버 카탈로그 | `item_definitions`·`room_slots`, 55종 결정적 seed와 seed 없이도 동작하는 카탈로그 게시 migration, 실제 repository 상점 조회·8개 필터 화면 작성 완료 | migration snapshot에 12개 슬롯·55개 상품·완성 에셋 9개가 포함되는 Jest·pgTAP 게이트 추가 | 원격 migration 적용과 실제 Supabase 계정의 8개 카테고리 조회는 배포 후 검증 필요 |
 | 5.2 | 구매·인벤토리 | 구매 요청·개인 소유 schema, 멱등 구매/결과 RPC, 상점 구매·보관함 화면 작성 완료 | demo 재시도·repository mapping·코인 부족 UI Jest 통과, 구매 SQL 시나리오 추가 | local/remote 동시 구매·RLS·새 세션 inventory 미검증 |
 | 6.0 | 공동 방 배치 | placement schema·예상 버전 RPC·탈퇴 배치 회수·실제 snapshot 조회 작성 완료, 배치된 타인 가구의 제한적 RLS read와 타인 이동 UI 차단 보완 | repository RPC mapping·타인 가구 read-only UI Jest 통과, RLS SQL 시나리오 추가 | local/remote 동시 이동·슬롯 점유·탈퇴 경쟁·RLS SQL 실행 미검증 |
 | 6.1 | 실제 방 snapshot·오프라인 읽기 전용 | online repository 가드, 마지막 query snapshot 표시, 방·상점·꾸미기·입주 UI 명령 제한, foreground/reconnect refetch 작성 완료 | 연결 상태·가드·캐시 정리·오프라인 UI Jest 통과 | 브라우저 네트워크 토글, local Supabase 중단/복구, 네이티브 reachability 미검증 |
