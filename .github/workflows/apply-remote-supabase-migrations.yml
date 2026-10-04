@@ -35,3 +35,5 @@ jobs:
         run: supabase db push
       - name: Verify migration history is current
         run: supabase db push --dry-run
+      - name: Verify production furniture catalog
+        run: supabase test db --linked supabase/tests/017_catalog_publish_test.sql
