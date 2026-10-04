@@ -139,7 +139,7 @@
 | 4.0 | RLS/RPC hardening | active membership helper, direct write revoke, RPC execute 제한과 전체 table 권한 매트릭스 작성 완료 | 정책 checklist·pgTAP 파일 추가 | local Supabase 부재로 다중 JWT RLS test 미실행 |
 | 4.1 | 비공개 추억 Storage 기반 | private bucket, 무작위 photo key, uploader/viewer/archive cutoff RLS와 lifecycle 경계 문서화 완료 | private bucket·deny-by-default·정책 문서 추가 | local Supabase 부재로 Storage API 테스트 미실행; signed URL 실제 발급·viewer grant 다계정 검증은 후속 photo flow에서 필요 |
 | 5.0 | wallet·출석 | 개인 wallet·ledger, KST 하루 100코인 RPC와 홈 UI 작성 완료 | RPC mapping·홈 출석 UI Jest, 첫 지급/동일 일자 재시도·원장 SQL 시나리오 작성 | local Supabase 부재로 KST·동시 출석 SQL test 미실행 |
-| 5.1 | 서버 카탈로그 | `item_definitions`·`room_slots`, 55종 결정적 seed와 seed 없이도 동작하는 카탈로그 게시 migration, 실제 repository 상점 조회·8개 필터 화면 작성 완료 | migration snapshot에 12개 슬롯·55개 상품·완성 에셋 9개가 포함되는 Jest·pgTAP 게이트 추가 | 원격 migration 적용과 실제 Supabase 계정의 8개 카테고리 조회는 배포 후 검증 필요 |
+| 5.1 | 서버 카탈로그 | `item_definitions`·`room_slots`, 55종 결정적 seed와 seed 없이도 동작하는 카탈로그 게시 migration, 실제 repository 상점 조회·8개 필터 화면 작성 완료 | local CI의 migration-only reset과 production DB pgTAP에서 12개 슬롯·55개 상품·완성 에셋 9개 확인 | Chrome 연결 시간 초과로 실제 계정 상점 UI의 8개 카테고리 수동 클릭 검증은 미수행 |
 | 5.2 | 구매·인벤토리 | 구매 요청·개인 소유 schema, 멱등 구매/결과 RPC, 상점 구매·보관함 화면 작성 완료 | demo 재시도·repository mapping·코인 부족 UI Jest 통과, 구매 SQL 시나리오 추가 | local/remote 동시 구매·RLS·새 세션 inventory 미검증 |
 | 6.0 | 공동 방 배치 | placement schema·예상 버전 RPC·탈퇴 배치 회수·실제 snapshot 조회 작성 완료, 배치된 타인 가구의 제한적 RLS read와 타인 이동 UI 차단 보완 | repository RPC mapping·타인 가구 read-only UI Jest 통과, RLS SQL 시나리오 추가 | local/remote 동시 이동·슬롯 점유·탈퇴 경쟁·RLS SQL 실행 미검증 |
 | 6.1 | 실제 방 snapshot·오프라인 읽기 전용 | online repository 가드, 마지막 query snapshot 표시, 방·상점·꾸미기·입주 UI 명령 제한, foreground/reconnect refetch 작성 완료 | 연결 상태·가드·캐시 정리·오프라인 UI Jest 통과 | 브라우저 네트워크 토글, local Supabase 중단/복구, 네이티브 reachability 미검증 |
@@ -158,6 +158,7 @@
 
 | 날짜 | 대상 | 명령 또는 환경 | 결과 | 범위 제한 |
 | --- | --- | --- | --- | --- |
+| 2026-10-04 | production 가구 카탈로그 게시 | PR #105 Database release gate, remote migration run `37179135239`, production catalog verification run `37179456526` | migration-only reset·전체 pgTAP·원격 migration history·production DB 읽기 검증 통과. 슬롯 12, 활성 상품 55, 상점 40, 추억 15, 완성 에셋 9, 비활성 0 확인 | Chrome production 탭 연결이 두 번 시간 초과되어 실제 계정 화면 수동 클릭은 검증하지 못함. 이미지가 실제로 존재하는 가구는 9종이며 나머지는 placeholder임 |
 | 2026-09-30 | 모바일 뒤로가기 | `MobileBackButton` Jest, Node 22 전체 Jest·typecheck·lint·demo web export | 45 suite/139 test 통과. history back·직접 링크 fallback 자동화 검증, 타입·정적 검사·웹 export 통과 | in-app Browser가 localhost 접근을 확장으로 차단해 실제 브라우저 화면 검증은 미수행. iOS·Android 실기기 검증 아님 |
 | 2026-09-30 | 반응형 UI/UX | Node 22 `npm test -- --runInBand --no-watchman --forceExit`, `npm run typecheck`, `npm run lint`, `EXPO_PUBLIC_APP_MODE=demo npm run build:web`, `npm run verify:web:export` | 47 suite/154 test 통과. 390/768/1280 breakpoint 단위 테스트, 4마리 터치 영역, 상점/추억 그리드, 설정 중앙 열, typecheck·lint·정적 웹 export를 확인 | Jest는 기존 비동기 handle 경고 때문에 `--forceExit` 사용. 브라우저 확장 차단으로 이번 변경의 수동 viewport 확인은 미수행이며, iOS·Android 실기기 검증이 아님 |
 | 2026-09-30 | main DB release gate | GitHub Actions `Database release gate`: local Supabase 시작, `supabase db reset --local`, `supabase test db` | 성공. 현행 migration·결정적 seed·pgTAP matrix가 CI local PostgreSQL에서 통과 | 원격 `our-cozy-home` DB 적용, 실제 JWT 다계정·Storage API, iOS·Android 검증을 대체하지 않음 |
