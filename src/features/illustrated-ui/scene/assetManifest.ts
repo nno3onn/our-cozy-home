@@ -224,6 +224,60 @@ const assets: Record<string, IllustratedAsset> = {
     status: 'final',
     source: require('../../../../assets/illustrated/furniture/snack-fish-cloud.png'),
   },
+  'illustrated:furniture:curtain-cafe-check': {
+    key: 'illustrated:furniture:curtain-cafe-check',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/curtain-cafe-check.png'),
+  },
+  'illustrated:furniture:table-clover': {
+    key: 'illustrated:furniture:table-clover',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/table-clover.png'),
+  },
+  'illustrated:furniture:cushion-petal': {
+    key: 'illustrated:furniture:cushion-petal',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/cushion-petal.png'),
+  },
+  'illustrated:furniture:rug-forest-path': {
+    key: 'illustrated:furniture:rug-forest-path',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/rug-forest-path.png'),
+  },
+  'illustrated:furniture:bed-bookcase': {
+    key: 'illustrated:furniture:bed-bookcase',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/bed-bookcase.png'),
+  },
+  'illustrated:furniture:lighting-tulip': {
+    key: 'illustrated:furniture:lighting-tulip',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/lighting-tulip.png'),
+  },
+  'illustrated:furniture:plant-mini-palm': {
+    key: 'illustrated:furniture:plant-mini-palm',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/plant-mini-palm.png'),
+  },
+  'illustrated:furniture:snack-milk-jelly': {
+    key: 'illustrated:furniture:snack-milk-jelly',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/snack-milk-jelly.png'),
+  },
+  'illustrated:furniture:snack-leaf-biscuit': {
+    key: 'illustrated:furniture:snack-leaf-biscuit',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/snack-leaf-biscuit.png'),
+  },
   'illustrated:memory:ribbon-frame': {
     key: 'illustrated:memory:ribbon-frame',
     kind: 'furniture',
@@ -271,6 +325,12 @@ const assets: Record<string, IllustratedAsset> = {
     kind: 'furniture',
     status: 'final',
     source: require('../../../../assets/illustrated/furniture/memory-forest-radio.png'),
+  },
+  'illustrated:memory:brunch-table': {
+    key: 'illustrated:memory:brunch-table',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/memory-brunch-table.png'),
   },
   'illustrated:placeholder:item': {
     key: 'illustrated:placeholder:item',

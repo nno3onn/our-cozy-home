@@ -3,12 +3,12 @@ import { useState } from 'react';
 import * as ReactNative from 'react-native';
 import { useRouter } from 'expo-router';
 
-import { SHOP_CATEGORIES, type ShopCategory } from '@/catalog/items';
+import { SHOP_CATEGORIES } from '@/catalog/items';
 import { AppText } from '@/components/ui/AppText';
 import { AppButton } from '@/components/ui/AppButton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Panel } from '@/components/ui/Panel';
-import { CategoryChips } from '@/features/illustrated-ui/catalog/CategoryChips';
+import { CategoryChips, type ShopCategoryFilter } from '@/features/illustrated-ui/catalog/CategoryChips';
 import { ShopItemCard } from '@/features/illustrated-ui/catalog/ShopItemCard';
 import { OfflineReadOnlyBanner } from '@/components/OfflineReadOnlyBanner';
 import { ResponsiveGrid } from '@/components/layout/ResponsiveGrid';
@@ -27,7 +27,7 @@ export function ShopScreen() {
   const repository = useRepository();
   const isOnline = useConnectionStatus();
   const router = useRouter();
-  const [category, setCategory] = useState<ShopCategory>(SHOP_CATEGORIES[0]);
+  const [category, setCategory] = useState<ShopCategoryFilter>('all');
   const [message, setMessage] = useState<string | null>(null);
   const shopQuery = useQuery({ queryKey: ['catalog', 'shop'], queryFn: () => repository.listShopItems() });
   const purchase = useMutation({
@@ -52,7 +52,7 @@ export function ShopScreen() {
     return <ResponsivePage fallbackHref="/"><EmptyState title="상점을 열지 못했어요" description="네트워크를 확인한 뒤 다시 시도해 주세요." /></ResponsivePage>;
   }
 
-  const items = shopQuery.data.filter((item) => item.category === category);
+  const items = category === 'all' ? shopQuery.data : shopQuery.data.filter((item) => item.category === category);
   return (
     <ResponsivePage contentMaxWidth={1120} fallbackHref="/" scroll testID="shop-page">
       <ReactNative.View style={styles.content}>
@@ -65,7 +65,7 @@ export function ShopScreen() {
         </ReactNative.View>
         {!isOnline ? <OfflineReadOnlyBanner /> : null}
         <AppText tone="muted" variant="caption">가격과 상품 정보는 서버 카탈로그를 기준으로 표시돼요.</AppText>
-        <CategoryChips categories={SHOP_CATEGORIES} onSelect={setCategory} selected={category} />
+        <CategoryChips categories={['all', ...SHOP_CATEGORIES]} onSelect={setCategory} selected={category} />
         <ResponsiveGrid testID="shop-grid">
           {items.map((item) => (
             <ShopItemCard disabled={!isOnline || purchase.isPending} item={item} key={item.id} onPurchase={() => purchase.mutate({ itemDefinitionId: item.id, requestId: createPurchaseRequestId() })} />
