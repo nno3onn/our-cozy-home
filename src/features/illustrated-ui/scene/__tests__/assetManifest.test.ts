@@ -55,6 +55,15 @@ describe('illustrated asset manifest', () => {
     ['memory-dining-table-brunch-table', 'illustrated:memory:brunch-table'],
   ] as const;
 
+  const finalMemoryFurnitureSet = [
+    ['memory-dining-table-snow-table', 'illustrated:memory:snow-table'],
+    ['memory-radio-cassette-radio', 'illustrated:memory:cassette-radio'],
+    ['memory-radio-shell-radio', 'illustrated:memory:shell-radio'],
+    ['memory-frame-cloud-frame', 'illustrated:memory:cloud-frame'],
+    ['memory-frame-star-frame', 'illustrated:memory:star-frame'],
+    ['memory-frame-stamp-frame', 'illustrated:memory:stamp-frame'],
+  ] as const;
+
   it('resolves the pilot room, animals, and furniture assets', () => {
     expect(getIllustratedAsset('illustrated:room:sunny')).toMatchObject({ status: 'final' });
     expect(getIllustratedAsset('illustrated:animal:rabbit')).toMatchObject({ status: 'final' });
@@ -114,6 +123,18 @@ describe('illustrated asset manifest', () => {
   });
 
   it.each(fifthFurnitureSet)('uses the fifth finished art set for %s', (itemId, assetKey) => {
+    expect(ITEM_BY_ID.get(itemId)).toMatchObject({
+      assetStatus: 'final',
+      thumbnailKey: assetKey,
+      roomAssetKey: assetKey,
+    });
+    expect(getIllustratedAsset(assetKey)).toMatchObject({
+      kind: 'furniture',
+      status: 'final',
+    });
+  });
+
+  it.each(finalMemoryFurnitureSet)('uses final memory furniture art for %s', (itemId, assetKey) => {
     expect(ITEM_BY_ID.get(itemId)).toMatchObject({
       assetStatus: 'final',
       thumbnailKey: assetKey,

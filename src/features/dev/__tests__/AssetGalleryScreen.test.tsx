@@ -11,8 +11,9 @@ describe('AssetGalleryScreen', () => {
     const placeholderCount = ITEM_CATALOG.length - finalCount;
 
     expect(view.getByText('상점 40 · 추억 15')).toBeOnTheScreen();
-    expect(view.getAllByText('임시 에셋')).toHaveLength(placeholderCount);
+    expect(view.queryAllByText('임시 에셋')).toHaveLength(placeholderCount);
     expect(view.getAllByText('완성 일러스트')).toHaveLength(finalCount);
+    expect(view.getByText('55종 모두 상점·보관함·방에서 함께 사용하는 완성 일러스트예요.')).toBeOnTheScreen();
     expect(view.getByText('복숭아 조개 쿠션')).toBeOnTheScreen();
     expect(view.getByText('소풍 라디오')).toBeOnTheScreen();
   });
