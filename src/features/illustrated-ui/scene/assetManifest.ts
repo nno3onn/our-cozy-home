@@ -176,6 +176,54 @@ const assets: Record<string, IllustratedAsset> = {
     status: 'final',
     source: require('../../../../assets/illustrated/furniture/snack-carrot-stars.png'),
   },
+  'illustrated:furniture:curtain-star-drape': {
+    key: 'illustrated:furniture:curtain-star-drape',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/curtain-star-drape.png'),
+  },
+  'illustrated:furniture:table-shelf': {
+    key: 'illustrated:furniture:table-shelf',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/table-shelf.png'),
+  },
+  'illustrated:furniture:cushion-cloud': {
+    key: 'illustrated:furniture:cushion-cloud',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/cushion-cloud.png'),
+  },
+  'illustrated:furniture:rug-picnic-check': {
+    key: 'illustrated:furniture:rug-picnic-check',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/rug-picnic-check.png'),
+  },
+  'illustrated:furniture:bed-berry-canopy': {
+    key: 'illustrated:furniture:bed-berry-canopy',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/bed-berry-canopy.png'),
+  },
+  'illustrated:furniture:lighting-constellation': {
+    key: 'illustrated:furniture:lighting-constellation',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/lighting-constellation.png'),
+  },
+  'illustrated:furniture:plant-flower-pot': {
+    key: 'illustrated:furniture:plant-flower-pot',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/plant-flower-pot.png'),
+  },
+  'illustrated:furniture:snack-fish-cloud': {
+    key: 'illustrated:furniture:snack-fish-cloud',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/snack-fish-cloud.png'),
+  },
   'illustrated:memory:ribbon-frame': {
     key: 'illustrated:memory:ribbon-frame',
     kind: 'furniture',
@@ -211,6 +259,18 @@ const assets: Record<string, IllustratedAsset> = {
     kind: 'furniture',
     status: 'final',
     source: require('../../../../assets/illustrated/furniture/memory-picnic-radio.png'),
+  },
+  'illustrated:memory:starlight-table': {
+    key: 'illustrated:memory:starlight-table',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/memory-starlight-table.png'),
+  },
+  'illustrated:memory:forest-radio': {
+    key: 'illustrated:memory:forest-radio',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/memory-forest-radio.png'),
   },
   'illustrated:placeholder:item': {
     key: 'illustrated:placeholder:item',
