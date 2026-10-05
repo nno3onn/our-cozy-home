@@ -158,6 +158,7 @@
 
 | 날짜 | 대상 | 명령 또는 환경 | 결과 | 범위 제한 |
 | --- | --- | --- | --- | --- |
+| 2026-10-05 | 방 오브젝트 반응형·배경 연출 | Node 24 전체 Jest·typecheck·lint·demo export·SPA export 검사, 로컬 demo 웹 320×700·390×844·1280×800 | 49 suite/202 test와 정적·빌드 검사 통과. 동물·추억 가구가 방과 동일 비율로 축소되고, 배경에 이미 그려진 러그·창가 화분의 중복 스프라이트를 제거함. 세 viewport 모두 가로 overflow·브라우저 warning/error 없음 | 병합 전 리뷰에서 추억 가구 터치 영역과 위쪽 동물의 겹침을 추가로 발견해 왼쪽 선반 좌표로 이동 후 재검증. 로컬 웹 검증이며 운영 배포·iOS/Android 실기기 검증은 아님 |
 | 2026-10-05 | 방 장면 반응형 이미지 좌표 | Node 24 전체 Jest·typecheck·lint·demo export·SPA export 검사, 로컬 demo 웹 320×700·390×844·768×1024·1280×800 | 49 suite/200 test와 정적·빌드 검사 통과. 방 배경을 논리 장면 크기에 제한해 배경·동물·가구가 같은 비율로 축소됨을 확인. 네 viewport 모두 가로 overflow와 브라우저 warning/error 없음 | 기본 셸 Node 19에서는 Supabase WebSocket 관련 2개 test가 실패했지만 지원 Node 24에서 통과. 로컬 웹 수동 검증이며 운영 배포·iOS/Android 실기기 검증은 아님 |
 | 2026-10-05 | 네 번째 가구 에셋 세트 | Node 22 전체 Jest·typecheck·lint·Supabase foundation·demo export, 로컬 웹 390×844·1280×800 | 48 suite/199 test와 정적/빌드 검사 통과. 10종 알파 PNG, 완성 39/placeholder 16, 신규 이름 10개, 두 viewport 무가로 overflow·브라우저 오류 없음 확인 | 로컬 demo 웹 검증이며 원격 migration·운영 배포·iOS/Android·저사양 기기 메모리 검증은 아님 |
 | 2026-10-04 | production 가구 카탈로그 게시 | PR #105 Database release gate, remote migration run `37179135239`, production catalog verification run `37179456526` | migration-only reset·전체 pgTAP·원격 migration history·production DB 읽기 검증 통과. 슬롯 12, 활성 상품 55, 상점 40, 추억 15, 완성 에셋 9, 비활성 0 확인 | Chrome production 탭 연결이 두 번 시간 초과되어 실제 계정 화면 수동 클릭은 검증하지 못함. 이미지가 실제로 존재하는 가구는 9종이며 나머지는 placeholder임 |

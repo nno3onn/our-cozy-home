@@ -32,7 +32,7 @@ export function RoomScene({ animals, accentFurniture, isActive, members, memoryF
   const anchors = getAnimalAnchors(Math.min(Math.max(animals.length, 1), 4) as 1 | 2 | 3 | 4);
   const actors = sortRoomActors(animals.map((animal, index) => ({ animal, anchor: anchors[index], id: animal.id, footY: anchors[index].foot.y })));
   const scale = Math.min(viewport.width, viewport.height) / 1000;
-  const memory = toViewport({ x: 104, y: 390 }, viewport);
+  const memory = toViewport({ x: 20, y: 390 }, viewport);
 
   return (
     <ReactNative.View
@@ -41,17 +41,11 @@ export function RoomScene({ animals, accentFurniture, isActive, members, memoryF
       style={[styles.room, desktopSceneSize ? { aspectRatio: undefined, height: desktopSceneSize, width: desktopSceneSize } : undefined]}
     >
       <RoomBackdrop />
-      <ReactNative.View pointerEvents="none" style={[styles.rug, { left: 160 * scale, top: 635 * scale, width: 680 * scale, height: 250 * scale }]}>
-        <FurnitureSprite itemId="rug-soft-oval" />
-      </ReactNative.View>
       {accentFurniture ? <ReactNative.View style={[styles.furniture, { left: 365 * scale, top: 475 * scale, width: 280 * scale, height: 230 * scale }]}>
         {accentFurniture.itemId ? <FurnitureSprite itemId={accentFurniture.itemId} /> : <ReactNative.View style={[styles.placeholderTable, { backgroundColor: accentFurniture.color }]} />}
       </ReactNative.View> : null}
-      <ReactNative.View pointerEvents="none" style={[styles.plant, { left: 780 * scale, top: 335 * scale, width: 180 * scale, height: 270 * scale }]}>
-        <FurnitureSprite itemId="plant-round-rubber-tree" />
-      </ReactNative.View>
       {memoryFurniture ? (
-        <ReactNative.Pressable accessibilityLabel={`${memoryFurniture.name} 추억 열기`} accessibilityRole="button" onPress={() => onOpenMemory(memoryFurniture.memoryId)} style={[styles.memory, { left: memory.x, top: memory.y, width: Math.max(58, 175 * scale), height: Math.max(58, 148 * scale) }]}>
+        <ReactNative.Pressable accessibilityLabel={`${memoryFurniture.name} 추억 열기`} accessibilityRole="button" hitSlop={8} onPress={() => onOpenMemory(memoryFurniture.memoryId)} style={[styles.memory, { left: memory.x, top: memory.y, width: 175 * scale, height: 148 * scale }]} testID="memory-furniture">
           <FurnitureSprite itemId={memoryFurniture.itemId} />
         </ReactNative.Pressable>
       ) : null}
@@ -69,9 +63,7 @@ export function RoomScene({ animals, accentFurniture, isActive, members, memoryF
 
 const styles = ReactNative.StyleSheet.create({
   room: { width: '100%', maxWidth: 720, alignSelf: 'center', aspectRatio: 1, overflow: 'hidden', borderRadius: illustratedRadii.room, borderWidth: 2, borderColor: illustratedColors.line, backgroundColor: illustratedColors.wall },
-  rug: { position: 'absolute' },
   furniture: { position: 'absolute' },
   placeholderTable: { width: '74%', height: '56%', alignSelf: 'center', marginTop: '22%', borderRadius: 48, borderWidth: 2, borderColor: illustratedColors.cocoa },
-  plant: { position: 'absolute' },
   memory: { position: 'absolute', alignItems: 'center', justifyContent: 'center' },
 });

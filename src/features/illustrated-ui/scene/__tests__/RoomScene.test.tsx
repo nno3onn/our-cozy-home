@@ -42,7 +42,8 @@ describe('RoomScene', () => {
     expect(onOpenMemory).toHaveBeenCalledWith('memory-1');
     expect(view.getByLabelText('소풍 라디오')).toBeOnTheScreen();
     expect(view.getByLabelText('둥근 쿠키 탁자')).toBeOnTheScreen();
-    expect(view.getByLabelText('포근 타원 러그')).toBeOnTheScreen();
+    expect(view.queryByLabelText('포근 타원 러그')).toBeNull();
+    expect(view.queryByLabelText('동글 고무나무')).toBeNull();
   });
 
   it('uses a coloured name ribbon, not an online-state indicator', async () => {
@@ -63,5 +64,47 @@ describe('RoomScene', () => {
     expect(view.getByLabelText('네 동물이 함께 지내는 방').props.style).toEqual(
       expect.arrayContaining([expect.objectContaining({ height: 530, width: 530 })]),
     );
+  });
+
+  it('scales animal artwork with the room instead of keeping a fixed minimum visual size', async () => {
+    const view = await render(
+      <RoomScene animals={animals} isActive members={members} onOpenMemory={jest.fn()} onSelectAnimal={jest.fn()} selectedAnimalId={null} />,
+    );
+
+    fireEvent(view.getByLabelText('네 동물이 함께 지내는 방'), 'layout', {
+      nativeEvent: { layout: { height: 320, width: 320 } },
+    });
+
+    expect(ReactNative.StyleSheet.flatten(view.getByTestId('animal-sprite-a1').props.style)).toEqual(
+      expect.objectContaining({ height: 70.4, width: 70.4 }),
+    );
+  });
+
+  it('scales interactive memory furniture with the same room ratio', async () => {
+    const view = await render(
+      <RoomScene
+        accentFurniture={{ color: '#D9AD85', itemId: 'cushion-shell', name: '복숭아 조개 쿠션' }}
+        animals={animals}
+        isActive
+        members={members}
+        memoryFurniture={{ itemId: 'memory-radio-picnic-radio', memoryId: 'memory-1', name: '소풍 라디오' }}
+        onOpenMemory={jest.fn()}
+        onSelectAnimal={jest.fn()}
+        selectedAnimalId={null}
+      />,
+    );
+
+    fireEvent(view.getByLabelText('네 동물이 함께 지내는 방'), 'layout', {
+      nativeEvent: { layout: { height: 320, width: 320 } },
+    });
+
+    const memoryStyle = ReactNative.StyleSheet.flatten(view.getByTestId('memory-furniture').props.style);
+    expect(memoryStyle.height).toBeCloseTo(47.36);
+    expect(memoryStyle.left).toBeCloseTo(6.4);
+    expect(memoryStyle.top).toBeCloseTo(124.8);
+    expect(memoryStyle.width).toBeCloseTo(56);
+
+    const upperLeftAnimalStyle = ReactNative.StyleSheet.flatten(view.getByLabelText('다온이 동물 선택').props.style);
+    expect(memoryStyle.left + memoryStyle.width + 8).toBeLessThanOrEqual(upperLeftAnimalStyle.left);
   });
 });

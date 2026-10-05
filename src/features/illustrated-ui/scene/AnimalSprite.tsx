@@ -11,7 +11,7 @@ type Props = { animal: Animal; anchor: AnimalAnchor; member: Member; viewport: V
 export function AnimalSprite({ animal, anchor, member, viewport }: Props) {
   const foot = toViewport(anchor.foot, viewport);
   const scale = Math.min(viewport.width, viewport.height) / 1000;
-  const size = Math.max(82, 220 * scale);
+  const size = 220 * scale;
   const key = animal.species === 'rabbit'
     ? 'illustrated:animal:rabbit'
     : animal.species === 'cat'
@@ -24,7 +24,7 @@ export function AnimalSprite({ animal, anchor, member, viewport }: Props) {
   const asset = getIllustratedAsset(key);
 
   return (
-    <View pointerEvents="none" style={[styles.sprite, { left: foot.x - size / 2, top: foot.y - size * 0.94, width: size, height: size }]}>
+    <View pointerEvents="none" style={[styles.sprite, { left: foot.x - size / 2, top: foot.y - size * 0.94, width: size, height: size }]} testID={`animal-sprite-${animal.id}`}>
       {asset?.source ? <Image resizeMode="contain" source={asset.source} style={styles.image} /> : <View style={[styles.bearFallback, { backgroundColor: member.pointColor }]} />}
       <View style={[styles.ownerRibbon, { backgroundColor: member.pointColor }]} />
     </View>
