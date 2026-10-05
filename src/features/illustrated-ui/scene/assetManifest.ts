@@ -332,6 +332,42 @@ const assets: Record<string, IllustratedAsset> = {
     status: 'final',
     source: require('../../../../assets/illustrated/furniture/memory-brunch-table.png'),
   },
+  'illustrated:memory:snow-table': {
+    key: 'illustrated:memory:snow-table',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/memory-snow-table.png'),
+  },
+  'illustrated:memory:cassette-radio': {
+    key: 'illustrated:memory:cassette-radio',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/memory-cassette-radio.png'),
+  },
+  'illustrated:memory:shell-radio': {
+    key: 'illustrated:memory:shell-radio',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/memory-shell-radio.png'),
+  },
+  'illustrated:memory:cloud-frame': {
+    key: 'illustrated:memory:cloud-frame',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/memory-cloud-frame.png'),
+  },
+  'illustrated:memory:star-frame': {
+    key: 'illustrated:memory:star-frame',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/memory-star-frame.png'),
+  },
+  'illustrated:memory:stamp-frame': {
+    key: 'illustrated:memory:stamp-frame',
+    kind: 'furniture',
+    status: 'final',
+    source: require('../../../../assets/illustrated/furniture/memory-stamp-frame.png'),
+  },
   'illustrated:placeholder:item': {
     key: 'illustrated:placeholder:item',
     kind: 'placeholder',

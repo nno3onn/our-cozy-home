@@ -23,6 +23,7 @@ export function AssetGalleryScreen({ enabled }: { enabled: boolean }) {
 
   const shopCount = ITEM_CATALOG.filter((item) => item.source === 'shop').length;
   const memoryCount = ITEM_CATALOG.length - shopCount;
+  const placeholderCount = ITEM_CATALOG.filter((item) => item.assetStatus === 'placeholder').length;
 
   return (
     <ResponsivePage contentMaxWidth={1200} fallbackHref="/settings" scroll testID="asset-gallery-page">
@@ -30,7 +31,9 @@ export function AssetGalleryScreen({ enabled }: { enabled: boolean }) {
         <AppText variant="title">에셋 목록</AppText>
         <AppText tone="muted">상점 {shopCount} · 추억 {memoryCount}</AppText>
         <AppText tone="muted" variant="caption">
-          완성된 파일은 실제 일러스트로, 나머지는 교체 가능한 제작용 자리표시자로 표시해요.
+          {placeholderCount === 0
+            ? '55종 모두 상점·보관함·방에서 함께 사용하는 완성 일러스트예요.'
+            : `완성 일러스트와 교체가 필요한 임시 에셋 ${placeholderCount}종을 구분해 표시해요.`}
         </AppText>
         <ResponsiveGrid maxColumns={4} minItemWidth={180} testID="asset-gallery-grid">
           {ITEM_CATALOG.map((item) => (

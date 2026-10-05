@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 
 import { ITEM_CATALOG } from '../items';
 import { validateCatalog } from '../catalogValidation';
@@ -36,6 +36,11 @@ describe('ITEM_CATALOG', () => {
     for (const category of memoryCategories) {
       expect(memoryItems.filter((item) => item.category === category)).toHaveLength(5);
     }
+  });
+
+  it('ships every catalog item with a finished illustrated asset', () => {
+    expect(ITEM_CATALOG.filter((item) => item.assetStatus === 'final')).toHaveLength(55);
+    expect(ITEM_CATALOG.filter((item) => item.assetStatus === 'placeholder')).toHaveLength(0);
   });
 
   it('provides complete rendering and interaction metadata for every item', () => {
@@ -182,6 +187,31 @@ describe('ITEM_CATALOG', () => {
       ['snack-milk-jelly', 'illustrated:furniture:snack-milk-jelly'],
       ['snack-leaf-biscuit', 'illustrated:furniture:snack-leaf-biscuit'],
       ['memory-dining-table-brunch-table', 'illustrated:memory:brunch-table'],
+    ];
+    const actualPairs = [...migration.matchAll(/\('([^']+)', '([^']+)'\)/g)].map((match) => [
+      match[1],
+      match[2],
+    ]);
+
+    expect(migration).toContain("asset_status = 'final'");
+    expect(actualPairs).toEqual(expectedPairs);
+  });
+
+  it('publishes the final memory furniture art through an additive migration', () => {
+    const migrationPath =
+      'supabase/migrations/20261005000300_publish_final_memory_furniture_art.sql';
+
+    expect(existsSync(migrationPath)).toBe(true);
+    if (!existsSync(migrationPath)) return;
+
+    const migration = readFileSync(migrationPath, 'utf8');
+    const expectedPairs = [
+      ['memory-dining-table-snow-table', 'illustrated:memory:snow-table'],
+      ['memory-radio-cassette-radio', 'illustrated:memory:cassette-radio'],
+      ['memory-radio-shell-radio', 'illustrated:memory:shell-radio'],
+      ['memory-frame-cloud-frame', 'illustrated:memory:cloud-frame'],
+      ['memory-frame-star-frame', 'illustrated:memory:star-frame'],
+      ['memory-frame-stamp-frame', 'illustrated:memory:stamp-frame'],
     ];
     const actualPairs = [...migration.matchAll(/\('([^']+)', '([^']+)'\)/g)].map((match) => [
       match[1],

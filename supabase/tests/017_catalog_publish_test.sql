@@ -28,14 +28,14 @@ select is(
 
 select is(
   (select count(*) from public.item_definitions where asset_status = 'final' and active),
-  49::bigint,
-  'the forty-nine completed furniture assets remain marked final'
+  55::bigint,
+  'all fifty-five completed furniture assets remain marked final'
 );
 
 select is(
   (select count(*) from public.item_definitions where asset_status = 'placeholder' and active),
-  6::bigint,
-  'only six memory furniture appearances remain placeholders'
+  0::bigint,
+  'the active catalog contains no placeholder furniture'
 );
 
 select is(

@@ -224,6 +224,12 @@ const finishedMemoryAssetKeys: Record<string, string> = {
   'memory-dining-table-starlight-table': 'illustrated:memory:starlight-table',
   'memory-radio-forest-radio': 'illustrated:memory:forest-radio',
   'memory-dining-table-brunch-table': 'illustrated:memory:brunch-table',
+  'memory-dining-table-snow-table': 'illustrated:memory:snow-table',
+  'memory-radio-cassette-radio': 'illustrated:memory:cassette-radio',
+  'memory-radio-shell-radio': 'illustrated:memory:shell-radio',
+  'memory-frame-cloud-frame': 'illustrated:memory:cloud-frame',
+  'memory-frame-star-frame': 'illustrated:memory:star-frame',
+  'memory-frame-stamp-frame': 'illustrated:memory:stamp-frame',
 };
 
 function createMemoryItems(): ItemDefinition[] {
