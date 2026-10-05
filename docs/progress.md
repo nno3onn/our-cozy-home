@@ -159,7 +159,7 @@
 | 날짜 | 대상 | 명령 또는 환경 | 결과 | 범위 제한 |
 | --- | --- | --- | --- | --- |
 | 2026-10-05 | 다섯 번째 가구 에셋 세트 | Node 24 전체 Jest·typecheck·lint·Supabase foundation·demo export, 로컬 웹 390×844·1280×800 | 49 suite/213 test와 정적·빌드 검사 통과. 10종 알파 PNG, 완성 49/placeholder 6, 상점 40종 전체 완성, 두 viewport 무가로 overflow·이미지 로드 성공 확인 | 로컬 개발 웹의 기존 `shadow*` deprecation warning 존재. 원격 migration·운영 배포·iOS/Android·저사양 기기 메모리 검증은 병합 후 수행 |
-| 2026-10-05 | 최종 추억 가구 에셋 세트 | Node 24 전체 Jest·typecheck·lint·Supabase foundation·demo export, 로컬 웹 390×844·1280×800 | 49 suite/221 test와 정적·빌드 검사 통과. 신규 6종 알파 PNG, 완성 55/placeholder 0, 두 viewport에서 55개 이미지 로드·신규 이름·무가로 overflow·브라우저 error 0 확인 | 로컬 개발 웹의 기존 `shadow*` deprecation warning 존재. 원격 migration·운영 배포·iOS/Android·저사양 기기 메모리 검증은 병합 후 수행 |
+| 2026-10-05 | 최종 추억 가구 에셋 세트 | Node 24 전체 Jest·typecheck·lint·Supabase foundation·demo export, 로컬·운영 웹 390×844·1280×800, 원격 migration·main DB gate | 49 suite/221 test와 정적·빌드·pgTAP 검사 통과. 신규 6종 알파 PNG, 완성 55/placeholder 0, 두 환경·두 viewport에서 55개 이미지 로드·신규 이름·무가로 overflow·브라우저 error 0 확인 | 로컬 개발 웹의 기존 `shadow*` deprecation warning 존재. iOS/Android·저사양 기기 메모리는 미검증 |
 | 2026-10-05 | 방 오브젝트 반응형·배경 연출 | Node 24 전체 Jest·typecheck·lint·demo export·SPA export 검사, 로컬 demo 웹 320×700·390×844·1280×800 | 49 suite/202 test와 정적·빌드 검사 통과. 동물·추억 가구가 방과 동일 비율로 축소되고, 배경에 이미 그려진 러그·창가 화분의 중복 스프라이트를 제거함. 세 viewport 모두 가로 overflow·브라우저 warning/error 없음 | 병합 전 리뷰에서 추억 가구 터치 영역과 위쪽 동물의 겹침을 추가로 발견해 왼쪽 선반 좌표로 이동 후 재검증. 로컬 웹 검증이며 운영 배포·iOS/Android 실기기 검증은 아님 |
 | 2026-10-05 | 방 장면 반응형 이미지 좌표 | Node 24 전체 Jest·typecheck·lint·demo export·SPA export 검사, 로컬 demo 웹 320×700·390×844·768×1024·1280×800 | 49 suite/200 test와 정적·빌드 검사 통과. 방 배경을 논리 장면 크기에 제한해 배경·동물·가구가 같은 비율로 축소됨을 확인. 네 viewport 모두 가로 overflow와 브라우저 warning/error 없음 | 기본 셸 Node 19에서는 Supabase WebSocket 관련 2개 test가 실패했지만 지원 Node 24에서 통과. 로컬 웹 수동 검증이며 운영 배포·iOS/Android 실기기 검증은 아님 |
 | 2026-10-05 | 네 번째 가구 에셋 세트 | Node 22 전체 Jest·typecheck·lint·Supabase foundation·demo export, 로컬 웹 390×844·1280×800 | 48 suite/199 test와 정적/빌드 검사 통과. 10종 알파 PNG, 완성 39/placeholder 16, 신규 이름 10개, 두 viewport 무가로 overflow·브라우저 오류 없음 확인 | 로컬 demo 웹 검증이며 원격 migration·운영 배포·iOS/Android·저사양 기기 메모리 검증은 아님 |
@@ -297,7 +297,10 @@ Build를 설치한 실제 기기에서 별도로 기록한다.
   전체 완성 안내가 노출됐다.
 - 전체 Jest 49 suite/221 test, typecheck, lint, Supabase foundation 검사, demo web export와 SPA
   export 검사가 통과했다. Jest는 기존 비종료 핸들 경고 때문에 `--forceExit`로 종료했다.
-  원격 migration·운영 배포·iOS/Android·저사양 기기 메모리 검증은 병합 이후 별도 확인한다.
+  PR #114의 preview와 pgTAP, main DB release run `37303017533`, 원격 migration run
+  `37303063145`가 통과했다. 운영 `/dev/assets`도 390×844와 1280×800에서 이미지 55개,
+  깨진 이미지·임시 에셋·가로 overflow·브라우저 error 0을 확인했다.
+- iOS/Android 실기기와 저사양 기기 메모리 사용량은 검증하지 않았다.
 
 ## 일러스트 UI 검증 (2026-09-29)
 
