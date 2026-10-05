@@ -158,6 +158,7 @@
 
 | 날짜 | 대상 | 명령 또는 환경 | 결과 | 범위 제한 |
 | --- | --- | --- | --- | --- |
+| 2026-10-05 | 다섯 번째 가구 에셋 세트 | Node 24 전체 Jest·typecheck·lint·Supabase foundation·demo export, 로컬 웹 390×844·1280×800 | 49 suite/213 test와 정적·빌드 검사 통과. 10종 알파 PNG, 완성 49/placeholder 6, 상점 40종 전체 완성, 두 viewport 무가로 overflow·이미지 로드 성공 확인 | 로컬 개발 웹의 기존 `shadow*` deprecation warning 존재. 원격 migration·운영 배포·iOS/Android·저사양 기기 메모리 검증은 병합 후 수행 |
 | 2026-10-05 | 방 오브젝트 반응형·배경 연출 | Node 24 전체 Jest·typecheck·lint·demo export·SPA export 검사, 로컬 demo 웹 320×700·390×844·1280×800 | 49 suite/202 test와 정적·빌드 검사 통과. 동물·추억 가구가 방과 동일 비율로 축소되고, 배경에 이미 그려진 러그·창가 화분의 중복 스프라이트를 제거함. 세 viewport 모두 가로 overflow·브라우저 warning/error 없음 | 병합 전 리뷰에서 추억 가구 터치 영역과 위쪽 동물의 겹침을 추가로 발견해 왼쪽 선반 좌표로 이동 후 재검증. 로컬 웹 검증이며 운영 배포·iOS/Android 실기기 검증은 아님 |
 | 2026-10-05 | 방 장면 반응형 이미지 좌표 | Node 24 전체 Jest·typecheck·lint·demo export·SPA export 검사, 로컬 demo 웹 320×700·390×844·768×1024·1280×800 | 49 suite/200 test와 정적·빌드 검사 통과. 방 배경을 논리 장면 크기에 제한해 배경·동물·가구가 같은 비율로 축소됨을 확인. 네 viewport 모두 가로 overflow와 브라우저 warning/error 없음 | 기본 셸 Node 19에서는 Supabase WebSocket 관련 2개 test가 실패했지만 지원 Node 24에서 통과. 로컬 웹 수동 검증이며 운영 배포·iOS/Android 실기기 검증은 아님 |
 | 2026-10-05 | 네 번째 가구 에셋 세트 | Node 22 전체 Jest·typecheck·lint·Supabase foundation·demo export, 로컬 웹 390×844·1280×800 | 48 suite/199 test와 정적/빌드 검사 통과. 10종 알파 PNG, 완성 39/placeholder 16, 신규 이름 10개, 두 viewport 무가로 overflow·브라우저 오류 없음 확인 | 로컬 demo 웹 검증이며 원격 migration·운영 배포·iOS/Android·저사양 기기 메모리 검증은 아님 |
@@ -223,11 +224,11 @@ Build를 설치한 실제 기기에서 별도로 기록한다.
 - 방: 햇살 창가 방을 중앙 러그가 비어 있는 미니어처 dollhouse 무대로 교체 완료
 - 동물: 토끼·고양이·곰·강아지 본체를 미니어처 봉제 인형 스타일로 제공, 본체 애니메이션은
   제작 전
-- 상점 아이템 40종: 카탈로그·렌더 메타데이터 완료. 별밤 커튼·책장 겸용 탁자·구름 쿠션·
-  체크 피크닉 러그·딸기 캐노피·별자리 무드등·꽃핀 화분·생선 구름칩까지 추가해 31종은
-  미니어처 제품 톤의 투명 PNG이며, 나머지 9종은 카테고리별 미니어처 형태 placeholder
-- 추억 가구 15종: 카탈로그·렌더 메타데이터 완료, 별밤 식탁·숲속 라디오까지 추가한 8종은
-  완성 일러스트, 나머지 7종은 카테고리별 미니어처 형태 placeholder; 방의 추억 가구는
+- 상점 아이템 40종: 카탈로그·렌더 메타데이터와 미니어처 제품 톤의 투명 PNG 교체 완료.
+  체크 카페 커튼·네잎 식탁·꽃잎 방석·숲길 러그·책장 침대·튤립 램프·작은 야자수·
+  딸기 우유젤리·민트 잎비스킷까지 상점·보관함·방이 같은 에셋 키를 사용
+- 추억 가구 15종: 카탈로그·렌더 메타데이터 완료, 브런치 식탁까지 추가한 9종은
+  완성 일러스트, 나머지 6종은 카테고리별 미니어처 형태 placeholder; 방의 추억 가구는
   `▣` 아이콘이 아니라
   실제 가구 정의를 렌더
 - 개발용 에셋 목록 화면: `/dev/assets` 구현, 데모 모드에서만 내용 표시; 형태화된 placeholder도 최종 PNG와 구분해 표시
@@ -266,6 +267,23 @@ Build를 설치한 실제 기기에서 별도로 기록한다.
 - 전체 Jest 48 suite/199 test, typecheck, lint, Supabase foundation 검사, demo web export와 SPA
   export 검사가 통과했다. 원격 migration·운영 배포 결과는 PR 병합 뒤 별도로 기록한다.
 
+## 다섯 번째 가구 에셋 세트 검증 (2026-10-05)
+
+- 체크 카페 커튼·네잎 식탁·꽃잎 방석·숲길 러그·책장 침대·튤립 램프·작은 야자수·
+  딸기 우유젤리·민트 잎비스킷·브런치 식탁을 상점/추억 카탈로그와 방 렌더러가 같은
+  에셋 키로 사용하도록 연결했다. 상점 40종은 모두 완성 PNG 상태다.
+- 카탈로그 상태는 완성 PNG 49종(상점 40종·추억 9종), placeholder 6종(모두 추억
+  가구)이다. 추가 전용 migration이 원격 카탈로그의 thumbnail/room key와 상태를 함께 갱신한다.
+- 10개 PNG가 모두 1254×1254 투명 채널을 가진 것을 확인했다. 데모 웹 `/dev/assets`를
+  390×844와 1280×800에서 확인해 이미지 49개가 모두 로드되고 완성 49개·임시 6개,
+  신규 이름 10개, 가로 overflow 없음도 확인했다. 상점은 `전체`를 기본 필터로 사용해
+  390×844와 1280×800 모두 40개 상품 이미지가 전부 로드되고 깨진 이미지와 가로 overflow가
+  없음을 확인했다. 모바일에서 간식 5개 필터와 전체 40개 복귀도 확인했다.
+- 로컬 개발 웹에는 기존 React Native Web `shadow*` deprecation warning이 남아 있다.
+  전체 Jest 49 suite/213 test, typecheck, lint, Supabase foundation 검사, demo web export와 SPA
+  export 검사는 통과했다. 원격 migration·운영 배포·iOS/Android·저사양 기기 메모리 검증은
+  병합 이후 별도 확인한다.
+
 ## 일러스트 UI 검증 (2026-09-29)
 
 - 데모 웹: 390×844와 1280×720 브라우저에서 홈 장면·네 동물 터치 영역·멤버 4자리·
@@ -288,8 +306,7 @@ Build를 설치한 실제 기기에서 별도로 기록한다.
    특히 탈퇴 시점의 추억 snapshot, 원본 삭제 전파, 재입주 grant 미복원을 확인한다.
 4. `send-push` 및 `delete-account` Edge Function을 원격에 배포하고, scheduler secret,
    Expo Push/APNs/FCM 설정 뒤 실기기에서 token·push·딥 링크를 확인한다.
-5. 남은 placeholder 16종(상점 9종·추억 가구 7종)을 제작 규칙에 맞는 최종 에셋으로
-   순차 교체하고,
+5. 남은 placeholder 추억 가구 6종을 제작 규칙에 맞는 최종 에셋으로 순차 교체하고,
    iOS·Android 접근성/모션 감소/작은 화면을 실제 기기에서 확인한다.
 
 자동 DB release matrix가 커버하는 핵심 규칙은 출석·구매 동시성, 활성 집 하나,
