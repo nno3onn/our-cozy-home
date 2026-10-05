@@ -139,4 +139,30 @@ describe('ITEM_CATALOG', () => {
     expect(migration).toContain("asset_status = 'final'");
     expect(actualPairs).toEqual(expectedPairs);
   });
+
+  it('publishes the fourth finished art set through an additive migration', () => {
+    const migration = readFileSync(
+      'supabase/migrations/20261005000100_publish_furniture_art_set_4.sql',
+      'utf8',
+    );
+    const expectedPairs = [
+      ['curtain-star-drape', 'illustrated:furniture:curtain-star-drape'],
+      ['table-shelf-table', 'illustrated:furniture:table-shelf'],
+      ['cushion-cloud', 'illustrated:furniture:cushion-cloud'],
+      ['rug-picnic-check', 'illustrated:furniture:rug-picnic-check'],
+      ['bed-berry-canopy', 'illustrated:furniture:bed-berry-canopy'],
+      ['lighting-constellation', 'illustrated:furniture:lighting-constellation'],
+      ['plant-flower-pot', 'illustrated:furniture:plant-flower-pot'],
+      ['snack-fish-cloud', 'illustrated:furniture:snack-fish-cloud'],
+      ['memory-dining-table-starlight-table', 'illustrated:memory:starlight-table'],
+      ['memory-radio-forest-radio', 'illustrated:memory:forest-radio'],
+    ];
+    const actualPairs = [...migration.matchAll(/\('([^']+)', '([^']+)'\)/g)].map((match) => [
+      match[1],
+      match[2],
+    ]);
+
+    expect(migration).toContain("asset_status = 'final'");
+    expect(actualPairs).toEqual(expectedPairs);
+  });
 });

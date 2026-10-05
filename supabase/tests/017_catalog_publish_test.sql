@@ -28,8 +28,8 @@ select is(
 
 select is(
   (select count(*) from public.item_definitions where asset_status = 'final' and active),
-  29::bigint,
-  'the twenty-nine completed furniture assets remain marked final'
+  39::bigint,
+  'the thirty-nine completed furniture assets remain marked final'
 );
 
 select is(
