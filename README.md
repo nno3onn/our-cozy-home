@@ -196,14 +196,18 @@ npm run supabase:edge:test
 ### 원격 집 흐름 E2E
 
 운영 Supabase에서 임시 A–E 계정을 만들고 온보딩, 집 생성, 하나의 초대로 세 명 순차
-입주, 다섯 번째 입주 차단, 집장 승계, 마지막 멤버 퇴장 archive를 검증한다. 성공 여부와
-관계없이 생성한 정확한 ID의 데이터와 Auth 계정을 정리하고, 이메일·비밀번호·초대 토큰·
-API key는 출력하지 않는다.
+입주, 다섯 번째 입주 차단, 마지막 자리 동시 수락, 집장 승계, 마지막 멤버 퇴장 archive를
+검증한다. 성공 여부와 관계없이 생성한 정확한 ID의 데이터와 Auth 계정을 정리하고,
+이메일·비밀번호·초대 토큰·API key는 출력하지 않는다. 기본 실행은 순차 정원 시나리오와
+동시 마지막 자리 시나리오를 모두 수행한다.
 
 ```bash
 npm run supabase:e2e:house:test
 npm run supabase:e2e:house
 ```
+
+한 시나리오만 재실행할 때는 `HOUSE_E2E_SCENARIO=sequential-capacity` 또는
+`HOUSE_E2E_SCENARIO=concurrent-last-seat`를 지정한다.
 
 기본적으로 로그인된 최신 Supabase CLI에서 API key를 메모리로만 읽는다. 프로젝트 로컬
 CLI가 `projects api-keys`를 지원하지 않으면 Homebrew·`/usr/local/bin`의 최신 CLI를

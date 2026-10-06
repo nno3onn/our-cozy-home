@@ -13,13 +13,17 @@
   됐고, E의 수락은 `house_full`로 차단됐다.
 - 완료: A 퇴장 시 가장 먼저 입주한 B에게 집장 권한이 이전됐다. B/C 퇴장까지 집은
   active였고 마지막 D 퇴장 직후 `archived_at`이 기록된 archived 상태를 확인했다.
-- 완료: 러너를 네 번 실행했으며 모두 `scenario-passed`와 `cleanup-finished`로 종료했다.
+- 완료: 순차 정원 시나리오를 다섯 번 실행했으며 모두 `scenario-passed`와
+  `cleanup-finished`로 종료했다.
   매 실행 후 notification·초대 이력·membership·house·Auth 사용자를 정확한 생성 ID로
   정리하고 house/Auth ID가 남지 않았는지 재조회했다.
-- 완료: Node contract test 6개가 API key 선택, 고정 단계 로그, `house_full` 판정, Auth
-  삭제 판정과 FK 안전 정리 순서를 검증한다.
-- 미검증: 마지막 한 자리에 대한 실제 동시 수락, 앱 화면의 4/4 갱신과 Realtime,
-  iOS·Android 실제 기기.
+- 완료: 별도 3인 집의 마지막 자리에 D/E의 수락 RPC를 동시에 시작했다. production DB는
+  정확히 한 요청만 `joined`, 다른 요청은 `house_full`로 처리했고 active membership은
+  4개, D/E 중 active member는 한 명이었다. 이 시나리오를 두 번 통과했으며 종료 후
+  Auth와 집 데이터도 모두 정리됐다.
+- 완료: Node contract test 7개가 API key 선택, 고정 단계 로그, `house_full` 판정, 동시
+  응답 분류, Auth 삭제 판정과 FK 안전 정리 순서를 검증한다.
+- 미검증: 앱 화면의 4/4 갱신과 Realtime, iOS·Android 실제 기기.
 
 ## 기준 문서
 
@@ -331,13 +335,11 @@ Build를 설치한 실제 기기에서 별도로 기록한다.
 
 ## 다음 작업
 
-1. 임시 계정으로 마지막 한 자리의 동시 초대 수락을 실행해 한 명만 입주하고 다른 한 명은
-   `house_full`인지 검증한다.
-2. 임시 계정 세트로 출석/구매/배치/탈퇴/추억/버릇 RLS와 멱등성 E2E matrix를 수행한다.
+1. 임시 계정 세트로 출석/구매/배치/탈퇴/추억/버릇 RLS와 멱등성 E2E matrix를 수행한다.
    특히 탈퇴 시점의 추억 snapshot, 원본 삭제 전파, 재입주 grant 미복원을 확인한다.
-3. 배포된 `send-push` worker의 scheduler와 Expo Push/APNs/FCM 설정 뒤 실기기에서
+2. 배포된 `send-push` worker의 scheduler와 Expo Push/APNs/FCM 설정 뒤 실기기에서
    token·push·딥 링크를 확인한다.
-4. 완성 에셋 55종의 iOS·Android 접근성/모션 감소/작은 화면과 저사양 기기 메모리 사용량을
+3. 완성 에셋 55종의 iOS·Android 접근성/모션 감소/작은 화면과 저사양 기기 메모리 사용량을
    실제 기기에서 확인한다.
 
 자동 DB release matrix가 커버하는 핵심 규칙은 출석·구매 동시성, 활성 집 하나,

@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import {
   buildCleanupPlan,
+  classifyConcurrentAcceptances,
   isExpectedHouseFullError,
   isMissingAuthUserError,
   resolveApiKeys,
@@ -77,4 +78,22 @@ test('deletes exact test rows in foreign-key-safe order', () => {
     { table: 'houses', column: 'id', values: ['house-id'] },
     { authUsers: ['user-a', 'user-b'] },
   ]);
+});
+
+test('accepts exactly one concurrent contender and rejects the other as full', () => {
+  assert.deepEqual(classifyConcurrentAcceptances([
+    { data: [{ result: 'joined', house_id: 'house-id' }], error: null },
+    { data: null, error: { message: 'house_full' } },
+  ], 'house-id'), {
+    fullCount: 1,
+    joinedCount: 1,
+  });
+
+  assert.throws(
+    () => classifyConcurrentAcceptances([
+      { data: [{ result: 'joined', house_id: 'house-id' }], error: null },
+      { data: [{ result: 'joined', house_id: 'house-id' }], error: null },
+    ], 'house-id'),
+    /exactly one joined and one house_full/,
+  );
 });

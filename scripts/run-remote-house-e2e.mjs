@@ -51,6 +51,20 @@ export function isMissingAuthUserError(error) {
   return error?.status === 404 || error?.code === 'user_not_found';
 }
 
+export function classifyConcurrentAcceptances(responses, houseId) {
+  const joinedCount = responses.filter((response) => {
+    const row = Array.isArray(response.data) ? response.data[0] : response.data;
+    return !response.error && row?.result === 'joined' && row?.house_id === houseId;
+  }).length;
+  const fullCount = responses.filter((response) => (
+    response.error && isExpectedHouseFullError(response.error)
+  )).length;
+  if (joinedCount !== 1 || fullCount !== 1 || responses.length !== 2) {
+    throw new Error('concurrent capacity expected exactly one joined and one house_full');
+  }
+  return { fullCount, joinedCount };
+}
+
 export function buildCleanupPlan({ houseId, inviteIds = [], userIds = [] }) {
   const plan = [];
   if (houseId) {
@@ -184,8 +198,12 @@ export async function runRemoteHouseE2E({
   env = process.env,
   projectRef = env.SUPABASE_PROJECT_REF || DEFAULT_PROJECT_REF,
   keyRows,
+  scenario = 'sequential-capacity',
   write = console.log,
 } = {}) {
+  if (!['sequential-capacity', 'concurrent-last-seat'].includes(scenario)) {
+    throw new Error(`Unsupported house E2E scenario: ${scenario}`);
+  }
   const report = safeStepReporter(write);
   const rows = keyRows ?? (
     env.SUPABASE_PUBLISHABLE_KEY && env.SUPABASE_SECRET_KEY
@@ -202,6 +220,7 @@ export async function runRemoteHouseE2E({
   const clients = [];
 
   try {
+    report(`start-${scenario}`);
     report('create-users');
     for (let index = 0; index < 5; index += 1) {
       const email = `e2e-house-${randomUUID()}@example.com`;
@@ -251,6 +270,46 @@ export async function runRemoteHouseE2E({
       .eq('house_id', context.houseId);
     if (inviteLookupError) throw new Error(`invite lookup: ${inviteLookupError.message}`);
     context.inviteIds = (inviteRows ?? []).map((row) => row.id);
+
+    if (scenario === 'concurrent-last-seat') {
+      report('join-two-members');
+      for (let index = 1; index <= 2; index += 1) {
+        const response = await clients[index].rpc('accept_house_invite', {
+          p_request_key: randomUUID(),
+          p_token: invite.invite_token,
+        });
+        const joined = requireRpcData(response.data, response.error, `accept invite ${index + 1}`);
+        if (joined.result !== 'joined' || joined.house_id !== context.houseId) {
+          throw new Error(`accept invite ${index + 1}: unexpected result`);
+        }
+      }
+
+      report('race-last-seat');
+      const concurrentResponses = await Promise.all([3, 4].map((index) => (
+        clients[index].rpc('accept_house_invite', {
+          p_request_key: randomUUID(),
+          p_token: invite.invite_token,
+        })
+      )));
+      classifyConcurrentAcceptances(concurrentResponses, context.houseId);
+
+      const { data: activeMembers, error: membersError } = await admin
+        .from('house_memberships')
+        .select('profile_id')
+        .eq('house_id', context.houseId)
+        .eq('status', 'active');
+      if (membersError) throw new Error(`concurrent membership verification: ${membersError.message}`);
+      if (activeMembers?.length !== 4) throw new Error('concurrent active membership count is not four');
+      const contenderIds = new Set(context.userIds.slice(3, 5));
+      const activeContenders = (activeMembers ?? [])
+        .filter((membership) => contenderIds.has(membership.profile_id));
+      if (activeContenders.length !== 1) {
+        throw new Error('concurrent contenders did not produce exactly one active member');
+      }
+      report('verify-concurrent-capacity');
+      report('scenario-passed');
+      return;
+    }
 
     report('join-three-members');
     for (let index = 1; index <= 3; index += 1) {
@@ -315,7 +374,13 @@ export async function runRemoteHouseE2E({
 }
 
 async function main() {
-  await runRemoteHouseE2E();
+  const selectedScenario = process.env.HOUSE_E2E_SCENARIO;
+  if (selectedScenario) {
+    await runRemoteHouseE2E({ scenario: selectedScenario });
+    return;
+  }
+  await runRemoteHouseE2E({ scenario: 'sequential-capacity' });
+  await runRemoteHouseE2E({ scenario: 'concurrent-last-seat' });
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
