@@ -9,6 +9,13 @@
 - Vercel production URL과 Supabase Auth Redirect URLs 설정
 - A/B/C/D/E 테스트 계정과 iOS·Android Development Build 준비
 
+## 환경 준비 현황
+
+- 2026-10-06: production migration history와 생성 Database 타입 일치 확인
+- 2026-10-06: `send-push`, `delete-account`, `reconcile-account-deletion` 배포 및 `ACTIVE` 확인
+- 2026-10-06: 세 함수의 인증 없는 요청이 모두 HTTP 401로 거부되는지 확인
+- 미완료: worker scheduler, Expo APNs/FCM 자격 증명, A–E 전용 테스트 계정, 실제 기기
+
 ## 기록 매트릭스
 
 | ID | 환경 | 절차 | 기대 결과 | 결과 |
