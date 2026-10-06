@@ -49,7 +49,8 @@
     "jest-expo": "~57.0.5",
     "supabase": "^1.37.1",
     "test-renderer": "^1.2.0",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "ws": "^8.18.3"
   },
   "scripts": {
     "start": "expo start",
@@ -69,6 +70,8 @@
     "supabase:check": "node scripts/verify-supabase-foundation.mjs",
     "supabase:verify-remote-release": "node scripts/verify-remote-migration-release.mjs",
     "supabase:edge:test": "node --test scripts/__tests__/supabase-edge-release.test.mjs",
+    "supabase:e2e:house:test": "node --test scripts/__tests__/remote-house-e2e.test.mjs",
+    "supabase:e2e:house": "node scripts/run-remote-house-e2e.mjs",
     "supabase:functions:deploy": "node scripts/supabase-edge-release.mjs deploy",
     "supabase:worker": "node scripts/supabase-edge-release.mjs invoke",
     "catalog:seed": "node scripts/generate-catalog-seed.mjs",

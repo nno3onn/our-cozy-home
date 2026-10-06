@@ -5,9 +5,10 @@
 정식 실행 대상이며, iOS·Android도 같은 코드베이스에서 유지한다. 현재 저장소는
 **명시적 데모 모드의 실행 가능한 경험**과 Supabase 이메일 세션·프로필·집·초대·경제·
 방 배치·추억·버릇을 위한 클라이언트, PostgreSQL migration/RPC/RLS 코드를 포함한다.
-로컬 PostgreSQL release gate는 GitHub Actions에서 검증한다. 다만 원격 Supabase에
-전체 migration을 적용하고 실제 다계정·실기기에서 검증하는 일은 별도의 외부 환경
-작업으로 남아 있으므로, 전체 실서비스 연동 완료로 간주하면 안 된다.
+로컬 PostgreSQL release gate는 GitHub Actions에서 검증하며 원격 Supabase에는 현재
+migration과 Edge Function이 배포되어 있다. 임시 다계정으로 집 정원·승계 흐름까지
+검증했지만 경제·추억·버릇의 원격 E2E와 iOS·Android 실기기 검증은 남아 있으므로,
+전체 실서비스 연동 완료로 간주하면 안 된다.
 
 제품 규칙은 [`docs/product-spec.md`](docs/product-spec.md), 기술 책임은
 [`docs/architecture.md`](docs/architecture.md), 현재 구현 범위는
@@ -191,6 +192,24 @@ Edge Function은 별도의 **Edge Functions release** workflow에서 확인값
 ```bash
 npm run supabase:edge:test
 ```
+
+### 원격 집 흐름 E2E
+
+운영 Supabase에서 임시 A–E 계정을 만들고 온보딩, 집 생성, 하나의 초대로 세 명 순차
+입주, 다섯 번째 입주 차단, 집장 승계, 마지막 멤버 퇴장 archive를 검증한다. 성공 여부와
+관계없이 생성한 정확한 ID의 데이터와 Auth 계정을 정리하고, 이메일·비밀번호·초대 토큰·
+API key는 출력하지 않는다.
+
+```bash
+npm run supabase:e2e:house:test
+npm run supabase:e2e:house
+```
+
+기본적으로 로그인된 최신 Supabase CLI에서 API key를 메모리로만 읽는다. 프로젝트 로컬
+CLI가 `projects api-keys`를 지원하지 않으면 Homebrew·`/usr/local/bin`의 최신 CLI를
+순서대로 시도한다. 필요할 때만 `SUPABASE_CLI_BIN`으로 실행 파일을 명시할 수 있으며,
+CI에서는 `SUPABASE_PUBLISHABLE_KEY`와 `SUPABASE_SECRET_KEY`를 secret 환경 변수로
+주입할 수 있다. 상세 결과는 [`docs/e2e-runbook.md`](docs/e2e-runbook.md)에 기록한다.
 
 모든 schema 변경은 `supabase/migrations`에 새 파일로 추가하며 적용한 migration을
 수정하지 않는다. `npm run supabase:check`는 local Docker 없이 파일 구조와 명령 계약을
