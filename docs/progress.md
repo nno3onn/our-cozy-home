@@ -1,9 +1,25 @@
 # 우리집 구현·검증 현황
 
-최종 수정일: 2026-10-03
+최종 수정일: 2026-10-06
 
 기능을 완료할 때 코드 경로, 검증 명령과 결과를 함께 갱신한다. 자동화 검증,
 로컬 Supabase 검증, 실제 계정·실기기 검증은 서로 대체하지 않는다.
+
+## 2026-10-06 원격 A–E 집 흐름 검증
+
+- 완료: `scripts/run-remote-house-e2e.mjs`가 비밀값을 출력하지 않고 임시 Auth 사용자
+  5명을 생성·온보딩한 뒤 실제 production RPC를 호출한다.
+- 완료: 하나의 활성 초대로 B/C/D가 순서대로 입주해 active membership이 정확히 4개가
+  됐고, E의 수락은 `house_full`로 차단됐다.
+- 완료: A 퇴장 시 가장 먼저 입주한 B에게 집장 권한이 이전됐다. B/C 퇴장까지 집은
+  active였고 마지막 D 퇴장 직후 `archived_at`이 기록된 archived 상태를 확인했다.
+- 완료: 러너를 네 번 실행했으며 모두 `scenario-passed`와 `cleanup-finished`로 종료했다.
+  매 실행 후 notification·초대 이력·membership·house·Auth 사용자를 정확한 생성 ID로
+  정리하고 house/Auth ID가 남지 않았는지 재조회했다.
+- 완료: Node contract test 6개가 API key 선택, 고정 단계 로그, `house_full` 판정, Auth
+  삭제 판정과 FK 안전 정리 순서를 검증한다.
+- 미검증: 마지막 한 자리에 대한 실제 동시 수락, 앱 화면의 4/4 갱신과 Realtime,
+  iOS·Android 실제 기기.
 
 ## 기준 문서
 
@@ -315,9 +331,9 @@ Build를 설치한 실제 기기에서 별도로 기록한다.
 
 ## 다음 작업
 
-1. 전용 테스트 계정 A–E로 온보딩·집 생성·3명 초대·다섯 번째 차단·마지막 자리 동시
-   수락을 검증한다.
-2. 동일 계정 세트로 출석/구매/배치/탈퇴/추억/버릇 RLS와 멱등성 E2E matrix를 수행한다.
+1. 임시 계정으로 마지막 한 자리의 동시 초대 수락을 실행해 한 명만 입주하고 다른 한 명은
+   `house_full`인지 검증한다.
+2. 임시 계정 세트로 출석/구매/배치/탈퇴/추억/버릇 RLS와 멱등성 E2E matrix를 수행한다.
    특히 탈퇴 시점의 추억 snapshot, 원본 삭제 전파, 재입주 grant 미복원을 확인한다.
 3. 배포된 `send-push` worker의 scheduler와 Expo Push/APNs/FCM 설정 뒤 실기기에서
    token·push·딥 링크를 확인한다.
