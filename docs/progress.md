@@ -146,8 +146,8 @@
 | 7.0 | 추억 초안·공유 대상 snapshot | private draft·명시적 share RPC, `memory_viewers` snapshot RLS, 작성 화면·공유 대상 표시 작성 완료 | repository mapping·작성 UI Jest 통과 | local/remote SQL RLS·다계정 공유 검증 미실행 |
 | 7.1 | 기여 revision·탈퇴 보관함 | 기여 단일 행+revision, 사진 메타데이터, 직접 기여자 archive·cutoff 서버 조회와 원본 삭제 전파 작성 완료 | repository current/archive mapping·SQL pgTAP 시나리오 파일·Jest 통과 | Docker 부재로 pgTAP 미실행, 원격 migration·A/B 탈퇴 후 cutoff 미검증 |
 | 7.2 | 두 명 기여·추억 가구 | memory row lock, 출처 고유 memory item·완료 event, 현재 viewer 기반 방 노출 정책과 snapshot item 조회 작성 완료 | 22개 pgTAP 시나리오 파일·typecheck 통과 | Docker 부재로 pgTAP 미실행, 원격 migration·동시 두 번째 기여·다계정 방 노출 미검증 |
-| 9.1 | 알림 Outbox·Expo Push | event/delivery/token target, DB lease·권한 재검증·receipt/재시도와 `send-push` Edge Function 작성 완료 | payload·ticket 분류·backoff Jest 통과 | local DB/pgTAP, Edge deploy/scheduler, Expo 실제 기기 수신 미검증 |
-| 10.0 | 계정 삭제 | 삭제 요청 RPC, 집 탈퇴 재사용·개인 원문/토큰/비추억 인벤토리 정리, 비식별 tombstone, `delete-account` Edge Function·설정 확인 UI 작성 | repository·오프라인 guard Jest 통과, account deletion SQL 시나리오 추가 | Docker/local Supabase·Edge deploy·실제 Auth 삭제 미검증 |
+| 9.1 | 알림 Outbox·Expo Push | event/delivery/token target, DB lease·권한 재검증·receipt/재시도와 `send-push` Edge Function 작성·원격 배포 완료 | payload·ticket 분류·backoff Jest, 원격 `ACTIVE`, 비인증 HTTP 401 통과 | scheduler, Expo APNs/FCM·실제 기기 수신 미검증 |
+| 10.0 | 계정 삭제 | 삭제 요청 RPC, 집 탈퇴 재사용·개인 원문/토큰/비추억 인벤토리 정리, 비식별 tombstone, `delete-account`·reconcile Edge Function·설정 확인 UI 작성 및 원격 배포 | repository·오프라인 guard Jest, account deletion pgTAP, 원격 `ACTIVE`, 비인증 HTTP 401 통과 | 전용 계정의 실제 Auth 삭제·공동 기록 보존 E2E 미검증 |
 | 11.0 | 웹 배포·딥 링크 | Vercel SPA rewrite, Expo static export·artifact secret 검사, Auth redirect 설정 문서 작성 | demo 웹 export·artifact 검사 통과 | Vercel production 데모에서 `/`, `/invite/test-token`, `/memories/demo-memory` 200 확인. 실제 Supabase Auth redirect·로그인 흐름은 미검증 |
 | 11.1 | 반응형·접근성·모션 | 주요 route의 SafeArea/scroll·키보드 회피, 44pt 버튼 계약, 동물 대체 행동·reduced motion·offline/empty/error 접근성 상태를 감사 | Room layout·button·screen Jest 회귀와 typecheck/lint 통과 | 390/1280 실제 브라우저, iOS/Android 스크린리더·키보드·모션 감소 미검증 |
 | 11.2 | 반응형 UI/UX 정리 | 공통 1/2/3열 breakpoint, 목록 최소 폭, 넓은 화면 방/꾸미기 분할, 중앙 form/read 열과 공통 키보드 스크롤을 적용 | Node 22 `npm test -- --runInBand --no-watchman --forceExit` 47 suite/154 test, typecheck·lint·demo web export·SPA export 검사 통과 | 이 작업 환경의 브라우저 확장 차단 때문에 새 viewport 수동 확인 미수행; iOS/Android 검증 아님 |
@@ -158,6 +158,7 @@
 
 | 날짜 | 대상 | 명령 또는 환경 | 결과 | 범위 제한 |
 | --- | --- | --- | --- | --- |
+| 2026-10-06 | 원격 Edge Function release | Supabase CLI deploy/list, 비인증 production HTTP smoke, Node 24 edge release contract | `send-push`·`delete-account`·`reconcile-account-deletion` v1 `ACTIVE`, 세 endpoint HTTP 401, 4 contract test 통과. 원격 생성 타입은 저장소와 동일 | 실제 Expo push·계정 삭제는 실행하지 않음. scheduler·APNs/FCM·실기기 미검증 |
 | 2026-10-05 | 다섯 번째 가구 에셋 세트 | Node 24 전체 Jest·typecheck·lint·Supabase foundation·demo export, 로컬 웹 390×844·1280×800 | 49 suite/213 test와 정적·빌드 검사 통과. 10종 알파 PNG, 완성 49/placeholder 6, 상점 40종 전체 완성, 두 viewport 무가로 overflow·이미지 로드 성공 확인 | 로컬 개발 웹의 기존 `shadow*` deprecation warning 존재. 원격 migration·운영 배포·iOS/Android·저사양 기기 메모리 검증은 병합 후 수행 |
 | 2026-10-05 | 최종 추억 가구 에셋 세트 | Node 24 전체 Jest·typecheck·lint·Supabase foundation·demo export, 로컬·운영 웹 390×844·1280×800, 원격 migration·main DB gate | 49 suite/221 test와 정적·빌드·pgTAP 검사 통과. 신규 6종 알파 PNG, 완성 55/placeholder 0, 두 환경·두 viewport에서 55개 이미지 로드·신규 이름·무가로 overflow·브라우저 error 0 확인 | 로컬 개발 웹의 기존 `shadow*` deprecation warning 존재. iOS/Android·저사양 기기 메모리는 미검증 |
 | 2026-10-05 | 방 오브젝트 반응형·배경 연출 | Node 24 전체 Jest·typecheck·lint·demo export·SPA export 검사, 로컬 demo 웹 320×700·390×844·1280×800 | 49 suite/202 test와 정적·빌드 검사 통과. 동물·추억 가구가 방과 동일 비율로 축소되고, 배경에 이미 그려진 러그·창가 화분의 중복 스프라이트를 제거함. 세 viewport 모두 가로 overflow·브라우저 warning/error 없음 | 병합 전 리뷰에서 추억 가구 터치 영역과 위쪽 동물의 겹침을 추가로 발견해 왼쪽 선반 좌표로 이동 후 재검증. 로컬 웹 검증이며 운영 배포·iOS/Android 실기기 검증은 아님 |
@@ -314,17 +315,13 @@ Build를 설치한 실제 기기에서 별도로 기록한다.
 
 ## 다음 작업
 
-1. 프로젝트 소유자가 GitHub repository secret `SUPABASE_ACCESS_TOKEN`과
-   `SUPABASE_DB_PASSWORD`를 설정한 뒤, Actions의 **Apply remote Supabase migrations**를
-   `APPLY-MIGRATIONS` 확인값으로 수동 실행하고 migration history를 확인한다. 비밀번호·
-   service-role key는 저장소, 앱 `.env`, CI log에 남기지 않는다.
-2. 원격 schema 반영 후 `npm run supabase:types`로 생성 타입을 갱신하고, 테스트 계정
-   A–E로 온보딩·집 생성·3명 초대·다섯 번째 차단·마지막 자리 동시 수락을 검증한다.
-3. 동일 계정 세트로 출석/구매/배치/탈퇴/추억/버릇 RLS와 멱등성 E2E matrix를 수행한다.
+1. 전용 테스트 계정 A–E로 온보딩·집 생성·3명 초대·다섯 번째 차단·마지막 자리 동시
+   수락을 검증한다.
+2. 동일 계정 세트로 출석/구매/배치/탈퇴/추억/버릇 RLS와 멱등성 E2E matrix를 수행한다.
    특히 탈퇴 시점의 추억 snapshot, 원본 삭제 전파, 재입주 grant 미복원을 확인한다.
-4. `send-push` 및 `delete-account` Edge Function을 원격에 배포하고, scheduler secret,
-   Expo Push/APNs/FCM 설정 뒤 실기기에서 token·push·딥 링크를 확인한다.
-5. 완성 에셋 55종의 iOS·Android 접근성/모션 감소/작은 화면과 저사양 기기 메모리 사용량을
+3. 배포된 `send-push` worker의 scheduler와 Expo Push/APNs/FCM 설정 뒤 실기기에서
+   token·push·딥 링크를 확인한다.
+4. 완성 에셋 55종의 iOS·Android 접근성/모션 감소/작은 화면과 저사양 기기 메모리 사용량을
    실제 기기에서 확인한다.
 
 자동 DB release matrix가 커버하는 핵심 규칙은 출석·구매 동시성, 활성 집 하나,

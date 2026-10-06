@@ -183,6 +183,15 @@ history와 실제 다계정 E2E 결과를 별도로 기록한다. workflow 계�
 npm run supabase:verify-remote-release
 ```
 
+Edge Function은 별도의 **Edge Functions release** workflow에서 확인값
+`DEPLOY-FUNCTIONS`를 입력해 배포한다. 이 workflow는 PR에서 배포 명령·worker 요청 계약을
+먼저 검사하고, 수동 실행에서 `send-push`, `delete-account`,
+`reconcile-account-deletion` 세 함수를 고정 프로젝트에 순서대로 배포한다.
+
+```bash
+npm run supabase:edge:test
+```
+
 모든 schema 변경은 `supabase/migrations`에 새 파일로 추가하며 적용한 migration을
 수정하지 않는다. `npm run supabase:check`는 local Docker 없이 파일 구조와 명령 계약을
 검사한다.
@@ -195,10 +204,10 @@ Service에 배치 발송하고 ticket/receipt, 재시도 및 무효 token을 처
 앱에서 직접 호출하지 않는다. scheduler 요청을 받기 위해 JWT 검증은 끄되,
 `NOTIFICATION_WORKER_SECRET` 검증 없이는 worker를 실행하지 않는다.
 
-원격 migration 적용 뒤 프로젝트 관리자만 다음처럼 Edge Function secret을 설정하고
-배포한다. `NOTIFICATION_WORKER_SECRET`과 service-role key를 앱의 `.env`나 Git에
-넣지 않는다. Expo의 APNs/FCM 자격 증명은 Expo/EAS 프로젝트 설정에서 별도로
-완성해야 한다.
+원격 migration 적용 뒤 프로젝트 관리자만 Edge Function secret을 설정한다.
+`NOTIFICATION_WORKER_SECRET`과 service-role key를 앱의 `.env`나 Git에 넣지 않는다.
+함수 배포는 **Edge Functions release** workflow를 사용한다. Expo의 APNs/FCM 자격 증명은
+Expo/EAS 프로젝트 설정에서 별도로 완성해야 한다.
 
 ```bash
 npx supabase secrets set --project-ref cbyikdryogktctskvzzk \
@@ -261,6 +270,5 @@ Open Graph·Twitter·canonical 메타데이터는 `scripts/inject-web-metadata.m
 상점 40종과 추억 가구 15종의 카탈로그·크기·기준점·슬롯·상호작용 데이터는
 seed와 추가 전용 migration에 모두 들어 있다. 따라서 원격 배포는 seed를 별도로
 실행하지 않아도 12개 슬롯과 55개 상품 정의를 재현한다.
-현재 완성 파일로 연결된 가구는 쿠션·탁자·고무나무·달잠 침대·반딧불 스탠드·포근 타원 러그·햇살 리본 커튼·생일 식탁·소풍 라디오 9종이며,
-나머지 상품은 코드 placeholder다. 데모에서 설정 → `55종 임시 에셋 보기`로
-완성 일러스트와 제작 중 항목을 한 번에 확인할 수 있다.
+상점 40종과 추억 가구 15종은 모두 완성 PNG로 연결되어 있으며 placeholder는 0종이다.
+데모에서 설정 → `55종 에셋 보기`로 전체 일러스트와 렌더 메타데이터를 한 번에 확인할 수 있다.
