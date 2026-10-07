@@ -6,6 +6,7 @@ import { spacing } from '@/theme/tokens';
 import { useResponsiveLayout } from './ResponsivePage';
 
 type ResponsiveGridProps = PropsWithChildren<{
+  columnsByBreakpoint?: Partial<Record<'compact' | 'medium' | 'wide', 1 | 2 | 3 | 4>>;
   maxColumns?: 1 | 2 | 3 | 4;
   minItemWidth?: number;
   testID?: string;
@@ -18,9 +19,14 @@ function basisFor(columns: number) {
   return '23%';
 }
 
-export function ResponsiveGrid({ children, maxColumns = 3, minItemWidth = 156, testID }: ResponsiveGridProps) {
-  const { gridColumns } = useResponsiveLayout();
-  const columns = Math.min(gridColumns, maxColumns);
+export function ResponsiveGrid({ children, columnsByBreakpoint, maxColumns = 3, minItemWidth = 156, testID }: ResponsiveGridProps) {
+  const { breakpoint, gridColumns, pageGutter } = useResponsiveLayout();
+  const { width } = ReactNative.useWindowDimensions();
+  const requested = columnsByBreakpoint?.[breakpoint] ?? gridColumns;
+  const gap = spacing.md;
+  const availableWidth = width - pageGutter * 2;
+  const fittingColumns = Math.max(1, Math.floor((availableWidth + gap) / (minItemWidth + gap)));
+  const columns = Math.min(requested, maxColumns, fittingColumns) as 1 | 2 | 3 | 4;
 
   return (
     <ReactNative.View style={styles.grid} testID={testID ? `${testID}-${columns}` : undefined}>
