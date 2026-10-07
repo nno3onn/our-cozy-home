@@ -1,9 +1,22 @@
 # 우리집 결정 기록
 
-최종 수정일: 2026-09-30
+최종 수정일: 2026-10-07
 
 제품 명세가 정하지 않은 되돌리기 쉬운 기본값과 선택 이유를 기록한다. 제품 규칙을
 바꾸는 결정은 이 문서만 수정하지 않고 `product-spec.md`도 함께 갱신한다.
+
+## D-033 토스식 UI Foundation의 단계적 전환
+
+- 상태: 채택
+- 결정: 제품 UI는 neutral semantic token과 Pretendard Variable을 기본으로 사용한다.
+  주요 행동은 `#3182F6`, 페이지 배경은 `#F7F8FA`, 기본 본문은 `#191F28`로 통일한다.
+  방·동물·가구의 따뜻한 asset 색은 scene 영역에 유지한다. 기존 `cream`·`ink` 등의 token과
+  `heading`·`quiet` API는 개별 화면 전환이 끝날 때까지만 compatibility alias로 유지한다.
+- 이유: 모든 화면을 한 번에 재작성해 Demo Mode와 실제 서버 흐름을 깨뜨리지 않으면서도,
+  후속 화면이 같은 정보 계층과 접근성 계약으로 이동할 수 있게 하기 위해서다.
+- 비용: Foundation 병합 직후에는 새 primitive와 legacy 화면이 함께 존재한다. alias 제거는
+  전체 route 전환과 viewport 회귀 검증이 끝난 별도 Issue에서 수행한다. 첫 버전은 light theme로
+  고정하되 semantic 이름은 향후 theme 확장을 막지 않게 한다.
 
 ## D-001 저장소와 패키지 관리
 

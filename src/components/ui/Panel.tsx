@@ -3,7 +3,6 @@ import type { ViewProps } from 'react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { colors, radii, spacing } from '@/theme/tokens';
-import { illustratedElevation } from '@/theme/illustratedTokens';
 
 export function Panel({ children, style, ...props }: PropsWithChildren<ViewProps>) {
   return (
@@ -18,9 +17,6 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     padding: spacing.lg,
     borderRadius: radii.lg,
-    borderWidth: 1.5,
-    borderColor: colors.line,
-    backgroundColor: colors.paper,
-    ...illustratedElevation.card,
+    backgroundColor: colors.surface,
   },
 });

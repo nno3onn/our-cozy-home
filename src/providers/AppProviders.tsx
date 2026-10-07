@@ -7,6 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import type { HomeRepository } from '@/domain/repository';
 import { ConnectionProvider } from '@/network/ConnectionProvider';
 import { RepositoryProvider } from '@/repositories/RepositoryContext';
+import { SnackbarProvider } from '@/components/ui/AppSnackbar';
 
 export function AppProviders({
   children,
@@ -32,13 +33,15 @@ export function AppProviders({
       <SafeAreaProvider>
         <ConnectionProvider>
           <QueryClientProvider client={queryClient}>
-            {repository ? (
-              <RepositoryProvider repository={repository}>
-                {children}
-              </RepositoryProvider>
-            ) : (
-              children
-            )}
+            <SnackbarProvider>
+              {repository ? (
+                <RepositoryProvider repository={repository}>
+                  {children}
+                </RepositoryProvider>
+              ) : (
+                children
+              )}
+            </SnackbarProvider>
           </QueryClientProvider>
         </ConnectionProvider>
       </SafeAreaProvider>

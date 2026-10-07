@@ -10,7 +10,7 @@ type AppButtonProps = Omit<PressableProps, 'children' | 'style'> & {
   label?: string;
   icon?: ReactNode;
   selected?: boolean;
-  tone?: 'primary' | 'secondary' | 'quiet' | 'danger';
+  tone?: 'primary' | 'secondary' | 'tertiary' | 'quiet' | 'danger' | 'icon';
 };
 
 export function AppButton({
@@ -40,6 +40,8 @@ export function AppButton({
       style={({ pressed }) => [
         styles.base,
         styles[tone],
+        selected && tone !== 'primary' && styles.selected,
+        !label && styles.iconOnly,
         pressed && !disabled && styles.pressed,
         disabled && styles.disabled,
       ]}
@@ -47,7 +49,10 @@ export function AppButton({
       <View style={styles.content}>
         {icon}
         {label ? (
-          <AppText style={tone === 'primary' ? styles.primaryText : undefined} variant="label">
+          <AppText
+            style={tone === 'primary' ? styles.primaryText : styles.defaultText}
+            variant="label"
+          >
             {label}
           </AppText>
         ) : null}
@@ -58,12 +63,12 @@ export function AppButton({
 
 const styles = StyleSheet.create({
   base: {
-    minHeight: 44,
+    minHeight: 52,
     minWidth: 44,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: spacing.lg,
-    borderRadius: radii.card,
+    borderRadius: radii.control,
     borderWidth: 1,
     borderColor: 'transparent',
   },
@@ -73,11 +78,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: spacing.sm,
   },
-  primary: { backgroundColor: colors.ink },
-  secondary: { backgroundColor: colors.mint },
-  quiet: { backgroundColor: colors.paper, borderColor: colors.line },
-  danger: { backgroundColor: '#FFF1EF', borderColor: '#F1C7C1' },
-  primaryText: { color: colors.white },
-  pressed: { transform: [{ translateY: 1 }], opacity: 0.86 },
-  disabled: { opacity: 0.42 },
+  primary: { backgroundColor: colors.brand },
+  secondary: { backgroundColor: colors.surfaceSubtle },
+  tertiary: { backgroundColor: 'transparent' },
+  quiet: { backgroundColor: colors.surface, borderColor: colors.border },
+  danger: { backgroundColor: colors.dangerSoft },
+  icon: { minHeight: 44, minWidth: 44, paddingHorizontal: spacing.md, backgroundColor: 'transparent' },
+  iconOnly: { minHeight: 44, minWidth: 44, paddingHorizontal: spacing.md },
+  selected: { borderColor: colors.brand, backgroundColor: colors.brandSoft },
+  primaryText: { color: colors.inverse },
+  defaultText: { color: colors.textPrimary },
+  pressed: { transform: [{ translateY: 1 }, { scale: 0.98 }] },
+  disabled: { opacity: 0.4 },
 });

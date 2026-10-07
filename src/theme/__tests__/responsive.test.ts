@@ -5,7 +5,7 @@ describe('getResponsiveLayout', () => {
     expect(getResponsiveLayout(599)).toMatchObject({
       breakpoint: 'compact',
       gridColumns: 1,
-      pageGutter: 16,
+      pageGutter: 20,
     });
   });
 
@@ -13,7 +13,7 @@ describe('getResponsiveLayout', () => {
     expect(getResponsiveLayout(600)).toMatchObject({
       breakpoint: 'medium',
       gridColumns: 2,
-      pageGutter: 24,
+      pageGutter: 28,
     });
   });
 

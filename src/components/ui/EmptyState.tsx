@@ -4,7 +4,6 @@ import { spacing } from '@/theme/tokens';
 
 import { AppButton } from './AppButton';
 import { AppText } from './AppText';
-import { Panel } from './Panel';
 
 type EmptyStateProps = {
   title: string;
@@ -20,7 +19,7 @@ export function EmptyState({
   title,
 }: EmptyStateProps) {
   return (
-    <Panel accessibilityRole="summary" style={styles.panel}>
+    <View accessibilityRole="summary" style={styles.panel}>
       <View style={styles.copy}>
         <AppText accessibilityRole="header" variant="heading">
           {title}
@@ -30,11 +29,11 @@ export function EmptyState({
       {actionLabel && onAction ? (
         <AppButton label={actionLabel} onPress={onAction} />
       ) : null}
-    </Panel>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  panel: { alignItems: 'stretch' },
+  panel: { alignItems: 'stretch', gap: spacing.lg, paddingVertical: spacing.xl },
   copy: { gap: spacing.sm },
 });

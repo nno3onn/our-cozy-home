@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react-native';
-import { Text } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
+import { colors } from '@/theme/tokens';
 import { AppButton } from '../AppButton';
 
 describe('AppButton', () => {
@@ -30,5 +31,26 @@ describe('AppButton', () => {
     );
 
     expect(view.getByRole('button', { name: '친구 초대' })).toBeOnTheScreen();
+    expect(
+      StyleSheet.flatten(view.getByRole('button', { name: '친구 초대' }).props.style),
+    ).toMatchObject({ minHeight: 44, minWidth: 44 });
+  });
+
+  it('uses the brand color and 52px height for the primary action', async () => {
+    const view = await render(<AppButton label="계속하기" onPress={() => undefined} />);
+
+    expect(
+      StyleSheet.flatten(view.getByRole('button', { name: '계속하기' }).props.style),
+    ).toMatchObject({ backgroundColor: colors.brand, minHeight: 52 });
+  });
+
+  it('exposes selected state without relying on color alone', async () => {
+    const view = await render(
+      <AppButton label="토끼" onPress={() => undefined} selected tone="secondary" />,
+    );
+
+    expect(
+      view.getByRole('button', { name: '토끼' }).props.accessibilityState,
+    ).toMatchObject({ selected: true });
   });
 });
