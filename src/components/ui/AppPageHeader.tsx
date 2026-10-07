@@ -9,18 +9,21 @@ import { colors, radii, spacing } from '@/theme/tokens';
 import { AppText } from './AppText';
 
 type AppPageHeaderProps = {
+  backLabel?: string;
   backHref?: Href;
+  onBack?: () => void;
   showBackOnWide?: boolean;
   title: string;
   trailing?: ReactNode;
 };
 
-export function AppPageHeader({ backHref, showBackOnWide = false, title, trailing }: AppPageHeaderProps) {
+export function AppPageHeader({ backHref, backLabel = '이전 화면으로 돌아가기', onBack, showBackOnWide = false, title, trailing }: AppPageHeaderProps) {
   const router = useRouter();
   const { breakpoint } = useResponsiveLayout();
-  const showsBack = Boolean(backHref) && (breakpoint !== 'wide' || showBackOnWide);
+  const showsBack = Boolean(backHref || onBack) && (breakpoint !== 'wide' || showBackOnWide);
 
   const goBack = () => {
+    if (onBack) return onBack();
     if (router.canGoBack()) router.back();
     else if (backHref) router.replace(backHref);
   };
@@ -29,7 +32,7 @@ export function AppPageHeader({ backHref, showBackOnWide = false, title, trailin
     <View style={styles.container}>
       {showsBack ? (
         <Pressable
-          accessibilityLabel="이전 화면으로 돌아가기"
+          accessibilityLabel={backLabel}
           accessibilityRole="button"
           hitSlop={4}
           onPress={goBack}

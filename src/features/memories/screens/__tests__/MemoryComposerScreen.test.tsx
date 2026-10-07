@@ -10,6 +10,7 @@ describe('MemoryComposerScreen', () => {
 
     expect(view.getByText('현재 집 친구들에게 공유돼요')).toBeOnTheScreen();
     expect(view.getByText('나래 · 민준')).toBeOnTheScreen();
+    expect(view.getByText('공유 전에는 나만 볼 수 있어요')).toBeOnTheScreen();
     await user.type(view.getByLabelText('추억 제목'), '비 오는 오후');
     await user.type(view.getByLabelText('추억 글'), '창가에서 같이 노래를 들었어요.');
     await user.press(view.getByRole('button', { name: '비공개 초안으로 저장' }));

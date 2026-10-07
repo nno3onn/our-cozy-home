@@ -2,8 +2,11 @@ import { StyleSheet, View } from 'react-native';
 
 import type { MemorySummary } from '@/domain/models';
 import { AppButton } from '@/components/ui/AppButton';
+import { AppPageHeader } from '@/components/ui/AppPageHeader';
 import { AppText } from '@/components/ui/AppText';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { InlineNotice } from '@/components/ui/InlineNotice';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { ResponsiveGrid } from '@/components/layout/ResponsiveGrid';
 import { ResponsivePage } from '@/components/layout/ResponsivePage';
 import { spacing } from '@/theme/tokens';
@@ -22,14 +25,18 @@ function MemorySection({ memories, onOpenMemory, scope }: { memories: MemorySumm
     (result[label] ??= []).push(memory);
     return result;
   }, {});
-  return <>{Object.entries(groups).map(([month, values]) => <View key={month} style={styles.section}><AppText style={styles.month} variant="heading">{month}</AppText><ResponsiveGrid maxColumns={3} testID={`memory-grid-${scope}`}>{values.map((memory) => <ScrapbookMemoryCard key={memory.id} memory={memory} onPress={onOpenMemory} scope={scope} />)}</ResponsiveGrid></View>)}</>;
+  return <>{Object.entries(groups).map(([month, values]) => <View key={month} style={styles.section}><AppText style={styles.month} variant="sectionTitle">{month}</AppText><ResponsiveGrid columnsByBreakpoint={{ compact: 1, medium: 2, wide: 3 }} maxColumns={3} testID={`memory-grid-${scope}`}>{values.map((memory) => <ScrapbookMemoryCard key={memory.id} memory={memory} onPress={onOpenMemory} scope={scope} />)}</ResponsiveGrid></View>)}</>;
 }
 
 export function MemoriesScreen({ onOpenMemory, onCreateMemory, onNavigateHome }: { onOpenMemory: (memoryId: string) => void; onCreateMemory?: () => void; onNavigateHome?: () => void }) {
-  const currentMemories = useMemories().data ?? [];
-  const archivedMemories = useArchivedMemories().data ?? [];
-  if (!currentMemories.length && !archivedMemories.length) return <ResponsivePage><EmptyState actionLabel="첫 추억 기록하기" description="사진이나 글을 남기면 초안이 생기고, 서로 다른 두 사람이 기여하면 가구가 완성돼요." onAction={onCreateMemory} title="첫 추억을 만들어 보세요" /></ResponsivePage>;
-  return <ResponsivePage contentMaxWidth={1120} scroll testID="memories-page"><View style={styles.content}><View style={styles.header}>{onNavigateHome ? <AppButton accessibilityLabel="우리집으로 돌아가기" icon={<AppText>←</AppText>} onPress={onNavigateHome} tone="quiet" /> : null}<View style={styles.titleBlock}><AppText variant="title">우리의 추억</AppText><AppText tone="muted">함께 남긴 순간을 가구로 간직해요.</AppText></View>{onCreateMemory ? <AppButton label="새 기록" onPress={onCreateMemory} /> : null}</View><AppText tone="muted" variant="caption">공유 당시 대상이었던 멤버만 볼 수 있어요.</AppText><MemorySection memories={currentMemories} onOpenMemory={onOpenMemory} scope="current" />{archivedMemories.length ? <View style={styles.archive}><View style={styles.archiveHeading}><AppText variant="heading">개인 보관함</AppText><AppText tone="muted" variant="caption">내가 직접 기여한 기록</AppText></View><AppText tone="muted" variant="caption">퇴장 시점까지 공개된 내용만 계속 볼 수 있어요.</AppText><MemorySection memories={archivedMemories} onOpenMemory={onOpenMemory} scope="archive" /></View> : null}</View></ResponsivePage>;
+  const currentQuery = useMemories();
+  const archivedQuery = useArchivedMemories();
+  const currentMemories = currentQuery.data ?? [];
+  const archivedMemories = archivedQuery.data ?? [];
+  if (currentQuery.isLoading || archivedQuery.isLoading) return <ResponsivePage><AppPageHeader backHref="/" backLabel="우리집으로 돌아가기" onBack={onNavigateHome} title="우리의 추억" /><View accessibilityLabel="추억 목록을 불러오는 중" style={styles.loading}><Skeleton height={42}/><Skeleton height={220}/></View></ResponsivePage>;
+  if (currentQuery.isError || archivedQuery.isError) return <ResponsivePage><AppPageHeader backHref="/" backLabel="우리집으로 돌아가기" onBack={onNavigateHome} title="우리의 추억" /><EmptyState title="추억을 불러오지 못했어요" description="네트워크를 확인한 뒤 다시 시도해 주세요."/></ResponsivePage>;
+  if (!currentMemories.length && !archivedMemories.length) return <ResponsivePage><AppPageHeader backHref="/" onBack={onNavigateHome} title="우리의 추억" /><EmptyState actionLabel="첫 추억 기록하기" description="사진이나 글을 남기면 초안이 생기고, 서로 다른 두 사람이 기여하면 가구가 완성돼요." onAction={onCreateMemory} title="첫 추억을 만들어 보세요" /></ResponsivePage>;
+  return <ResponsivePage contentMaxWidth={1120} scroll testID="memories-page"><View style={styles.content}><AppPageHeader backHref="/" backLabel="우리집으로 돌아가기" onBack={onNavigateHome} title="우리의 추억" trailing={onCreateMemory ? <AppButton label="새 기록" onPress={onCreateMemory} /> : null} /><AppText tone="secondary">함께 남긴 순간을 가구로 간직해요.</AppText><InlineNotice message="공유를 시작한 시점의 대상 멤버만 볼 수 있어요." /><MemorySection memories={currentMemories} onOpenMemory={onOpenMemory} scope="current" />{archivedMemories.length ? <View style={styles.archive}><View style={styles.archiveHeading}><AppText variant="sectionTitle">개인 보관함</AppText><AppText tone="tertiary" variant="caption">내가 직접 기여한 기록</AppText></View><AppText tone="secondary" variant="caption">퇴장 뒤 추가된 내용은 보이지 않으며, 원작자가 삭제한 내용은 함께 사라져요.</AppText><MemorySection memories={archivedMemories} onOpenMemory={onOpenMemory} scope="archive" /></View> : null}</View></ResponsivePage>;
 }
 
-const styles = StyleSheet.create({ content: { gap: spacing.md, paddingBottom: spacing.lg }, header: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm }, titleBlock: { flex: 1, gap: 2 }, section: { gap: spacing.sm }, month: { writingDirection: 'ltr' }, archive: { gap: spacing.sm, paddingTop: spacing.md }, archiveHeading: { alignItems: 'baseline', flexDirection: 'row', gap: spacing.sm } });
+const styles = StyleSheet.create({ content: { gap: spacing.xl, paddingBottom: spacing.xl }, loading: { gap: spacing.lg, paddingTop: spacing.xl }, section: { gap: spacing.lg }, month: { writingDirection: 'ltr' }, archive: { gap: spacing.lg, paddingTop: spacing.md }, archiveHeading: { alignItems: 'baseline', flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm } });
