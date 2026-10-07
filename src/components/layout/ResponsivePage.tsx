@@ -63,7 +63,7 @@ export function ResponsivePage({
 }
 
 const styles = ReactNative.StyleSheet.create({
-  safeArea: { backgroundColor: colors.cream, flex: 1, position: 'relative' },
+  safeArea: { backgroundColor: colors.background, flex: 1, position: 'relative' },
   navigation: { alignSelf: 'center', paddingTop: 12, width: '100%' },
   content: { alignSelf: 'center', minWidth: 0, width: '100%' },
   fill: { flex: 1 },

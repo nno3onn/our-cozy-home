@@ -1,9 +1,28 @@
 # 우리집 구현·검증 현황
 
-최종 수정일: 2026-10-06
+최종 수정일: 2026-10-07
 
 기능을 완료할 때 코드 경로, 검증 명령과 결과를 함께 갱신한다. 자동화 검증,
 로컬 Supabase 검증, 실제 계정·실기기 검증은 서로 대체하지 않는다.
+
+## 2026-10-07 토스식 UI Foundation
+
+- 완료: 중립 semantic color·spacing·radius·typography·elevation·z-index token을 추가하고,
+  후속 화면 전환 중인 기존 화면을 위해 legacy token alias를 한시적으로 유지했다.
+- 완료: 공식 Pretendard v1.3.9 Variable TTF와 OFL license를 저장소에 포함하고 Expo root에서
+  앱 화면 렌더 전에 불러오도록 연결했다.
+- 완료: AppText·AppButton·AppInput·AppPageHeader·AppSection·ListRow·BottomActionBar·
+  InlineNotice·AppSnackbar·Skeleton 공통 컴포넌트를 구현했다.
+- 완료: compact/medium/wide page gutter를 20/28/32px로 통일하고, header title wrapping,
+  44pt icon action, 입력 오류, Snackbar FIFO, reduced-motion Skeleton 계약을 자동화했다.
+- 검증: Node 22.14.0에서 typecheck·lint, Jest 58 suite/239 test, Demo Mode web export와
+  SPA/secret artifact 검사가 통과했다. Pretendard TTF가 web export에 포함되는 것도 확인했다.
+- 검증: export 정적 서버를 390×844와 1280×800 viewport에서 열어 방·네 동물·가구·이름표,
+  compact 하단 탭과 wide 왼쪽 rail을 확인했다. 두 viewport 모두 가로 overflow가 없고,
+  실제 텍스트의 computed font가 Pretendard이며 브라우저 warning/error가 없었다.
+- 진행: 인증·온보딩·집·상점·추억·설정 개별 화면의 새 primitive 전환은 후속 Issue 범위다.
+- 미검증: 이번 단계의 브라우저 확인은 로컬 Demo Mode이며 iOS·Android 실기기의
+  Pretendard 렌더, safe area, keyboard, screen reader는 아직 검증하지 않았다.
 
 ## 2026-10-06 원격 A–E 집 흐름 검증
 

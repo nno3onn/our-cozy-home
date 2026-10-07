@@ -1,6 +1,9 @@
 import { Redirect, Stack, useSegments } from 'expo-router';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import { AppProviders } from '@/providers/AppProviders';
 import { AuthProvider, useAuth } from '@/auth/AuthProvider';
@@ -9,8 +12,13 @@ import { ModeErrorScreen } from '@/components/ModeErrorScreen';
 import { readRuntimeConfig } from '@/config/env';
 import { createRepository } from '@/repositories/createRepository';
 import { getAuthRedirect, getPendingInviteRedirect } from '@/auth/routeGuard';
-import { AppText } from '@/components/ui/AppText';
+import { AppButton } from '@/components/ui/AppButton';
+import { InlineNotice } from '@/components/ui/InlineNotice';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { colors, spacing } from '@/theme/tokens';
+import { appFonts } from '@/theme/fonts';
+
+void SplashScreen.preventAutoHideAsync();
 
 const runtimeConfig = readRuntimeConfig();
 const repositoryResult = runtimeConfig.ok
@@ -18,6 +26,18 @@ const repositoryResult = runtimeConfig.ok
   : null;
 
 export default function RootLayout() {
+  const [fontsLoaded, fontError] = useFonts(appFonts);
+
+  useEffect(() => {
+    if (fontsLoaded || fontError) {
+      void SplashScreen.hideAsync();
+    }
+  }, [fontError, fontsLoaded]);
+
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
+
   return (
     <AppProviders repository={repositoryResult?.ok ? repositoryResult.repository : undefined}>
       <StatusBar style="dark" />
@@ -42,10 +62,10 @@ function AuthenticatedRoutes() {
   const segments = useSegments();
   const redirect = getAuthRedirect({ ...state, onboarding }, segments);
   if (state.status === 'loading' || (state.status === 'signed_in' && onboarding === 'loading')) {
-    return <View style={styles.loading}><ActivityIndicator color={colors.ink} /></View>;
+    return <View style={styles.loading}><View style={styles.loadingCard}><Skeleton height={32} width="48%" /><Skeleton height={20} width="72%" /><Skeleton height={52} /></View></View>;
   }
   if (state.status === 'signed_in' && onboarding === 'unavailable') {
-    return <View style={styles.loading}><AppText tone="danger">프로필을 확인하지 못했어요.</AppText><AppText tone="muted">{onboardingError ?? '네트워크 상태를 확인한 뒤 다시 시도해 주세요.'}</AppText><Pressable accessibilityRole="button" accessibilityLabel="프로필 다시 확인" onPress={() => void refreshOnboarding()}><AppText variant="label">다시 시도</AppText></Pressable></View>;
+    return <View style={styles.loading}><View style={styles.loadingCard}><InlineNotice message={onboardingError ?? '네트워크 상태를 확인한 뒤 다시 시도해 주세요.'} title="프로필을 확인하지 못했어요" tone="danger" /><AppButton label="다시 시도" onPress={() => void refreshOnboarding()} /></View></View>;
   }
   if (redirect) return <Redirect href={redirect} />;
   if (state.status === 'signed_in') {
@@ -56,5 +76,6 @@ function AuthenticatedRoutes() {
 }
 
 const styles = StyleSheet.create({
-  loading: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.md, backgroundColor: colors.cream, padding: spacing.xl },
+  loading: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background, padding: spacing.xl },
+  loadingCard: { width: '100%', maxWidth: 420, gap: spacing.lg },
 });

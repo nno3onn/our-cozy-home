@@ -19,6 +19,7 @@ describe('ResponsivePage', () => {
     expect(view.getByTestId('responsive-page-navigation')).toBeOnTheScreen();
     expect(ReactNative.StyleSheet.flatten(view.getByTestId('responsive-page-navigation').props.style).position).not.toBe('absolute');
     expect(ReactNative.StyleSheet.flatten(view.getByTestId('responsive-page-scroll').props.contentContainerStyle).paddingBottom).toBe(88);
+    expect(ReactNative.StyleSheet.flatten(view.getByTestId('responsive-page-scroll').props.contentContainerStyle).paddingHorizontal).toBe(20);
   });
 
   it('keeps a constrained desktop reading column without a mobile back control', async () => {

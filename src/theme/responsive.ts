@@ -11,11 +11,11 @@ export type ResponsiveLayout = {
 
 export function getResponsiveLayout(width: number): ResponsiveLayout {
   if (width < responsiveBreakpoints.medium) {
-    return { breakpoint: 'compact', bottomSafeSpace: 88, gridColumns: 1, pageGutter: 16 };
+    return { breakpoint: 'compact', bottomSafeSpace: 88, gridColumns: 1, pageGutter: 20 };
   }
 
   if (width < responsiveBreakpoints.wide) {
-    return { breakpoint: 'medium', bottomSafeSpace: 88, gridColumns: 2, pageGutter: 24 };
+    return { breakpoint: 'medium', bottomSafeSpace: 88, gridColumns: 2, pageGutter: 28 };
   }
 
   return { breakpoint: 'wide', bottomSafeSpace: 0, gridColumns: 3, pageGutter: 32 };
