@@ -31,6 +31,7 @@ describe('InviteAcceptanceControls', () => {
     await userEvent.setup().press(view.getByRole('button', { name: '이 집에 입주하기' }));
 
     expect(await view.findByText('집이 꽉 찼어요. 다른 우리집을 찾아봐요.')).toBeOnTheScreen();
+    expect(view.getByRole('alert')).toBeOnTheScreen();
   });
 
   it('explains when a previously previewed invite is no longer valid', async () => {

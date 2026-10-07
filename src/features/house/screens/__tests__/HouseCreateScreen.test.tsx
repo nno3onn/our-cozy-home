@@ -30,6 +30,7 @@ describe('HouseCreateScreen', () => {
     await user.press(view.getByRole('button', { name: '집 만들기' }));
 
     expect(await view.findByText('이미 살고 있는 집이 있어요.')).toBeOnTheScreen();
+    expect(view.getByRole('alert')).toBeOnTheScreen();
     expect(view.getByDisplayValue('도란도란 우리집')).toBeOnTheScreen();
     await user.press(view.getByRole('button', { name: '기존 집 열기' }));
     expect(onOpenExistingHouse).toHaveBeenCalledTimes(1);

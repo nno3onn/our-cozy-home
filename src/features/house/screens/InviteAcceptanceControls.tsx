@@ -3,7 +3,7 @@ import { View } from 'react-native';
 
 import type { AcceptInviteInput, InviteAcceptance } from '@/domain/models';
 import { AppButton } from '@/components/ui/AppButton';
-import { AppText } from '@/components/ui/AppText';
+import { InlineNotice } from '@/components/ui/InlineNotice';
 import { OfflineReadOnlyBanner } from '@/components/OfflineReadOnlyBanner';
 import { useConnectionStatus } from '@/network/ConnectionProvider';
 import { spacing } from '@/theme/tokens';
@@ -53,7 +53,7 @@ export function InviteAcceptanceControls({ token, createRequestId = defaultReque
 
   return <View style={{ gap: spacing.sm }}>
     {!isOnline ? <OfflineReadOnlyBanner /> : null}
-    {error ? <AppText tone="danger">{error}</AppText> : null}
+    {error ? <InlineNotice message={error} tone="danger" /> : null}
     <AppButton disabled={!isOnline || submitting} label={submitting ? '입주 확인 중…' : '이 집에 입주하기'} onPress={() => void accept()} />
   </View>;
 }

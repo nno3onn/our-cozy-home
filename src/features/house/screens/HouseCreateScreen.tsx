@@ -1,12 +1,14 @@
 import { useRef, useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { View } from 'react-native';
 
-import type { CreateHouseInput } from '@/domain/models';
-import { AppButton } from '@/components/ui/AppButton';
-import { AppText } from '@/components/ui/AppText';
-import { colors, spacing } from '@/theme/tokens';
-import { illustratedColors, illustratedElevation, illustratedRadii } from '@/theme/illustratedTokens';
 import { ResponsiveFormPage } from '@/components/layout/ResponsiveFormPage';
+import { AppButton } from '@/components/ui/AppButton';
+import { AppInput } from '@/components/ui/AppInput';
+import { AppPageHeader } from '@/components/ui/AppPageHeader';
+import { AppText } from '@/components/ui/AppText';
+import { InlineNotice } from '@/components/ui/InlineNotice';
+import type { CreateHouseInput } from '@/domain/models';
+import { spacing } from '@/theme/tokens';
 
 import { validateHouseName } from '../houseValidation';
 
@@ -23,12 +25,7 @@ function defaultRequestId(): string {
   return `house-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-export function HouseCreateScreen({
-  createRequestId = defaultRequestId,
-  onCreate,
-  onCreated,
-  onOpenExistingHouse,
-}: HouseCreateScreenProps) {
+export function HouseCreateScreen({ createRequestId = defaultRequestId, onCreate, onCreated, onOpenExistingHouse }: HouseCreateScreenProps) {
   const [name, setName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [alreadyInHouse, setAlreadyInHouse] = useState(false);
@@ -50,9 +47,7 @@ export function HouseCreateScreen({
       await onCreate({ name: name.trim(), requestId: requestId.current });
       onCreated();
     } catch (caught) {
-      const message = typeof caught === 'object' && caught && 'message' in caught
-        ? String(caught.message)
-        : '';
+      const message = typeof caught === 'object' && caught && 'message' in caught ? String(caught.message) : '';
       if (message === 'already_in_house') {
         setAlreadyInHouse(true);
         setError('이미 살고 있는 집이 있어요.');
@@ -65,41 +60,26 @@ export function HouseCreateScreen({
   }
 
   return (
-    <ResponsiveFormPage fallbackHref="/house/choose" maxWidth={640} testID="house-create-page">
-        <View style={styles.content}>
-          <View style={styles.houseMark}><AppText style={styles.houseIcon}>⌂</AppText></View>
-          <AppText variant="title">새 우리집 만들기</AppText>
-          <AppText tone="muted">혼자서도 시작할 수 있어요. 친구는 나중에 초대해요.</AppText>
-          <TextInput
-            accessibilityLabel="집 이름"
-            autoFocus
-            maxLength={30}
-            onChangeText={setName}
-            placeholder="예: 도란도란 우리집"
-            style={styles.input}
-            value={name}
-          />
-          {error ? <AppText tone="danger">{error}</AppText> : null}
-          <AppButton disabled={submitting} label={submitting ? '집 만드는 중…' : '집 만들기'} onPress={() => void submit()} />
-          {alreadyInHouse && onOpenExistingHouse ? (
-            <AppButton label="기존 집 열기" onPress={onOpenExistingHouse} tone="secondary" />
-          ) : null}
-        </View>
+    <ResponsiveFormPage maxWidth={640} testID="house-create-page">
+      <AppPageHeader backHref="/house/choose" title="새 우리집" />
+      <View style={{ gap: spacing.sm }}>
+        <AppText variant="display">우리 집의 이름을 지어 주세요</AppText>
+        <AppText tone="secondary">혼자서도 바로 시작하고, 친구는 나중에 초대할 수 있어요.</AppText>
+      </View>
+      <AppInput
+        autoFocus
+        helperText="친구들이 초대 화면에서 확인할 이름이에요."
+        label="집 이름"
+        maxLength={30}
+        onChangeText={setName}
+        placeholder="예: 도란도란 우리집"
+        value={name}
+      />
+      {error ? <InlineNotice message={error} tone="danger" /> : null}
+      <AppButton disabled={submitting} label={submitting ? '집 만드는 중…' : '집 만들기'} onPress={() => void submit()} />
+      {alreadyInHouse && onOpenExistingHouse ? (
+        <AppButton label="기존 집 열기" onPress={onOpenExistingHouse} tone="quiet" />
+      ) : null}
     </ResponsiveFormPage>
   );
 }
-
-const styles = StyleSheet.create({
-  content: { gap: spacing.md },
-  houseMark: { alignItems: 'center', alignSelf: 'center', backgroundColor: '#FDE8E1', borderRadius: 46, height: 92, justifyContent: 'center', width: 92, ...illustratedElevation.card },
-  houseIcon: { color: illustratedColors.peach, fontSize: 54, lineHeight: 58 },
-  input: {
-    minHeight: 48,
-    borderWidth: 1,
-    borderColor: colors.line,
-    borderRadius: illustratedRadii.card,
-    paddingHorizontal: spacing.md,
-    backgroundColor: colors.paper,
-    color: colors.ink,
-  },
-});
