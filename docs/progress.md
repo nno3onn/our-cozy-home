@@ -352,6 +352,19 @@ Build를 설치한 실제 기기에서 별도로 기록한다.
 - 실제 iOS/Android, 실제 Supabase 계정, 알림/딥 링크/사진 업로드는 이번 UI 작업에서
   검증하지 않았다. 웹에서 확인한 결과를 네이티브 기기 검증으로 간주하지 않는다.
 
+## 첫 진입 폼 UI 전환 검증 (2026-10-07)
+
+- 로그인·회원가입·온보딩·집 선택·집 생성·초대 미리보기/수락을 공통 `AppPageHeader`,
+  `AppInput`, `AppSection`, `InlineNotice`, `AppButton`으로 전환했다. 기존 AuthProvider,
+  repository RPC, 초대 token 보존과 request id 멱등성 계약은 변경하지 않았다.
+- 실패 뒤 입력 유지, 회원가입 비밀번호 조건, 선택 동물 접근성 상태, 포인트 색상 설명,
+  집 생성 충돌, 빈 초대·정원 초과·오프라인 오류의 alert semantics를 자동화 테스트로 확인했다.
+- Node 22.14.0에서 typecheck·lint, 전체 Jest 60 suites/244 tests, Demo Mode web export와
+  SPA 산출물 검사가 통과했다.
+- 브라우저 자동 검증 환경이 localhost 요청을 차단해 320×700·390×844·768×1024·1280×800
+  실화면 검증은 완료하지 못했다. 실제 iOS/Android의 키보드 회피·스크린리더·딥 링크 역시
+  미검증이며, 완료된 것으로 보고하지 않는다.
+
 ## 다음 작업
 
 1. 임시 계정 세트로 출석/구매/배치/탈퇴/추억/버릇 RLS와 멱등성 E2E matrix를 수행한다.

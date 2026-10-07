@@ -3,6 +3,7 @@ import { render } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
 import { ResponsivePage } from '../ResponsivePage';
+import { ResponsiveFormPage } from '../ResponsiveFormPage';
 
 describe('ResponsivePage', () => {
   const dimensions = jest.spyOn(ReactNative, 'useWindowDimensions');
@@ -28,5 +29,15 @@ describe('ResponsivePage', () => {
 
     expect(view.queryByLabelText('이전 화면으로 돌아가기')).not.toBeOnTheScreen();
     expect(ReactNative.StyleSheet.flatten(view.getByTestId('responsive-page-content').props.style).maxWidth).toBe(760);
+  });
+
+  it('keeps form content neutral instead of forcing a floating card', async () => {
+    dimensions.mockReturnValue({ fontScale: 1, height: 844, scale: 1, width: 390 });
+    const view = await render(<ResponsiveFormPage testID="form-page"><Text>form</Text></ResponsiveFormPage>);
+    const style = ReactNative.StyleSheet.flatten(view.getByTestId('form-page-form-content').props.style);
+
+    expect(style.backgroundColor).toBeUndefined();
+    expect(style.borderWidth).toBeUndefined();
+    expect(style.gap).toBe(24);
   });
 });

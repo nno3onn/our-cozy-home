@@ -25,6 +25,7 @@ describe('HouseEntryChoiceScreen', () => {
     await user.press(view.getByRole('button', { name: '초대 확인하기' }));
 
     expect(view.getByText('초대 코드 또는 링크를 입력해 주세요.')).toBeOnTheScreen();
+    expect(view.getByRole('alert')).toBeOnTheScreen();
     expect(onOpenInvite).not.toHaveBeenCalled();
   });
 });
