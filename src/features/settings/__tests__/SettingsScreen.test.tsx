@@ -31,6 +31,8 @@ describe('SettingsScreen', () => {
     const { view } = await renderSettings('demo', repository);
     const user = userEvent.setup();
 
+    expect(view.getByRole('header', { name: '설정' })).toBeOnTheScreen();
+    expect(view.getByText('데모 모드로 실행 중')).toBeOnTheScreen();
     await user.press(view.getByRole('button', { name: '데모 데이터 초기화' }));
     expect(view.getByText('정말 처음으로 돌릴까요?')).toBeOnTheScreen();
     await user.press(view.getByRole('button', { name: '초기화 확인' }));

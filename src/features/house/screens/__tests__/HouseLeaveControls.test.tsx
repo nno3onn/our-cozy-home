@@ -11,6 +11,8 @@ describe('HouseLeaveControls', () => {
 
     await user.press(view.getByRole('button', { name: '우리집 나가기' }));
     expect(view.getByText('정말 우리집을 나갈까요?')).toBeOnTheScreen();
+    expect(view.getByText('내가 산 가구는 개인 보관함으로 회수돼요.')).toBeOnTheScreen();
+    expect(view.getByText('집장이면 가장 먼저 입주한 친구에게 권한이 넘어가요.')).toBeOnTheScreen();
     await user.press(view.getByRole('button', { name: '나가기 확인' }));
 
     expect(onLeave).toHaveBeenCalledTimes(1);
