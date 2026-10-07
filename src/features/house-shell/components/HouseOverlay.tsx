@@ -3,7 +3,7 @@ import { Modal, Pressable, StyleSheet, View } from 'react-native';
 
 import { AppButton } from '@/components/ui/AppButton';
 import { AppText } from '@/components/ui/AppText';
-import { colors, radii, spacing } from '@/theme/tokens';
+import { colors, radii, spacing, zIndex } from '@/theme/tokens';
 
 type HouseOverlayProps = PropsWithChildren<{
   visible: boolean;
@@ -24,7 +24,8 @@ export function HouseOverlay({
       <View style={styles.root}>
         <Pressable accessibilityLabel="패널 바깥 영역 닫기" accessibilityRole="button" onPress={onDismiss} style={styles.scrim} />
         <View accessibilityLabel={accessibilityLabel} accessibilityViewIsModal style={styles.sheet}>
-          <AppButton accessibilityLabel={dismissLabel} icon={<AppText style={styles.closeMark}>×</AppText>} onPress={onDismiss} tone="quiet" />
+          <View style={styles.handle} />
+          <View style={styles.close}><AppButton accessibilityLabel={dismissLabel} icon={<AppText style={styles.closeMark}>×</AppText>} onPress={onDismiss} tone="icon" /></View>
           {children}
         </View>
       </View>
@@ -33,8 +34,10 @@ export function HouseOverlay({
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, justifyContent: 'flex-end' },
-  scrim: { ...StyleSheet.absoluteFill, backgroundColor: 'rgba(56, 51, 46, 0.4)' },
-  sheet: { backgroundColor: colors.paper, borderTopLeftRadius: radii.scene, borderTopRightRadius: radii.scene, gap: spacing.md, minHeight: 310, padding: spacing.lg },
+  root: { zIndex: zIndex.sheet, flex: 1, justifyContent: 'flex-end' },
+  scrim: { ...StyleSheet.absoluteFill, backgroundColor: colors.scrim },
+  sheet: { backgroundColor: colors.surface, borderTopLeftRadius: radii.sheet, borderTopRightRadius: radii.sheet, gap: spacing.lg, minHeight: 310, padding: spacing.xl },
+  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: radii.pill, backgroundColor: colors.border },
+  close: { position: 'absolute', right: spacing.md, top: spacing.md },
   closeMark: { fontSize: 24, lineHeight: 26 },
 });

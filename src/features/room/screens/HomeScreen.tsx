@@ -1,13 +1,14 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { AnimalAction } from '@/domain/models';
 import { DomainError } from '@/domain/errors';
 import { ITEM_BY_ID } from '@/catalog/items';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { Skeleton } from '@/components/ui/Skeleton';
 import { OfflineReadOnlyBanner } from '@/components/OfflineReadOnlyBanner';
 import { HouseGameShell } from '@/features/house-shell/components/HouseGameShell';
 import { HouseOverlay } from '@/features/house-shell/components/HouseOverlay';
@@ -86,7 +87,7 @@ export function HomeScreen({
   if (homeQuery.isPending) {
     return (
       <SafeAreaView style={styles.centered}>
-        <ActivityIndicator accessibilityLabel="우리집 불러오는 중" color={colors.ink} />
+        <View accessibilityLabel="우리집 불러오는 중" style={styles.loading}><Skeleton height={52} /><Skeleton height={76} /><Skeleton height={360} radius={24} /></View>
       </SafeAreaView>
     );
   }
@@ -164,6 +165,7 @@ export function HomeScreen({
 
 const styles = StyleSheet.create({
   centered: { alignItems: 'center', backgroundColor: colors.cream, flex: 1, justifyContent: 'center' },
+  loading: { width: '100%', maxWidth: 1120, gap: spacing.md, padding: spacing.lg },
   errorArea: { backgroundColor: colors.cream, flex: 1, padding: spacing.lg },
   stage: { flex: 1 },
 });

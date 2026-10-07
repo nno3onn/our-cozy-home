@@ -36,6 +36,7 @@ describe('AnimalDetailSheet', () => {
 
     expect(view.getByText('말랑이')).toBeOnTheScreen();
     expect(view.getByText('행동을 저장하지 못했어요. 다시 시도해 주세요.')).toBeOnTheScreen();
+    expect(view.getByRole('alert')).toBeOnTheScreen();
   });
 
   it('keeps action controls disabled when a server-confirmed action is unavailable', async () => {
