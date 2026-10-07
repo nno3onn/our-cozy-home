@@ -3,7 +3,6 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { ITEM_BY_ID } from '@/catalog/items';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppText } from '@/components/ui/AppText';
-import { Panel } from '@/components/ui/Panel';
 import { ItemThumbnail } from '@/features/illustrated-ui/scene/ItemThumbnail';
 import type { HomeSnapshot, RoomPlacement } from '@/domain/models';
 import { colors, radii, spacing } from '@/theme/tokens';
@@ -51,12 +50,12 @@ export function DecorateTray({
           const movable = item.ownerId === snapshot.currentUserId;
           if (!definition) return null;
           return (
-            <Panel key={item.id} style={[styles.card, item.id === selected?.id && styles.selectedCard]}>
+            <View key={item.id} style={[styles.card, item.id === selected?.id && styles.selectedCard]}>
               <View style={styles.preview}><ItemThumbnail itemId={definition.id} style={styles.thumbnail} /></View>
               <AppText numberOfLines={1} variant="label">{definition.nameKo}</AppText>
               <AppText tone="muted" variant="caption">소유자 {owner?.displayName ?? '알 수 없음'}</AppText>
-              {movable ? <AppButton label={`${definition.nameKo} 선택`} onPress={() => onSelect(item.id)} tone="quiet" /> : null}
-            </Panel>
+              {movable ? <AppButton label={`${definition.nameKo} 선택`} onPress={() => onSelect(item.id)} selected={item.id === selected?.id} tone="quiet" /> : null}
+            </View>
           );
         })}
       </ScrollView>
@@ -71,15 +70,15 @@ export function DecorateTray({
 }
 
 const styles = StyleSheet.create({
-  tray: { backgroundColor: colors.paper, borderTopLeftRadius: radii.sheet, borderTopRightRadius: radii.sheet, borderWidth: 1, borderColor: colors.line, gap: spacing.sm, maxHeight: '52%', padding: spacing.md, shadowColor: '#8D684C', shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.1, shadowRadius: 12 },
-  aside: { borderBottomLeftRadius: radii.scene, borderBottomRightRadius: radii.scene, flexShrink: 0, maxHeight: undefined, width: 300 },
+  tray: { backgroundColor: colors.surface, borderTopLeftRadius: radii.sheet, borderTopRightRadius: radii.sheet, borderTopWidth: StyleSheet.hairlineWidth, borderColor: colors.border, gap: spacing.md, maxHeight: '52%', padding: spacing.lg },
+  aside: { borderRadius: radii.sheet, borderWidth: StyleSheet.hairlineWidth, flexShrink: 0, maxHeight: undefined, width: 380 },
   header: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },
   headingCopy: { gap: 1 },
   items: { gap: spacing.sm, paddingVertical: spacing.xs },
   asideItems: { paddingBottom: spacing.md },
-  card: { gap: spacing.xs, padding: spacing.sm, width: 150 },
-  selectedCard: { borderColor: colors.coral, borderWidth: 2 },
-  preview: { alignItems: 'center', backgroundColor: colors.surface, borderRadius: radii.card, height: 82, justifyContent: 'center', width: '100%' },
+  card: { gap: spacing.xs, padding: spacing.sm, width: 156, borderRadius: radii.card, borderWidth: 1, borderColor: 'transparent' },
+  selectedCard: { borderColor: colors.brand, backgroundColor: colors.brandSoft },
+  preview: { alignItems: 'center', backgroundColor: colors.surfaceSubtle, borderRadius: radii.card, height: 96, justifyContent: 'center', width: '100%' },
   thumbnail: { height: '92%', width: '92%' },
   selection: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm, justifyContent: 'space-between' },
 });

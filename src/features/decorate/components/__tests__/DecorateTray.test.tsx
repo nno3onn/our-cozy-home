@@ -36,6 +36,10 @@ describe('DecorateTray', () => {
     const view = await render(<DecorateTray isOnline={false} isPending={false} onOpenShop={jest.fn()} onPlace={jest.fn()} onSelect={jest.fn()} placement={placement} selectedOwnedItemId="owned-a" snapshot={snapshot} />);
 
     expect(view.getByText('선택: 민트 매듭 쿠션')).toBeOnTheScreen();
+    expect(view.getByRole('button', { name: '민트 매듭 쿠션 선택' })).toHaveProp('accessibilityState', {
+      disabled: false,
+      selected: true,
+    });
     expect(view.getByRole('button', { name: '선택한 가구 놓기' })).toBeDisabled();
   });
 

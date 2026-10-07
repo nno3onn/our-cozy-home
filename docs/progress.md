@@ -377,6 +377,24 @@ Build를 설치한 실제 기기에서 별도로 기록한다.
 - 방 좌표·동물 이름표·서버 RPC는 변경하지 않았다. localhost 브라우저 차단으로 이번 변경의
   로컬 실화면 viewport 검증은 미완료이며 iOS/Android safe area·sheet·back gesture도 미검증이다.
 
+## 상점·보관함·꾸미기 UI 전환 검증 (2026-10-07)
+
+- 상점 40종과 8개 카테고리를 유지하면서 가로 카테고리 필터, 중립 상품 카드, compact
+  2열·medium 3열·wide 4열 반응형 목록으로 전환했다. 카드 최소 폭을 확보하지 못하는
+  360px 미만 환경에서는 자동으로 1열로 낮춘다.
+- 상품을 누르면 이미지·가격·용도를 확인하는 바텀시트를 먼저 열고 확인 뒤에만 기존 구매
+  RPC를 호출한다. 성공 결과는 남은 코인 snackbar로 표시하고, 코인 부족은 서버가 확정한
+  현재 잔액·가격·부족 금액을 시트에 유지한다. 응답이 불명확할 때 기존 request id 기반
+  구매 결과 복구 조회를 유지한다.
+- 보관함은 상품 이미지·수량·개인 소유권을 한 목록에서 확인하게 했고, 꾸미기 tray는 선택
+  상태를 semantic brand 색과 접근성 selected state로 함께 표시한다. 친구 소유 가구의
+  선택 제한과 서버 placement version 충돌 계약은 변경하지 않았다.
+- Node 22.14.0에서 typecheck·lint, 전체 Jest 61 suites/248 tests, Demo Mode web export와
+  SPA 산출물 검사가 통과했다. Jest는 기존 비종료 핸들 경고 때문에 `--forceExit`로 종료했다.
+- compact/medium/wide 열 수와 구매 성공·부족·오프라인, 보관함 이미지·소유권, tray 선택
+  상태는 컴포넌트 테스트로 검증했다. localhost 브라우저 차단으로 실제 viewport 렌더링과
+  iOS/Android의 sheet·스크린리더·safe area는 검증하지 않았다.
+
 ## 다음 작업
 
 1. 임시 계정 세트로 출석/구매/배치/탈퇴/추억/버릇 RLS와 멱등성 E2E matrix를 수행한다.
