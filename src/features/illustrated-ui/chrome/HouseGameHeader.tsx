@@ -2,7 +2,7 @@ import { StyleSheet, View } from 'react-native';
 
 import type { House, Member } from '@/domain/models';
 import { AppText } from '@/components/ui/AppText';
-import { illustratedColors, illustratedElevation, illustratedRadii } from '@/theme/illustratedTokens';
+import { colors, spacing } from '@/theme/tokens';
 
 import { CoinPill } from './CoinPill';
 import { GameIconButton } from './GameIconButton';
@@ -12,24 +12,23 @@ export function HouseGameHeader({ coinBalance, currentUserId, house, members, on
   return (
     <View style={styles.header}>
       <View style={styles.topRow}>
-        <View accessibilityLabel={`${house.name} 집 이름`} style={styles.housePill}>
-          <AppText style={styles.houseMark}>⌂</AppText>
-          <AppText variant="label">{house.name}</AppText>
+        <View accessibilityLabel={`${house.name} 집 이름`} style={styles.houseTitle}>
+          <AppText numberOfLines={1} variant="sectionTitle">{house.name}</AppText>
+          <AppText tone="secondary" variant="label">{members.length}/{house.capacity}</AppText>
         </View>
         <View style={styles.actions}>
           <CoinPill balance={coinBalance} />
           <GameIconButton accessibilityLabel="설정 열기" icon={<AppText>⚙</AppText>} onPress={onOpenSettings} />
         </View>
       </View>
-      <MemberAvatarRow capacity={house.capacity} currentUserId={currentUserId} members={members} onInvite={onOpenInvite} />
+      <MemberAvatarRow capacity={house.capacity} currentUserId={currentUserId} members={members} onInvite={onOpenInvite} showSummary={false} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  header: { gap: 12, paddingHorizontal: 16, paddingTop: 12 },
-  topRow: { alignItems: 'center', flexDirection: 'row', gap: 8, justifyContent: 'space-between' },
-  housePill: { alignItems: 'center', backgroundColor: illustratedColors.paper, borderColor: illustratedColors.line, borderRadius: illustratedRadii.pill, borderWidth: 1, flexDirection: 'row', gap: 7, minHeight: 42, paddingHorizontal: 13, ...illustratedElevation.card },
-  houseMark: { color: illustratedColors.peach, fontSize: 21, lineHeight: 22 },
-  actions: { alignItems: 'center', flexDirection: 'row', gap: 6 },
+  header: { gap: spacing.md, paddingHorizontal: spacing.lg, paddingTop: spacing.md, backgroundColor: colors.background },
+  topRow: { alignItems: 'center', flexDirection: 'row', gap: spacing.md, justifyContent: 'space-between' },
+  houseTitle: { minWidth: 0, flex: 1, flexDirection: 'row', alignItems: 'baseline', gap: spacing.sm },
+  actions: { alignItems: 'center', flexDirection: 'row', gap: spacing.xs },
 });

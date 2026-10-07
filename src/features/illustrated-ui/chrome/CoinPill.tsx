@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/ui/AppText';
-import { illustratedColors, illustratedElevation, illustratedRadii } from '@/theme/illustratedTokens';
+import { colors, radii, spacing } from '@/theme/tokens';
 
 export function CoinPill({ balance }: { balance: number }) {
   return (
@@ -13,7 +13,7 @@ export function CoinPill({ balance }: { balance: number }) {
 }
 
 const styles = StyleSheet.create({
-  pill: { alignItems: 'center', backgroundColor: illustratedColors.paper, borderColor: illustratedColors.line, borderRadius: illustratedRadii.pill, borderWidth: 1.5, flexDirection: 'row', gap: 6, minHeight: 44, paddingHorizontal: 12, ...illustratedElevation.card },
-  coin: { color: illustratedColors.honey, fontSize: 18 },
-  balance: { color: illustratedColors.cocoa },
+  pill: { alignItems: 'center', backgroundColor: colors.surfaceSubtle, borderRadius: radii.pill, flexDirection: 'row', gap: spacing.xs, minHeight: 44, paddingHorizontal: spacing.md },
+  coin: { color: colors.warning, fontSize: 18 },
+  balance: { color: colors.textPrimary },
 });

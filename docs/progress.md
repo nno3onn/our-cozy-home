@@ -365,6 +365,18 @@ Build를 설치한 실제 기기에서 별도로 기록한다.
   실화면 검증은 완료하지 못했다. 실제 iOS/Android의 키보드 회피·스크린리더·딥 링크 역시
   미검증이며, 완료된 것으로 보고하지 않는다.
 
+## 우리집 셸 UI 전환 검증 (2026-10-07)
+
+- 상단을 집 이름·`n/4`·코인·설정으로 단순화하고, 멤버 네 자리에서는 중복 인원 문구를
+  제거했다. 빈자리는 관리자에게만 기존 초대 진입점으로 노출한다.
+- 하단 탭과 wide rail은 selected accessibility state와 semantic brand 색을 공유한다. 동물
+  상태 prompt는 한 줄 요약과 `보기`로 줄였고, 상세 sheet는 상태 ListRow·행동 선택·alert
+  오류·최근 버릇 순서로 정리했다. 출석·초대 카드와 loading도 Foundation 표현으로 전환했다.
+- Node 22.14.0에서 typecheck·lint, 전체 Jest 60 suites/246 tests, Demo Mode web export와
+  SPA 산출물 검사가 통과했다. compact/medium/wide shell 분기는 컴포넌트 테스트로 확인했다.
+- 방 좌표·동물 이름표·서버 RPC는 변경하지 않았다. localhost 브라우저 차단으로 이번 변경의
+  로컬 실화면 viewport 검증은 미완료이며 iOS/Android safe area·sheet·back gesture도 미검증이다.
+
 ## 다음 작업
 
 1. 임시 계정 세트로 출석/구매/배치/탈퇴/추억/버릇 RLS와 멱등성 E2E matrix를 수행한다.

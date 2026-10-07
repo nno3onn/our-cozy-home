@@ -2,8 +2,11 @@ import { Image, StyleSheet, View } from 'react-native';
 
 import type { Animal, AnimalAction, Member } from '@/domain/models';
 import { AppButton } from '@/components/ui/AppButton';
+import { AppSection } from '@/components/ui/AppSection';
 import { AppText } from '@/components/ui/AppText';
-import { colors, radii, spacing } from '@/theme/tokens';
+import { InlineNotice } from '@/components/ui/InlineNotice';
+import { ListRow } from '@/components/ui/ListRow';
+import { colors, spacing } from '@/theme/tokens';
 import { getIllustratedAsset } from '@/features/illustrated-ui/scene/assetManifest';
 
 const stateLabels = {
@@ -50,46 +53,19 @@ export function AnimalDetailSheet({
         <AppText variant="heading">{animal.name}</AppText>
         <AppText tone="muted" variant="caption">{ownerLabel}</AppText>
       </View>
-      <View style={styles.statusRow}>
-        <AppText variant="label">기분</AppText>
-        <AppText>행복해요 ♡♡♡♡♡</AppText>
+      <View style={styles.statusList}>
+        <ListRow title="기분" value="행복해요 · 5/5" />
+        <ListRow title="지금 상태" value={stateLabels[animal.state]} />
       </View>
-      <View style={styles.statusRow}>
-        <AppText variant="label">상태</AppText>
-        <AppText>{stateLabels[animal.state]}</AppText>
-      </View>
-      <View style={styles.actions}>
-        <AppButton
-          disabled={disabled}
-          label="간식 주기"
-          onPress={() => onAction('eating')}
-          selected={animal.state === 'eating'}
-          tone={animal.state === 'eating' ? 'secondary' : 'quiet'}
-        />
-        <AppButton
-          disabled={disabled}
-          label="놀아주기"
-          onPress={() => onAction('playing')}
-          selected={animal.state === 'playing'}
-          tone={animal.state === 'playing' ? 'secondary' : 'quiet'}
-        />
-        <AppButton
-          disabled={disabled}
-          label="쉬게 하기"
-          onPress={() => onAction('resting')}
-          selected={animal.state === 'resting'}
-          tone={animal.state === 'resting' ? 'secondary' : 'quiet'}
-        />
-      </View>
-      {errorMessage ? (
-        <AppText accessibilityLiveRegion="polite" style={styles.error} tone="danger" variant="caption">
-          {errorMessage}
-        </AppText>
-      ) : null}
-      <View style={styles.habit}>
-        <AppText variant="label">최근 배운 버릇</AppText>
-        <AppText tone="muted" variant="caption">아직 배운 버릇이 없어요</AppText>
-      </View>
+      <AppSection title="함께하기">
+        <View style={styles.actions}>
+          <View style={styles.action}><AppButton disabled={disabled} label="간식 주기" onPress={() => onAction('eating')} selected={animal.state === 'eating'} tone="quiet" /></View>
+          <View style={styles.action}><AppButton disabled={disabled} label="놀아주기" onPress={() => onAction('playing')} selected={animal.state === 'playing'} tone="quiet" /></View>
+          <View style={styles.action}><AppButton disabled={disabled} label="쉬게 하기" onPress={() => onAction('resting')} selected={animal.state === 'resting'} tone="quiet" /></View>
+        </View>
+      </AppSection>
+      {errorMessage ? <InlineNotice message={errorMessage} tone="danger" /> : null}
+      <ListRow description="아직 배운 버릇이 없어요" title="최근 배운 버릇" />
     </View>
   );
 }
@@ -99,8 +75,7 @@ const styles = StyleSheet.create({
   avatar: { alignItems: 'center', alignSelf: 'center', backgroundColor: colors.surface, borderRadius: 42, borderWidth: 2, height: 104, justifyContent: 'center', width: 104 },
   emoji: { fontSize: 42, lineHeight: 50 },
   sprite: { height: 106, width: 106 },
-  statusRow: { borderBottomColor: colors.line, borderBottomWidth: 1, flexDirection: 'row', justifyContent: 'space-between', paddingBottom: spacing.sm },
-  actions: { flexDirection: 'row', gap: spacing.sm },
-  error: { textAlign: 'center' },
-  habit: { backgroundColor: colors.surface, borderRadius: radii.card, gap: spacing.xs, padding: spacing.md },
+  statusList: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border },
+  actions: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  action: { minWidth: 112, flex: 1 },
 });
