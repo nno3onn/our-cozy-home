@@ -26,6 +26,7 @@ describe('memory screens', () => {
 
     expect(await view.findByText('강가에서 보낸 오후')).toBeOnTheScreen();
     expect(view.getByText('2026년 9월')).toBeOnTheScreen();
+    expect(view.getByText('가구 완성')).toBeOnTheScreen();
     fireEvent.press(view.getByRole('button', { name: '강가에서 보낸 오후 상세 열기' }));
     expect(onOpenMemory).toHaveBeenCalledWith('memory-river-picnic');
   });
@@ -34,6 +35,7 @@ describe('memory screens', () => {
     const onNavigateHome = jest.fn();
     const view = await render(wrapper(<MemoriesScreen onNavigateHome={onNavigateHome} onOpenMemory={jest.fn()} />));
 
+    await view.findByText('강가에서 보낸 오후');
     fireEvent.press(await view.findByRole('button', { name: '우리집으로 돌아가기' }));
 
     expect(onNavigateHome).toHaveBeenCalledTimes(1);
@@ -65,6 +67,7 @@ describe('memory screens', () => {
 
     expect(await view.findByText('개인 보관함')).toBeOnTheScreen();
     expect(view.getByText('보관한 산책')).toBeOnTheScreen();
+    expect(view.getByText('퇴장 시점까지 공개된 내용')).toBeOnTheScreen();
   });
 
   it('turns the scrapbook into two readable tablet columns', async () => {

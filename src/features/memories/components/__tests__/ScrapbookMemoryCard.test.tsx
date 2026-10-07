@@ -23,6 +23,6 @@ describe('ScrapbookMemoryCard', () => {
   it('labels an archived card as personal archive content', async () => {
     const view = await render(<ScrapbookMemoryCard memory={memory} onPress={jest.fn()} scope="archive" />);
 
-    expect(view.getByText('개인 보관함 기록')).toBeOnTheScreen();
+    expect(view.getByText('퇴장 시점까지 공개된 내용')).toBeOnTheScreen();
   });
 });
