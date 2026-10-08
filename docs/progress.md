@@ -491,6 +491,18 @@ Build를 설치한 실제 기기에서 별도로 기록한다.
 - 실제 iOS/Android VoiceOver·TalkBack의 focus 이동·복귀와 200% 글자 확대는 아직 실기기에서
   검증하지 않았으며 완료로 간주하지 않는다.
 
+## 큰 글자 페이지 헤더 보강 (2026-10-08)
+
+- 공통 `AppPageHeader`가 viewport breakpoint와 시스템 font scale을 함께 사용한다. compact
+  화면에서 font scale이 1.5 이상이고 trailing action이 있으면 뒤로가기·제목은 첫 행에,
+  action은 들여쓴 전체 폭의 다음 행에 배치한다.
+- 제목은 줄 수를 제한하지 않고 기존 44pt 뒤로가기 target을 유지한다. 일반 글자 크기의
+  compact header와 wide에서 뒤로가기를 숨기는 기존 계약은 변경하지 않았다.
+- 자동화 테스트로 320px/fontScale 2, 320px 일반 글자, 1280px wide 조건을 확인했다.
+  Node 22.14.0에서 typecheck·lint, 전체 Jest 64 suites/256 tests, Demo Mode web export와
+  SPA 산출물 검사가 통과했다. 실제 iOS/Android 접근성 글자 크기와 한국어 폰트 렌더링은
+  아직 실기기에서 검증하지 않았다.
+
 ## 다음 작업
 
 1. 임시 계정 세트로 출석/구매/배치/탈퇴/추억/버릇 RLS와 멱등성 E2E matrix를 수행한다.

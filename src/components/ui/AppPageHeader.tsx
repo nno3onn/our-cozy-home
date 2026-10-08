@@ -19,8 +19,9 @@ type AppPageHeaderProps = {
 
 export function AppPageHeader({ backHref, backLabel = '이전 화면으로 돌아가기', onBack, showBackOnWide = false, title, trailing }: AppPageHeaderProps) {
   const router = useRouter();
-  const { breakpoint } = useResponsiveLayout();
+  const { breakpoint, fontScale } = useResponsiveLayout();
   const showsBack = Boolean(backHref || onBack) && (breakpoint !== 'wide' || showBackOnWide);
+  const usesLargeTextLayout = breakpoint === 'compact' && fontScale >= 1.5 && Boolean(trailing);
 
   const goBack = () => {
     if (onBack) return onBack();
@@ -29,7 +30,7 @@ export function AppPageHeader({ backHref, backLabel = '이전 화면으로 돌�
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, usesLargeTextLayout && styles.largeTextContainer]} testID="app-page-header">
       {showsBack ? (
         <Pressable
           accessibilityLabel={backLabel}
@@ -46,7 +47,14 @@ export function AppPageHeader({ backHref, backLabel = '이전 화면으로 돌�
       <AppText accessibilityRole="header" style={styles.title} variant="title">
         {title}
       </AppText>
-      {trailing ? <View style={styles.trailing}>{trailing}</View> : null}
+      {trailing ? (
+        <View
+          style={[styles.trailing, usesLargeTextLayout && styles.largeTextTrailing, usesLargeTextLayout && { paddingLeft: showsBack ? 52 : 0 }]}
+          testID="app-page-header-trailing"
+        >
+          {trailing}
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -58,4 +66,6 @@ const styles = StyleSheet.create({
   pressed: { backgroundColor: colors.surfaceSubtle, transform: [{ scale: 0.98 }] },
   title: { minWidth: 0, flex: 1, flexShrink: 1 },
   trailing: { flexShrink: 0 },
+  largeTextContainer: { flexWrap: 'wrap' },
+  largeTextTrailing: { width: '100%' },
 });

@@ -2,6 +2,7 @@ import * as ReactNative from 'react-native';
 import { render } from '@testing-library/react-native';
 
 import { AppPageHeader } from '../AppPageHeader';
+import { AppButton } from '../AppButton';
 
 const mockReplace = jest.fn();
 const mockBack = jest.fn();
@@ -34,5 +35,21 @@ describe('AppPageHeader', () => {
     const view = await render(<AppPageHeader backHref="/" title="상점" />);
 
     expect(view.queryByLabelText('이전 화면으로 돌아가기')).not.toBeOnTheScreen();
+  });
+
+  it('moves the trailing action below the title at 200 percent text on a narrow phone', async () => {
+    dimensions.mockReturnValue({ fontScale: 2, height: 568, scale: 1, width: 320 });
+    const view = await render(
+      <AppPageHeader
+        backHref="/"
+        title="우리의 아주 긴 추억 기록"
+        trailing={<AppButton label="새 기록" onPress={jest.fn()} />}
+      />,
+    );
+
+    expect(ReactNative.StyleSheet.flatten(view.getByTestId('app-page-header').props.style).flexWrap).toBe('wrap');
+    expect(ReactNative.StyleSheet.flatten(view.getByTestId('app-page-header-trailing').props.style).width).toBe('100%');
+    expect(view.getByText('우리의 아주 긴 추억 기록').props.numberOfLines).toBeUndefined();
+    expect(view.getByRole('button', { name: '새 기록' })).toBeOnTheScreen();
   });
 });
