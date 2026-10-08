@@ -471,3 +471,14 @@
 - 비용: overlay 안에 또 다른 vertical scroll을 두지 않는다. 실제 native screen reader의
   초기 focus와 닫은 뒤 focus 복귀는 자동화 테스트만으로 증명하지 않고 실기기 검증 항목으로
   남긴다.
+
+## D-044 큰 글자 compact header의 trailing action은 다음 행으로 내린다
+
+- 상태: 채택
+- 결정: compact breakpoint에서 `fontScale >= 1.5`이고 trailing action이 있는 경우 공통
+  page header를 두 행으로 감싼다. 첫 행은 뒤로가기와 줄바꿈 가능한 제목, 두 번째 행은
+  뒤로가기 폭만큼 들여쓴 전체 폭 action 영역이다.
+- 이유: 제목을 축약하거나 시스템 확대를 제한하지 않으면서 320px 화면에서도 세 요소가
+  같은 행의 폭을 두고 경쟁하지 않게 하기 위해서다.
+- 비용: 큰 글자에서 header 높이가 늘어난다. 이는 내용 누락보다 우선하며, 일반 font scale과
+  wide layout은 기존 한 행 구조를 유지한다.

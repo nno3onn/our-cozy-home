@@ -16,8 +16,8 @@ type ResponsivePageProps = PropsWithChildren<{
 }>;
 
 export function useResponsiveLayout() {
-  const { width } = ReactNative.useWindowDimensions();
-  return getResponsiveLayout(width);
+  const { fontScale, width } = ReactNative.useWindowDimensions();
+  return { ...getResponsiveLayout(width), fontScale };
 }
 
 export function ResponsivePage({
