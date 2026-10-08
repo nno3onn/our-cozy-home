@@ -476,6 +476,21 @@ Build를 설치한 실제 기기에서 별도로 기록한다.
   22.14.0에서 typecheck·lint, 전체 Jest 63 suites/252 tests, Demo Mode web export와 SPA
   산출물 검사가 통과했다.
 
+## Bottom sheet 접근성 보강 (2026-10-08)
+
+- 동물 상세, 상품 확인, 추억 가구 완성이 공유하는 `HouseOverlay`가 시스템 모션 감소
+  설정을 읽는다. 모션 감소 시 `Modal` 전환을 `none`으로 바꾸고, 일반 설정에서는 기존
+  slide 전환을 유지한다.
+- sheet를 web dialog로 식별하고 native modal 접근성 범위를 유지했다. 내용 영역은 최대
+  화면 높이 안에서 스크롤되며 bottom safe area를 반영해 큰 글자와 작은 화면에서 마지막
+  행동이 잘리지 않게 했다.
+- scrim, 닫기 버튼, Android hardware back 요청은 동일한 dismiss callback을 계속 사용한다.
+  자동화 테스트로 두 모션 설정, dialog 속성, 스크롤 영역과 세 dismiss 경로를 확인했다.
+- Node 22.14.0에서 typecheck·lint, 전체 Jest 64 suites/255 tests, Demo Mode web export와
+  SPA 산출물 검사가 통과했다.
+- 실제 iOS/Android VoiceOver·TalkBack의 focus 이동·복귀와 200% 글자 확대는 아직 실기기에서
+  검증하지 않았으며 완료로 간주하지 않는다.
+
 ## 다음 작업
 
 1. 임시 계정 세트로 출석/구매/배치/탈퇴/추억/버릇 RLS와 멱등성 E2E matrix를 수행한다.

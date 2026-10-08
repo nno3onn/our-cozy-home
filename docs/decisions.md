@@ -459,3 +459,15 @@
   선택한 멤버를 이름과 point color로 구분한다는 제품 규칙을 유지하기 위해서다.
 - 비용: 기존 cream/ink 등 호환 alias 정의는 점진 전환과 테스트 호환을 위해 당장은 남긴다.
   방 배경·동물·가구 에셋 자체에는 이 semantic 전환을 적용하지 않는다.
+
+## D-043 공통 sheet가 시스템 모션·safe area·내용 overflow를 책임진다
+
+- 상태: 채택
+- 결정: 모든 `HouseOverlay` 소비자는 별도 전환을 구현하지 않는다. 공통 overlay가 시스템
+  reduced-motion 값으로 slide/none을 선택하고, bottom safe area와 최대 높이, 내부 vertical
+  scroll, dialog 의미를 제공한다.
+- 이유: 동물 상세·구매 확인·추억 완성마다 접근성 처리를 반복하면 설정 반영과 작은 화면
+  동작이 달라질 수 있으므로 overlay 경계에서 한 번 보장하기 위해서다.
+- 비용: overlay 안에 또 다른 vertical scroll을 두지 않는다. 실제 native screen reader의
+  초기 focus와 닫은 뒤 focus 복귀는 자동화 테스트만으로 증명하지 않고 실기기 검증 항목으로
+  남긴다.
