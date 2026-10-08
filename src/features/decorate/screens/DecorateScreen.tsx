@@ -81,7 +81,7 @@ export function DecorateScreen() {
 }
 
 const styles = StyleSheet.create({
-  centered: { backgroundColor: colors.cream, flex: 1, justifyContent: 'center', padding: spacing.lg },
+  centered: { backgroundColor: colors.background, flex: 1, justifyContent: 'center', padding: spacing.lg },
   stage: { flex: 1, minHeight: 0 },
   content: { flex: 1, justifyContent: 'flex-end', minHeight: 0 },
   wideContent: { alignItems: 'stretch', flexDirection: 'row', gap: spacing.md, padding: spacing.md },

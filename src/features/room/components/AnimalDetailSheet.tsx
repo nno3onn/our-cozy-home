@@ -46,12 +46,12 @@ export function AnimalDetailSheet({
 
   return (
     <View style={styles.content}>
-      <View style={[styles.avatar, { borderColor: owner?.pointColor ?? colors.peach }]}>
+      <View style={[styles.avatar, { borderColor: owner?.pointColor ?? colors.brand }]}>
         {sprite?.source ? <Image accessibilityLabel={`${animal.name} 일러스트`} resizeMode="contain" source={sprite.source} style={styles.sprite} /> : <AppText style={styles.emoji}>🐻</AppText>}
       </View>
       <View>
-        <AppText variant="heading">{animal.name}</AppText>
-        <AppText tone="muted" variant="caption">{ownerLabel}</AppText>
+        <AppText accessibilityRole="header" variant="sectionTitle">{animal.name}</AppText>
+        <AppText tone="secondary" variant="caption">{ownerLabel}</AppText>
       </View>
       <View style={styles.statusList}>
         <ListRow title="기분" value="행복해요 · 5/5" />

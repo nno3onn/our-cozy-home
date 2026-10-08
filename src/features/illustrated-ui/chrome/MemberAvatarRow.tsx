@@ -21,7 +21,7 @@ export function MemberAvatarRow({ capacity, currentUserId, members, onInvite, sh
             </>
           ) : canInvite ? (
             <Pressable accessibilityLabel="빈 자리로 친구 초대" accessibilityRole="button" onPress={onInvite} style={styles.invite}>
-              <AppText style={styles.plus} variant="heading">+</AppText>
+              <AppText style={styles.plus} variant="sectionTitle">+</AppText>
             </Pressable>
           ) : <View style={styles.empty} />}
         </View>

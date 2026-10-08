@@ -24,6 +24,7 @@ describe('DecorateTray', () => {
     const onSelect = jest.fn();
     const view = await render(<DecorateTray isOnline isPending={false} onOpenShop={jest.fn()} onPlace={jest.fn()} onSelect={onSelect} placement={placement} selectedOwnedItemId={null} snapshot={snapshot} />);
 
+    expect(view.getByRole('header', { name: '내 보관함' })).toBeOnTheScreen();
     expect(view.getByText('민트 매듭 쿠션')).toBeOnTheScreen();
     expect(view.getByText('소유자 다은')).toBeOnTheScreen();
     expect(view.getByText('소유자 한섭')).toBeOnTheScreen();
