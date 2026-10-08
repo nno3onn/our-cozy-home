@@ -1,4 +1,4 @@
-import { forwardRef, useId } from 'react';
+import { forwardRef, useId, useState } from 'react';
 import type { TextInputProps } from 'react-native';
 import { StyleSheet, TextInput, View } from 'react-native';
 
@@ -14,11 +14,12 @@ type AppInputProps = TextInputProps & {
 };
 
 export const AppInput = forwardRef<TextInput, AppInputProps>(function AppInput(
-  { accessibilityHint, error, helperText, label, style, ...props },
+  { accessibilityHint, error, helperText, label, onBlur, onFocus, style, ...props },
   ref,
 ) {
   const generatedId = useId();
   const help = error ?? helperText;
+  const [focused, setFocused] = useState(false);
 
   return (
     <View style={styles.container}>
@@ -31,7 +32,15 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(function AppInput(
         accessibilityHint={accessibilityHint ?? help}
         accessibilityLabel={props.accessibilityLabel ?? label}
         aria-invalid={Boolean(error)}
-        style={[styles.input, error && styles.inputError, style]}
+        onBlur={(event) => {
+          setFocused(false);
+          onBlur?.(event);
+        }}
+        onFocus={(event) => {
+          setFocused(true);
+          onFocus?.(event);
+        }}
+        style={[styles.input, error && styles.inputError, style, focused && styles.focused]}
       />
       {help ? (
         <AppText accessibilityRole={error ? 'alert' : undefined} tone={error ? 'danger' : 'tertiary'} variant="caption">
@@ -56,4 +65,5 @@ const styles = StyleSheet.create({
     fontSize: typeScale.body.fontSize,
   },
   inputError: { borderColor: colors.danger },
+  focused: { outlineColor: colors.brand, outlineOffset: 2, outlineStyle: 'solid', outlineWidth: 2 },
 });
