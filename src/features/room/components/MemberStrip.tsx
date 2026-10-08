@@ -26,7 +26,7 @@ export function MemberStrip({ members }: { members: Member[] }) {
               <View
                 style={[
                   styles.avatar,
-                  { backgroundColor: member?.pointColor ?? colors.paper },
+                  { backgroundColor: member?.pointColor ?? colors.surface },
                   !member && styles.emptyAvatar,
                 ]}
               >
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: radii.pill,
     borderWidth: 1.5,
-    borderColor: colors.ink,
+    borderColor: colors.textPrimary,
   },
-  emptyAvatar: { borderStyle: 'dashed', borderColor: colors.line },
+  emptyAvatar: { borderStyle: 'dashed', borderColor: colors.border },
 });

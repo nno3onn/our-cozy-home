@@ -164,8 +164,8 @@ export function HomeScreen({
 }
 
 const styles = StyleSheet.create({
-  centered: { alignItems: 'center', backgroundColor: colors.cream, flex: 1, justifyContent: 'center' },
+  centered: { alignItems: 'center', backgroundColor: colors.background, flex: 1, justifyContent: 'center' },
   loading: { width: '100%', maxWidth: 1120, gap: spacing.md, padding: spacing.lg },
-  errorArea: { backgroundColor: colors.cream, flex: 1, padding: spacing.lg },
+  errorArea: { backgroundColor: colors.background, flex: 1, padding: spacing.lg },
   stage: { flex: 1 },
 });

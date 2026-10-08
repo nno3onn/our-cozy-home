@@ -463,6 +463,19 @@ Build를 설치한 실제 기기에서 별도로 기록한다.
   export와 SPA 산출물 검사가 통과했다. 실제 모바일 브라우저의 대량 이미지 메모리 사용량은
   아직 검증하지 않았다.
 
+## Foundation semantic token 정리 (2026-10-08)
+
+- 꾸미기 보관함과 동물 상세의 화면 제목을 `sectionTitle`과 접근 가능한 header로 통일했다.
+  가구 수·배치 상태·소유자·동물 주인·추억 참여자 같은 보조 정보는 secondary 계층으로
+  표시한다.
+- 빈 상태 제목과 초대 빈자리 기호도 같은 typography scale을 사용한다. 로딩·오류·앱 shell
+  배경과 동물 선택 이름표는 cream/ink/paper 호환 alias 대신 semantic background,
+  textPrimary, surface, border를 사용한다.
+- 방 배경·동물·가구 이미지와 사용자별 point color는 변경하지 않았다. 관련 컴포넌트
+  테스트에서 제목 header, 행동 selected 상태, 소유권, 빈 상태 행동을 확인했다. Node
+  22.14.0에서 typecheck·lint, 전체 Jest 63 suites/252 tests, Demo Mode web export와 SPA
+  산출물 검사가 통과했다.
+
 ## 다음 작업
 
 1. 임시 계정 세트로 출석/구매/배치/탈퇴/추억/버릇 RLS와 멱등성 E2E matrix를 수행한다.

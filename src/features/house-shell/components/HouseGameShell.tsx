@@ -58,7 +58,7 @@ export function HouseGameShell({
 }
 
 const styles = StyleSheet.create({
-  safeArea: { backgroundColor: colors.cream, flex: 1 },
+  safeArea: { backgroundColor: colors.background, flex: 1 },
   frame: { alignSelf: 'center', flex: 1, maxWidth: 1120, width: '100%' },
   desktopFrame: { flexDirection: 'row', padding: spacing.md },
   main: { flex: 1, minWidth: 0 },

@@ -12,7 +12,7 @@ describe('AnimalDetailSheet', () => {
     const onAction = jest.fn();
     const view = await render(<AnimalDetailSheet animal={animal} disabled={false} onAction={onAction} onDismiss={jest.fn()} owner={owner} />);
 
-    expect(view.getByText('말랑이')).toBeOnTheScreen();
+    expect(view.getByRole('header', { name: '말랑이' })).toBeOnTheScreen();
     expect(view.getByText('다은이의 동물')).toBeOnTheScreen();
     expect(view.getByText('놀고 있어요')).toBeOnTheScreen();
     expect(view.getByRole('button', { name: '놀아주기' }).props.accessibilityState).toEqual({ disabled: false, selected: true });

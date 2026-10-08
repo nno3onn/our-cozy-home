@@ -21,10 +21,10 @@ export function EmptyState({
   return (
     <View accessibilityRole="summary" style={styles.panel}>
       <View style={styles.copy}>
-        <AppText accessibilityRole="header" variant="heading">
+        <AppText accessibilityRole="header" variant="sectionTitle">
           {title}
         </AppText>
-        <AppText tone="muted">{description}</AppText>
+        <AppText tone="secondary">{description}</AppText>
       </View>
       {actionLabel && onAction ? (
         <AppButton label={actionLabel} onPress={onAction} />

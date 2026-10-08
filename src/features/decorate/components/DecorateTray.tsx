@@ -37,12 +37,12 @@ export function DecorateTray({
     <View accessibilityLabel={aside ? '꾸미기 보조 패널' : '꾸미기 보관함'} style={[styles.tray, aside && styles.aside]}>
       <View style={styles.header}>
         <View style={styles.headingCopy}>
-          <AppText variant="heading">내 보관함</AppText>
-          <AppText tone="muted" variant="caption">배치할 가구 {furniture.length}개</AppText>
+          <AppText accessibilityRole="header" variant="sectionTitle">내 보관함</AppText>
+          <AppText tone="secondary" variant="caption">배치할 가구 {furniture.length}개</AppText>
         </View>
         <AppButton label="상점" onPress={onOpenShop} tone="quiet" />
       </View>
-      <AppText tone="muted" variant="caption">{placedDefinition ? `${placedDefinition.nameKo} 배치 중` : '이 자리는 비어 있어요'}</AppText>
+      <AppText tone="secondary" variant="caption">{placedDefinition ? `${placedDefinition.nameKo} 배치 중` : '이 자리는 비어 있어요'}</AppText>
       <ScrollView contentContainerStyle={[styles.items, aside && styles.asideItems]} horizontal={!aside} showsHorizontalScrollIndicator={false}>
         {furniture.map((item) => {
           const definition = ITEM_BY_ID.get(item.itemDefinitionId);
@@ -53,7 +53,7 @@ export function DecorateTray({
             <View key={item.id} style={[styles.card, item.id === selected?.id && styles.selectedCard]}>
               <View style={styles.preview}><ItemThumbnail itemId={definition.id} style={styles.thumbnail} /></View>
               <AppText numberOfLines={1} variant="label">{definition.nameKo}</AppText>
-              <AppText tone="muted" variant="caption">소유자 {owner?.displayName ?? '알 수 없음'}</AppText>
+              <AppText tone="secondary" variant="caption">소유자 {owner?.displayName ?? '알 수 없음'}</AppText>
               {movable ? <AppButton label={`${definition.nameKo} 선택`} onPress={() => onSelect(item.id)} selected={item.id === selected?.id} tone="quiet" /> : null}
             </View>
           );

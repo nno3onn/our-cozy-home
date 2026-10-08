@@ -448,3 +448,14 @@
   비교하기 위해서다.
 - 비용: 완성/임시 상태는 색상만으로 전달하지 않고 텍스트와 접근성 이름을 함께 제공한다.
   개발/데모 모드 밖에서 목록을 숨기는 기존 접근 계약은 유지한다.
+
+## D-042 화면 chrome은 semantic token, 개인 구분은 point color를 사용한다
+
+- 상태: 채택
+- 결정: 페이지·sheet·panel의 배경, 제목, 보조문구, 테두리와 선택 상태는 Foundation의
+  background/surface/text/border/brand 토큰을 사용한다. 개인별 동물과 멤버를 구분하는
+  이름표·avatar 테두리는 사용자가 고른 point color를 계속 사용한다.
+- 이유: warm illustration palette를 앱 상태 의미로 재사용하지 않으면서도 같은 동물 종류를
+  선택한 멤버를 이름과 point color로 구분한다는 제품 규칙을 유지하기 위해서다.
+- 비용: 기존 cream/ink 등 호환 alias 정의는 점진 전환과 테스트 호환을 위해 당장은 남긴다.
+  방 배경·동물·가구 에셋 자체에는 이 semantic 전환을 적용하지 않는다.
