@@ -18,6 +18,7 @@ describe('InviteManagerScreen', () => {
     );
     const user = userEvent.setup();
 
+    expect(view.getByRole('header', { name: '친구 초대' })).toBeOnTheScreen();
     await user.press(view.getByRole('button', { name: '초대 만들기' }));
 
     expect(onCreateInvite).toHaveBeenCalledWith(false);
@@ -39,6 +40,9 @@ describe('InviteManagerScreen', () => {
     await user.press(view.getByRole('button', { name: '초대 만들기' }));
     await view.findByText('FIRST111');
     await user.press(view.getByRole('button', { name: '새 초대 재발급' }));
+    expect(view.getByText('기존 링크는 즉시 사용할 수 없게 돼요.')).toBeOnTheScreen();
+    expect(view.getByText('FIRST111')).toBeOnTheScreen();
+    await user.press(view.getByRole('button', { name: '재발급 확인' }));
 
     expect(onCreateInvite).toHaveBeenNthCalledWith(1, false);
     expect(onCreateInvite).toHaveBeenNthCalledWith(2, true);
@@ -59,6 +63,9 @@ describe('InviteManagerScreen', () => {
     await user.press(view.getByRole('button', { name: '초대 만들기' }));
     await view.findByText('ACTIVE12');
     await user.press(view.getByRole('button', { name: '초대 취소' }));
+    expect(view.getByText('취소하면 이 링크와 코드는 다시 활성화할 수 없어요.')).toBeOnTheScreen();
+    expect(view.getByText('ACTIVE12')).toBeOnTheScreen();
+    await user.press(view.getByRole('button', { name: '취소 확인' }));
 
     expect(onCancelInvite).toHaveBeenCalledTimes(1);
     expect(await view.findByText('초대를 취소했어요. 기존 링크는 더 이상 사용할 수 없어요.')).toBeOnTheScreen();

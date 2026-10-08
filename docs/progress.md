@@ -425,6 +425,19 @@ Build를 설치한 실제 기기에서 별도로 기록한다.
 - Demo Mode 초기화와 집 나가기 확인 UI를 자동화 검증했다. 실제 Supabase 계정 삭제,
   관리자 승계 결과, iOS/Android 실기기와 스크린리더는 이번 UI 변경에서 검증하지 않았다.
 
+## 초대 관리·결과 오버레이 UI 전환 검증 (2026-10-08)
+
+- 친구 초대 관리에 공통 page header와 24시간·수락 순서 안내를 적용했다. 활성 초대를
+  재발급하거나 취소할 때 기존 링크·코드가 즉시 무효화되고 다시 활성화되지 않는다는 확인을
+  거친 뒤 기존 RPC를 호출한다.
+- 초대 생성·취소·실패 피드백을 semantic notice로 구분했다. 초대 token은 기존처럼 읽기
+  전용 링크 입력에만 표시하며 오류 메시지나 로그에 추가하지 않는다.
+- 추억 가구 완성 sheet는 제목·가구·원본 추억·두 명 기여 멱등성 설명 순서로 단순화하고,
+  방에 놓기만 primary, 보관함에 두기는 secondary action으로 유지했다.
+- Node 22.14.0에서 typecheck·lint, 전체 Jest 63 suites/250 tests, Demo Mode web export와
+  SPA 산출물 검사가 통과했다. 실제 모바일 공유 sheet, iOS/Android safe area와 실제
+  Supabase 초대 재발급 동작은 이번 UI 변경에서 검증하지 않았다.
+
 ## 다음 작업
 
 1. 임시 계정 세트로 출석/구매/배치/탈퇴/추억/버릇 RLS와 멱등성 E2E matrix를 수행한다.
