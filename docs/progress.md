@@ -438,6 +438,18 @@ Build를 설치한 실제 기기에서 별도로 기록한다.
   SPA 산출물 검사가 통과했다. 실제 모바일 공유 sheet, iOS/Android safe area와 실제
   Supabase 초대 재발급 동작은 이번 UI 변경에서 검증하지 않았다.
 
+## 추억 범위 segment UI 전환 검증 (2026-10-08)
+
+- 현재 집 추억과 개인 보관함을 상단 segment로 분리해 선택한 범위의 월별 목록만 렌더링한다.
+  두 범위를 한 화면에 이어 붙이지 않으며 각 control은 selected accessibility state를 가진다.
+- 현재 추억을 기본값으로 사용한다. 현재 열람 가능한 추억이 없고 개인 보관함만 있으면
+  보관함을 기본 선택하고 현재 추억 control을 비활성화한다.
+- 퇴장 뒤 추가된 내용 차단과 원본 삭제 전파 안내는 개인 보관함을 선택했을 때만 표시한다.
+  viewer snapshot, archive cutoff와 Storage/RLS 계약은 변경하지 않았다.
+- Node 22.14.0에서 typecheck·lint, 전체 Jest 63 suites/251 tests, Demo Mode web export와
+  SPA 산출물 검사가 통과했다. 실제 퇴장 계정의 원격 archive 데이터와 iOS/Android
+  스크린리더 segment 이동은 이번 UI 변경에서 검증하지 않았다.
+
 ## 다음 작업
 
 1. 임시 계정 세트로 출석/구매/배치/탈퇴/추억/버릇 RLS와 멱등성 E2E matrix를 수행한다.

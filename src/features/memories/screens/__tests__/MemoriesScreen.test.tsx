@@ -65,9 +65,27 @@ describe('memory screens', () => {
       </QueryClientProvider>,
     );
 
-    expect(await view.findByText('개인 보관함')).toBeOnTheScreen();
-    expect(view.getByText('보관한 산책')).toBeOnTheScreen();
+    expect((await view.findByRole('button', { name: '현재 추억 보기' })).props.accessibilityState).toEqual(expect.objectContaining({ selected: true }));
+    expect(view.getByRole('button', { name: '개인 보관함 보기' }).props.accessibilityState).toEqual(expect.objectContaining({ selected: false }));
+    expect(view.queryByText('보관한 산책')).not.toBeOnTheScreen();
+    fireEvent.press(view.getByRole('button', { name: '개인 보관함 보기' }));
+    expect(await view.findByText('보관한 산책')).toBeOnTheScreen();
+    expect(view.getByRole('button', { name: '개인 보관함 보기' }).props.accessibilityState).toEqual(expect.objectContaining({ selected: true }));
     expect(view.getByText('퇴장 시점까지 공개된 내용')).toBeOnTheScreen();
+    expect(view.queryByText('강가에서 보낸 오후')).not.toBeOnTheScreen();
+  });
+
+  it('opens the personal archive by default when no current-house memory is accessible', async () => {
+    const repository = new DemoRepository();
+    jest.spyOn(repository, 'listMemories').mockResolvedValue([]);
+    jest.spyOn(repository, 'listArchivedMemories').mockResolvedValue([
+      { id: 'archive-only', title: '나의 기록', occurredOn: '2026-09-18', participantNames: ['나래'], contributionCount: 1, furnitureOwnedItemId: null, preview: '퇴장 전 기록' },
+    ]);
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: Infinity } } });
+    const view = await render(<QueryClientProvider client={client}><RepositoryProvider repository={repository}><MemoriesScreen onOpenMemory={jest.fn()} /></RepositoryProvider></QueryClientProvider>);
+
+    expect((await view.findByRole('button', { name: '개인 보관함 보기' })).props.accessibilityState).toEqual(expect.objectContaining({ selected: true }));
+    expect(view.getByText('나의 기록')).toBeOnTheScreen();
   });
 
   it('turns the scrapbook into two readable tablet columns', async () => {
