@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import { StyleSheet, Text } from 'react-native';
 
 import { colors } from '@/theme/tokens';
@@ -52,5 +52,24 @@ describe('AppButton', () => {
     expect(
       view.getByRole('button', { name: '토끼' }).props.accessibilityState,
     ).toMatchObject({ selected: true });
+  });
+
+  it('shows and clears a semantic focus ring for keyboard navigation', async () => {
+    const onBlur = jest.fn();
+    const onFocus = jest.fn();
+    const view = await render(<AppButton label="계속하기" onBlur={onBlur} onFocus={onFocus} onPress={jest.fn()} />);
+    const button = view.getByRole('button', { name: '계속하기' });
+
+    await fireEvent(button, 'focus');
+    expect(StyleSheet.flatten(button.props.style)).toMatchObject({
+      outlineColor: colors.brand,
+      outlineStyle: 'solid',
+      outlineWidth: 2,
+    });
+
+    await fireEvent(button, 'blur');
+    expect(StyleSheet.flatten(button.props.style).outlineWidth).toBeUndefined();
+    expect(onFocus).toHaveBeenCalledTimes(1);
+    expect(onBlur).toHaveBeenCalledTimes(1);
   });
 });

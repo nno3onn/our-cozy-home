@@ -503,6 +503,18 @@ Build를 설치한 실제 기기에서 별도로 기록한다.
   SPA 산출물 검사가 통과했다. 실제 iOS/Android 접근성 글자 크기와 한국어 폰트 렌더링은
   아직 실기기에서 검증하지 않았다.
 
+## 웹 키보드 포커스 표시 보강 (2026-10-08)
+
+- 공통 `AppButton`과 `AppInput`이 focus 시 brand 색상의 2px solid outline과 2px offset을
+  표시하고 blur 시 제거한다. 입력 error border, 버튼 selected/disabled 색과 별도의 레이어로
+  보여 상태 의미를 덮어쓰지 않는다.
+- 공통 컴포넌트가 내부 focus 상태를 갱신한 뒤 consumer가 전달한 `onFocus`/`onBlur` callback도
+  그대로 호출한다. 접근성 이름, label, helper/error 계약은 변경하지 않았다.
+- 자동화 테스트로 focus/blur의 outline과 callback 전달을 확인했다. 실제 production 브라우저의
+  keyboard-only tab 순서와 high-contrast mode는 아직 수동 검증하지 않았다. Node 22.14.0에서
+  typecheck·lint, 전체 Jest 64 suites/258 tests, Demo Mode web export와 SPA 산출물 검사가
+  통과했다.
+
 ## 다음 작업
 
 1. 임시 계정 세트로 출석/구매/배치/탈퇴/추억/버릇 RLS와 멱등성 E2E matrix를 수행한다.

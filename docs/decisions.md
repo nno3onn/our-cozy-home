@@ -482,3 +482,14 @@
   같은 행의 폭을 두고 경쟁하지 않게 하기 위해서다.
 - 비용: 큰 글자에서 header 높이가 늘어난다. 이는 내용 누락보다 우선하며, 일반 font scale과
   wide layout은 기존 한 행 구조를 유지한다.
+
+## D-045 공통 interactive control은 동일한 외곽 focus ring을 사용한다
+
+- 상태: 채택
+- 결정: `AppButton`과 `AppInput`의 focus 상태는 control 바깥 2px 위치에 brand 색상 2px
+  solid outline으로 표시한다. focus를 잃으면 outline을 제거하며 consumer focus callback은
+  계속 전달한다.
+- 이유: selected, error와 focus가 같은 border를 차지하면 한 상태가 다른 상태를 숨기므로,
+  외곽 outline으로 키보드 위치를 독립적으로 전달하기 위해서다.
+- 비용: pointer로 focus한 경우에도 ring이 보일 수 있다. React Native의 공통 API가 web의
+  `:focus-visible`을 직접 제공하지 않으므로 v1에서는 일관된 focus 가시성을 우선한다.
