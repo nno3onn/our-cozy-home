@@ -1,5 +1,7 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 
+import { ROOM_SLOT_SEED } from '@/catalog/catalogSeed';
+import { getOwnInventoryItems, getPlacementSlots, getSelectablePlacementSlots } from '@/features/inventory/inventoryItems';
 import { ITEM_BY_ID } from '@/catalog/items';
 import { AppButton } from '@/components/ui/AppButton';
 import { AppText } from '@/components/ui/AppText';
@@ -17,8 +19,14 @@ export function DecorateTray({
   placement,
   selectedOwnedItemId,
   snapshot,
+  slotId = 'floor-accent-left',
+  onSelectSlot = () => undefined,
+  placeLabel = '선택한 가구 놓기',
 }: {
   aside?: boolean;
+  slotId?: string;
+  onSelectSlot?: (slotId: string) => void;
+  placeLabel?: string;
   snapshot: HomeSnapshot;
   placement: RoomPlacement | undefined;
   selectedOwnedItemId: string | null;
@@ -28,13 +36,13 @@ export function DecorateTray({
   onPlace: () => void;
   onOpenShop: () => void;
 }) {
-  const furniture = snapshot.ownedItems.filter((item) => item.kind === 'furniture' && item.allowedSlotIds.includes('floor-accent-left'));
+  const furniture = getOwnInventoryItems(snapshot).filter(item => getPlacementSlots(item).length > 0);
   const selected = furniture.find((item) => item.id === selectedOwnedItemId) ?? furniture.find((item) => item.ownerId === snapshot.currentUserId);
   const placed = snapshot.ownedItems.find((item) => item.id === placement?.ownedItemId);
   const placedDefinition = placed ? ITEM_BY_ID.get(placed.itemDefinitionId) : undefined;
 
   return (
-    <View accessibilityLabel={aside ? '꾸미기 보조 패널' : '꾸미기 보관함'} style={[styles.tray, aside && styles.aside]}>
+    <ScrollView contentContainerStyle={styles.trayContent} nestedScrollEnabled accessibilityLabel={aside ? '꾸미기 보조 패널' : '꾸미기 보관함'} style={[styles.tray, aside && styles.aside]}>
       <View style={styles.header}>
         <View style={styles.headingCopy}>
           <AppText accessibilityRole="header" variant="sectionTitle">내 보관함</AppText>
@@ -43,7 +51,7 @@ export function DecorateTray({
         <AppButton label="상점" onPress={onOpenShop} tone="quiet" />
       </View>
       <AppText tone="secondary" variant="caption">{placedDefinition ? `${placedDefinition.nameKo} 배치 중` : '이 자리는 비어 있어요'}</AppText>
-      <ScrollView contentContainerStyle={[styles.items, aside && styles.asideItems]} horizontal={!aside} showsHorizontalScrollIndicator={false}>
+      <ScrollView style={styles.inventoryViewport} contentContainerStyle={[styles.items, aside && styles.asideItems]} nestedScrollEnabled horizontal={!aside} showsHorizontalScrollIndicator={false}>
         {furniture.map((item) => {
           const definition = ITEM_BY_ID.get(item.itemDefinitionId);
           const owner = snapshot.members.find((member) => member.userId === item.ownerId);
@@ -62,16 +70,19 @@ export function DecorateTray({
       {selected ? (
         <View style={styles.selection}>
           <AppText variant="label">선택: {ITEM_BY_ID.get(selected.itemDefinitionId)?.nameKo}</AppText>
-          <AppButton disabled={!isOnline || isPending || placement?.ownedItemId === selected.id} label="선택한 가구 놓기" onPress={onPlace} />
+          <View style={styles.slotChoices}>{getSelectablePlacementSlots(selected,snapshot).map(id=><AppButton key={id} label={ROOM_SLOT_SEED.find(slot=>slot.id===id)?.nameKo ?? id} selected={id===slotId} disabled={isPending} tone="quiet" onPress={()=>onSelectSlot(id)}/>)}</View>
+          <AppButton disabled={!isOnline || isPending || placement?.ownedItemId === selected.id} label={placeLabel} onPress={onPlace} />
         </View>
       ) : null}
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  tray: { backgroundColor: colors.surface, borderTopLeftRadius: radii.sheet, borderTopRightRadius: radii.sheet, borderTopWidth: StyleSheet.hairlineWidth, borderColor: colors.border, gap: spacing.md, maxHeight: '52%', padding: spacing.lg },
-  aside: { borderRadius: radii.sheet, borderWidth: StyleSheet.hairlineWidth, flexShrink: 0, maxHeight: undefined, width: 380 },
+  tray: { backgroundColor: colors.surface, borderTopLeftRadius: radii.sheet, borderTopRightRadius: radii.sheet, borderTopWidth: StyleSheet.hairlineWidth, borderColor: colors.border, maxHeight: '52%' },
+  trayContent: { gap: spacing.md, padding: spacing.lg },
+  inventoryViewport: { flexGrow: 0, flexShrink: 0 },
+  aside: { borderRadius: radii.sheet, borderWidth: StyleSheet.hairlineWidth, flexGrow: 0, flexShrink: 0, maxHeight: '100%', width: 380 },
   header: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },
   headingCopy: { gap: 1 },
   items: { gap: spacing.sm, paddingVertical: spacing.xs },
@@ -80,5 +91,6 @@ const styles = StyleSheet.create({
   selectedCard: { borderColor: colors.brand, backgroundColor: colors.brandSoft },
   preview: { alignItems: 'center', backgroundColor: colors.surfaceSubtle, borderRadius: radii.card, height: 96, justifyContent: 'center', width: '100%' },
   thumbnail: { height: '92%', width: '92%' },
-  selection: { alignItems: 'center', flexDirection: 'row', gap: spacing.sm, justifyContent: 'space-between' },
+  slotChoices: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.xs },
+  selection: { alignItems: 'stretch', flexDirection: 'column', gap: spacing.sm, justifyContent: 'space-between' },
 });
