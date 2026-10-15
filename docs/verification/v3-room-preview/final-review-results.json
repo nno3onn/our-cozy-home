@@ -1,0 +1,31 @@
+{
+  "originalFilesChecked": 549,
+  "originalChanged": [],
+  "baselineTests": 277,
+  "finalTests": 284,
+  "removedTests": [],
+  "addedTests": [
+    "Demo placement safety cannot place the same owned furniture in two slots",
+    "Demo placement safety rejects furniture belonging to another member without changing the room",
+    "Demo placement safety requires version zero for an empty slot",
+    "discards an unconfirmed preview when the active house changes",
+    "discards an unconfirmed preview when the active user changes",
+    "keeps valid memory hit areas separate from every companion at 1280",
+    "keeps valid memory hit areas separate from every companion at 320"
+  ],
+  "date": "2026-10-15",
+  "initialHead": "7da0db5434c0de11a7d4a9aefa383fbb115dcc9d",
+  "verifiedSourceCommit": "ee328f0f1b37d281d0c8b96b22da7038c2d778fa",
+  "suites": 67,
+  "exitCodes": {
+    "typecheck": 0,
+    "eslint": 0,
+    "jest": 0,
+    "demoBuild": 0,
+    "demoExport": 0,
+    "supabaseBuild": 0,
+    "supabaseExport": 0
+  },
+  "actualSupabaseGameplay": "not-run: no isolated project/accounts; production metadata read only",
+  "independentReview": "attempted; tool usage limit prevented completion"
+}
