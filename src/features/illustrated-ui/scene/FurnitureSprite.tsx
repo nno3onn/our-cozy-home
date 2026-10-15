@@ -8,14 +8,15 @@ import { getIllustratedAsset } from './assetManifest';
 type Props = {
   itemId: string;
   style?: StyleProp<ImageStyle>;
+  resizeMode?: 'contain' | 'stretch';
 };
 
-export function FurnitureSprite({ itemId, style }: Props) {
+export function FurnitureSprite({ itemId, style, resizeMode = 'contain' }: Props) {
   const item = ITEM_BY_ID.get(itemId);
   const asset = item ? getIllustratedAsset(item.roomAssetKey) : undefined;
 
   if (asset?.source) {
-    return <Image accessibilityLabel={item?.nameKo} resizeMode="contain" source={asset.source} style={[styles.image, style]} />;
+    return <Image accessibilityLabel={item?.nameKo} resizeMode={resizeMode} source={asset.source} style={[styles.image, style]} />;
   }
 
   return <MiniaturePlaceholder category={item?.category} color={item?.previewColor ?? illustratedColors.peach} label={item?.nameKo ?? '가구'} style={style} />;

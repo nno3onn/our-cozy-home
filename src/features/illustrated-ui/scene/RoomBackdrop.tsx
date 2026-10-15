@@ -2,8 +2,8 @@ import { Image, StyleSheet, View } from 'react-native';
 
 import { getIllustratedAsset } from './assetManifest';
 
-export function RoomBackdrop() {
-  const sunnyRoom = getIllustratedAsset('illustrated:room:sunny');
+export function RoomBackdrop({ hasCurtain = false }: { hasCurtain?: boolean }) {
+  const sunnyRoom = getIllustratedAsset(hasCurtain ? 'illustrated:room:sunny-bare-window' : 'illustrated:room:sunny');
 
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>

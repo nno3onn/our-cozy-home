@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { ITEM_BY_ID } from '@/catalog/items';
+import { getCurtainWindowRect } from '@/game/room/curtainLayout';
 import * as ReactNative from 'react-native';
 
 import type { Animal, Member } from '@/domain/models';
@@ -65,14 +67,15 @@ export function RoomScene({ roomItems = [], availableWidth, animals, accentFurni
       onLayout={(event) => setViewport(event.nativeEvent.layout)}
       style={[styles.room, desktopSceneSize ? { aspectRatio: undefined, height: desktopSceneSize, width: desktopSceneSize } : undefined]}
     >
-      <RoomBackdrop />
+      <RoomBackdrop hasCurtain={roomItems.some(item => item.slotId === 'window' && ITEM_BY_ID.get(item.itemId)?.category === 'curtain')} />
       {roomItems.filter(item => !(item.slotId === 'floor-accent-left' && accentFurniture) && !(item.slotId === 'memory-shelf' && memoryFurniture)).map(item => {
         const layout = placedItemLayout[item.slotId];
         if (!layout) return null;
         const foot = toViewport(layout, viewport);
         const zIndex = getRoomItemDepth(item.slotId, item.slotId === 'memory-shelf' ? memory.y + 148 * scale * memoryArtScale : foot.y);
-        const style = item.slotId === 'memory-shelf' ? { position: 'absolute' as const, zIndex, left: memory.x, top: memory.y, width: 175 * scale * memoryArtScale, height: 148 * scale * memoryArtScale } : { position: 'absolute' as const, zIndex, left: foot.x - layout.width * scale / 2, top: foot.y - layout.height * scale, width: layout.width * scale, height: layout.height * scale };
-        const artwork = <FurnitureSprite itemId={item.itemId} />;
+        const isCurtain = item.slotId === 'window' && ITEM_BY_ID.get(item.itemId)?.category === 'curtain';
+        const style = isCurtain ? { position: 'absolute' as const, zIndex, left: 0, top: 0, width: viewport.width, height: viewport.height } : item.slotId === 'memory-shelf' ? { position: 'absolute' as const, zIndex, left: memory.x, top: memory.y, width: 175 * scale * memoryArtScale, height: 148 * scale * memoryArtScale } : { position: 'absolute' as const, zIndex, left: foot.x - layout.width * scale / 2, top: foot.y - layout.height * scale, width: layout.width * scale, height: layout.height * scale };
+        const artwork = <FurnitureSprite itemId={item.itemId} resizeMode={isCurtain ? 'stretch' : 'contain'} style={isCurtain ? getCurtainWindowRect(viewport, item.itemId) : undefined} />;
         return item.memoryId ? <ReactNative.Pressable key={item.slotId} style={style} hitSlop={getFurnitureHitSlop(style, viewport)} accessibilityRole="button" accessibilityLabel={`${item.name} 추억 열기`} onPress={() => onOpenMemory(item.memoryId!)} testID={`placed-room-${item.slotId}`}>{artwork}</ReactNative.Pressable>
           : <ReactNative.View key={item.slotId} style={style} pointerEvents="none" testID={`placed-room-${item.slotId}`}>{artwork}</ReactNative.View>;
       })}
