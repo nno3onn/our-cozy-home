@@ -27,6 +27,13 @@ import { useDecorateStore } from '../store/useDecorateStore';
 
 
 export function DecorateScreen() {
+  const homeQuery = useHomeSnapshot();
+  // A preview belongs to the house and account that created it. Reset all
+  // unconfirmed editing state when either scope changes (including logout).
+  return <DecorateSession key={`${homeQuery.data?.house.id}:${homeQuery.data?.currentUserId}`} />;
+}
+
+function DecorateSession() {
   const router = useRouter();
   const [roomWidth,setRoomWidth]=useState<number>();
   const [preview,setPreview]=useState<PlaceItemInput|null>(null);

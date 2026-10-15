@@ -1,11 +1,13 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import * as ReactNative from 'react-native';
 
 import { RepositoryProvider } from '@/repositories/RepositoryContext';
 import { DemoRepository } from '@/repositories/demo/DemoRepository';
 import { ConnectionProvider } from '@/network/ConnectionProvider';
 import type { ConnectionState } from '@/network/connectionState';
+
+import { homeSnapshotKey } from '@/features/room/hooks/useHomeSnapshot';
 
 import { DecorateScreen } from '../DecorateScreen';
 
@@ -150,4 +152,18 @@ it('confirms a pending preview once even when pressed repeatedly',async()=>{
  await fireEvent.press(view.getByRole('button',{name:'여기에 놓기'}));
  await fireEvent.press(view.getByRole('button',{name:'여기에 놓기'}));expect(place).toHaveBeenCalledTimes(1);expect(view.getByRole('button',{name:'미리보기 취소'})).toBeDisabled();
  finish();await waitFor(()=>expect(client.isMutating()).toBe(0));await view.unmount();client.clear();
+});
+
+it.each(['house', 'user'] as const)('discards an unconfirmed preview when the active %s changes', async scope => {
+  const { repository, client, view, place } = await previewFixture();
+  const snapshot = await repository.getHomeSnapshot();
+  await act(async () => {
+    client.setQueryData(homeSnapshotKey, scope === 'house'
+      ? { ...snapshot, house: { ...snapshot.house, id: 'another-house' } }
+      : { ...snapshot, currentUserId: 'user-minjun' });
+  });
+  await waitFor(() => expect(view.queryByTestId('placement-preview-controls')).toBeNull());
+  expect(place).not.toHaveBeenCalled();
+  await view.unmount();
+  client.clear();
 });

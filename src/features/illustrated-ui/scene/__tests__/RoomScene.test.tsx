@@ -151,3 +151,28 @@ it('caps a desktop room to the width remaining beside the inventory panel',async
  const view=await render(<RoomScene availableWidth={280} animals={[]} members={[]} isActive={false} selectedAnimalId={null} onOpenMemory={jest.fn()} onSelectAnimal={jest.fn()}/>);
  expect(ReactNative.StyleSheet.flatten(view.getByLabelText('네 동물이 함께 지내는 방').props.style)).toEqual(expect.objectContaining({width:280,height:280}));
 });
+
+it.each([320, 1280])('keeps valid memory hit areas separate from every companion at %i', async width => {
+  const memories = ITEM_CATALOG.filter(item => item.source === 'memory');
+  expect(memories.length).toBeGreaterThan(0);
+  for (const count of [1, 2, 3, 4]) {
+    for (const item of memories) for (const slotId of item.allowedSlotIds) {
+      const view = await render(<RoomScene animals={animals.slice(0, count)} members={members} isActive selectedAnimalId={null}
+        roomItems={[{ slotId, itemId: item.id, name: item.nameKo, memoryId: 'readable-memory' }]}
+        onOpenMemory={jest.fn()} onSelectAnimal={jest.fn()} />);
+      await fireEvent(view.getByLabelText('네 동물이 함께 지내는 방'), 'layout', { nativeEvent: { layout: { width, height: width } } });
+      const node = view.getByTestId(`placed-room-${slotId}`);
+      const style = ReactNative.StyleSheet.flatten(node.props.style);
+      const slop = node.props.hitSlop;
+      const rect = { left: Math.max(0, style.left - slop.left), right: Math.min(width, style.left + style.width + slop.right),
+        top: Math.max(0, style.top - slop.top), bottom: Math.min(width, style.top + style.height + slop.bottom) };
+      for (const animal of animals.slice(0, count)) {
+        const target = ReactNative.StyleSheet.flatten(view.getByLabelText(`${animal.name} 동물 선택`).props.style);
+        const overlapWidth = Math.max(0, Math.min(rect.right, target.left + target.width) - Math.max(rect.left, target.left));
+        const overlapHeight = Math.max(0, Math.min(rect.bottom, target.top + target.height) - Math.max(rect.top, target.top));
+        expect(overlapWidth * overlapHeight).toBe(0);
+      }
+      await view.unmount();
+    }
+  }
+});
