@@ -8,6 +8,12 @@ export type IllustratedAsset = {
 };
 
 const assets: Record<string, IllustratedAsset> = {
+  'illustrated:room:sunny-bare-window': {
+    key: 'illustrated:room:sunny-bare-window',
+    kind: 'room',
+    status: 'final',
+    source: require('../../../../assets/illustrated/rooms/sunny-room-bare-window.png'),
+  },
   'illustrated:room:sunny': {
     key: 'illustrated:room:sunny',
     kind: 'room',
