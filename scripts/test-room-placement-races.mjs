@@ -69,7 +69,7 @@ const items = [a1, a2, b1, c1, consumable].map(q).join(',');
 const slot1 = `${tag}_1`, slot2 = `${tag}_2`, definition = `${tag}_furniture`, consumableDefinition = `${tag}_consumable`;
 let house, newHouse;
 const results = [];
-const record = (name) => { results.push({ scenario: name, passed: true }); };
+const record = (name) => { results.push({ scenario: name, passed: true }); console.log(`Passed: ${name}`); };
 const rpc = (h, item, slot, version, key) => `select row_to_json(r) from public.place_owned_item_scoped(${q(h)},${q(item)},${q(slot)},${version},${q(key)}) r;`;
 async function call(uid, sql) { await x.auth(uid); try { return await x.ok(sql); } finally { await x.ok('commit;'); } }
 async function deny(uid, sql, expected = 'P0001') {
@@ -163,8 +163,14 @@ try {
   // PostgreSQL must roll back both the placement and its idempotency receipt.
   const offline = new Session('offline'); await offline.init(); await offline.auth(A);
   await offline.ok(rpc(house,a2,slot2,0,'offline-abort'));
-  const offlineClosed = new Promise((resolve) => offline.child.once('exit',resolve));
+  const offlineClosed = new Promise((resolve, reject) => {
+    const timer = setTimeout(() => { offline.child.kill(); reject(new Error('Terminated backend client did not close')); }, 10000);
+    offline.child.once('exit', () => { clearTimeout(timer); resolve(); });
+  });
   await admin.ok(`select pg_terminate_backend(pid) from pg_stat_activity where application_name=${q(offline.name)};`);
+  // psql can be blocked reading stdin while its idle server socket closes.
+  // A new command makes it observe the actual backend termination.
+  offline.child.stdin.write('select 1;\n');
   await offlineClosed;
   await check(`not exists(select 1 from public.room_placements where house_id=${q(house)} and slot_id=${q(slot2)})`, 'Disconnected uncommitted placement persisted');
   await call(A,rpc(house,a2,slot2,0,'offline-abort'));
