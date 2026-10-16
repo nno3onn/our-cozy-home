@@ -274,8 +274,8 @@ export class SupabaseRepository implements HomeRepository {
       .select('*')
       .eq('house_id', houseResult.data.id);
     if (placementsResult.error) throw mapSupabaseError(placementsResult.error);
-    const ownedItemsResult = await (this.client.from('owned_items' as never) as any)
-      .select('*')
+    const ownedItemsResult = await this.client.from('owned_items')
+      .select('id, profile_id, item_definition_id, kind, quantity, item_definitions(allowed_slot_ids)')
       .is('recovered_at', null)
       .or(`profile_id.eq.${authData.user.id},id.in.(${placementsResult.data.map((placement: { owned_item_id: string }) => placement.owned_item_id).join(',') || '00000000-0000-0000-0000-000000000000'})`);
     if (ownedItemsResult.error) throw mapSupabaseError(ownedItemsResult.error);
@@ -299,9 +299,9 @@ export class SupabaseRepository implements HomeRepository {
           : [];
       }),
       animals: animalsResult.data.map(mapAnimalRow),
-      ownedItems: ownedItemsResult.data.map((item: { id: string; profile_id: string; item_definition_id: string; kind: 'furniture' | 'consumable' | 'memory'; quantity: number }) => ({
-        id: item.id, ownerId: item.profile_id, itemDefinitionId: item.item_definition_id, kind: item.kind,
-        allowedSlotIds: [], quantity: item.quantity,
+      ownedItems: ownedItemsResult.data.map((item) => ({
+        id: item.id, ownerId: item.profile_id, itemDefinitionId: item.item_definition_id, kind: item.kind as HomeSnapshot['ownedItems'][number]['kind'],
+        allowedSlotIds: Array.isArray(item.item_definitions?.allowed_slot_ids) && item.item_definitions.allowed_slot_ids.every((slot): slot is string => typeof slot === 'string') ? item.item_definitions.allowed_slot_ids : [], quantity: item.quantity,
       })),
       placements: placementsResult.data.map((placement: { id: string; owned_item_id: string; slot_id: string; version: number }) => ({
         id: placement.id, ownedItemId: placement.owned_item_id, slotId: placement.slot_id, version: placement.version,

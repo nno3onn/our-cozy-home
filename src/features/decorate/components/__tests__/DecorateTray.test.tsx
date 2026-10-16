@@ -20,14 +20,14 @@ const snapshot: HomeSnapshot = {
 const placement: RoomPlacement = { id: 'placement-a', ownedItemId: 'owned-a', slotId: 'floor-accent-left', version: 2 };
 
 describe('DecorateTray', () => {
-  it('shows item ownership but only lets the current owner select a movable item', async () => {
+  it('shows only usable owned furniture while preserving owner labels', async () => {
     const onSelect = jest.fn();
     const view = await render(<DecorateTray isOnline isPending={false} onOpenShop={jest.fn()} onPlace={jest.fn()} onSelect={onSelect} placement={placement} selectedOwnedItemId={null} snapshot={snapshot} />);
 
     expect(view.getByRole('header', { name: '내 보관함' })).toBeOnTheScreen();
     expect(view.getByText('민트 매듭 쿠션')).toBeOnTheScreen();
     expect(view.getByText('소유자 다은')).toBeOnTheScreen();
-    expect(view.getByText('소유자 한섭')).toBeOnTheScreen();
+    expect(view.queryByText('소유자 한섭')).not.toBeOnTheScreen();
     fireEvent.press(view.getByRole('button', { name: '민트 매듭 쿠션 선택' }));
     expect(onSelect).toHaveBeenCalledWith('owned-a');
     expect(view.queryByRole('button', { name: '별 쿠션 선택' })).not.toBeOnTheScreen();

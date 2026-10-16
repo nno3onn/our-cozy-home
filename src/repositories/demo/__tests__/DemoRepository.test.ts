@@ -101,3 +101,25 @@ it('replays an identical placement request without changing the slot again', asy
   expect((await repository.getHomeSnapshot()).placements.find(p => p.id === first.id)?.version).toBe(2);
   await expect(repository.placeItem({ ...input, slotId: 'floor-accent-right' })).rejects.toThrow('placement_conflict');
 });
+
+describe('Demo placement safety', () => {
+  it('rejects furniture belonging to another member without changing the room', async () => {
+    const repository = new DemoRepository();
+    const before = await repository.getHomeSnapshot();
+    await expect(repository.placeItem({ houseId: 'house-dorandoran', requestId: 'safety-1', ownedItemId: 'owned-peach-cushion', slotId: 'floor-accent-right', expectedVersion: 0 })).rejects.toThrow('forbidden');
+    expect(await repository.getHomeSnapshot()).toEqual(before);
+  });
+  it('requires version zero for an empty slot', async () => {
+    const repository = new DemoRepository();
+    const before = await repository.getHomeSnapshot();
+    await expect(repository.placeItem({ houseId: 'house-dorandoran', requestId: 'safety-2', ownedItemId: 'owned-mint-cushion', slotId: 'floor-accent-right', expectedVersion: 5 })).rejects.toThrow('placement_conflict');
+    expect(await repository.getHomeSnapshot()).toEqual(before);
+  });
+  it('cannot place the same owned furniture in two slots', async () => {
+    const repository = new DemoRepository();
+    await repository.placeItem({ houseId: 'house-dorandoran', requestId: 'safety-3', ownedItemId: 'owned-mint-cushion', slotId: 'floor-accent-right', expectedVersion: 0 });
+    const before = await repository.getHomeSnapshot();
+    await expect(repository.placeItem({ houseId: 'house-dorandoran', requestId: 'safety-4', ownedItemId: 'owned-mint-cushion', slotId: 'floor-accent-left', expectedVersion: 1 })).rejects.toThrow('placement_conflict');
+    expect(await repository.getHomeSnapshot()).toEqual(before);
+  });
+});

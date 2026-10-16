@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import type { Animal, Member } from '@/domain/models';
 import type { AnimalAnchor, Viewport } from '@/game/room/roomLayout';
+import { ROOM_CONTROLS_DEPTH } from '@/game/room/sceneDepth';
 import { getHitTarget } from '@/game/room/roomLayout';
 import { colors, radii, spacing } from '@/theme/tokens';
 
@@ -63,6 +64,7 @@ export function AnimalActor({
 const styles = StyleSheet.create({
   target: {
     position: 'absolute',
+    zIndex: ROOM_CONTROLS_DEPTH,
   },
   nameTag: {
     position: 'absolute',
