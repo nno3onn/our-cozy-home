@@ -5,12 +5,14 @@ on:
     paths:
       - 'supabase/**'
       - 'scripts/test-room-placement-races.mjs'
+      - 'scripts/test-room-placement-realtime.mjs'
       - '.github/workflows/database-release.yml'
   push:
     branches: [main]
     paths:
       - 'supabase/**'
       - 'scripts/test-room-placement-races.mjs'
+      - 'scripts/test-room-placement-realtime.mjs'
       - '.github/workflows/database-release.yml'
 
 jobs:
@@ -44,3 +46,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y postgresql-client
           node scripts/test-room-placement-races.mjs
+      - name: Verify scoped placement with actual local Auth and REST
+        env:
+          ROOM_PLACEMENT_DISPOSABLE_DB: '1'
+        run: node scripts/test-room-placement-realtime.mjs

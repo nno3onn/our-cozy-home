@@ -72,12 +72,12 @@ const results = [];
 const record = (name) => { results.push({ scenario: name, passed: true }); };
 const rpc = (h, item, slot, version, key) => `select row_to_json(r) from public.place_owned_item_scoped(${q(h)},${q(item)},${q(slot)},${version},${q(key)}) r;`;
 async function call(uid, sql) { await x.auth(uid); try { return await x.ok(sql); } finally { await x.ok('commit;'); } }
-async function deny(uid, sql) {
+async function deny(uid, sql, expected = 'P0001') {
   await x.auth(uid);
   const r = await x.run(sql);
   await x.ok('rollback;');
   assert.equal(r.error, true, `Expected denial: ${sql}`);
-  assert.ok(!['57014', '55P03', '40P01', '25P02', '42883', '42601'].includes(r.state), `Unexpected failure rather than domain denial: ${r.stderr}`);
+  assert.equal(r.state, expected, `Expected domain denial ${expected}: ${r.stderr}`);
 }
 async function check(expression, message) {
   const lines = await admin.ok(`select case when (${expression}) then true else false end;`);
@@ -129,11 +129,11 @@ try {
     values ${[definition,consumableDefinition].map((id,i)=>`(${q(id)},'shop','furniture','race','race',0,${i===1},'race','race','race','{}','{}',${q(JSON.stringify([slot1,slot2]))},0,'none','placeholder','#123456')`).join(',')};
     insert into public.owned_items(id,profile_id,item_definition_id,kind) values
     (${q(a1)},${q(A)},${q(definition)},'furniture'),(${q(a2)},${q(A)},${q(definition)},'furniture'),(${q(b1)},${q(B)},${q(definition)},'furniture'),(${q(c1)},${q(C)},${q(definition)},'furniture'),(${q(consumable)},${q(A)},${q(consumableDefinition)},'consumable');`);
-  await deny(C, rpc(house,c1,slot1,0,'outside'));
-  await deny(A, rpc(house,b1,slot1,0,'foreign'));
-  await deny(A, rpc(house,consumable,slot1,0,'consumable'));
+  await deny(C, rpc(house,c1,slot1,0,'outside'),'42501');
+  await deny(A, rpc(house,b1,slot1,0,'foreign'),'42501');
+  await deny(A, rpc(house,consumable,slot1,0,'consumable'),'42501');
   await deny(A, rpc(house,a1,'invalid-slot',0,'invalid-slot'));
-  await deny(A, `select * from public.place_owned_item(${q(a1)},${q(slot1)},0);`);
+  await deny(A, `select * from public.place_owned_item(${q(a1)},${q(slot1)},0);`,'42501');
   record('membership, ownership, kind, allowed-slot and legacy RPC denials');
   await x.ok(`begin isolation level repeatable read; set local role authenticated; select set_config('request.jwt.claim.sub',${q(A)},true);`);
   const staleSnapshot = await x.run(rpc(house,a1,slot1,0,'old-snapshot'));
@@ -201,10 +201,10 @@ try {
   await assetCount(); record('leave-first / place-second');
 
   newHouse = JSON.parse((await call(A,`select row_to_json(r) from public.create_house(${q(`${tag.slice(0,23)}_2`)},'new-house') r;`)).at(-1)).house_id;
-  await deny(A,rpc(house,a1,slot2,0,'delayed-old-house'));
+  await deny(A,rpc(house,a1,slot2,0,'delayed-old-house'),'42501');
   await check(`not exists(select 1 from public.room_placements where house_id=${q(newHouse)})`, 'Delayed old-house command redirected into new house');
   await call(A,rpc(newHouse,a1,slot2,0,'new-house-placement'));
-  await deny(A,rpc(house,a1,slot1,0,'race-A'));
+  await deny(A,rpc(house,a1,slot1,0,'race-A'),'42501');
   await check(`exists(select 1 from public.room_placements where house_id=${q(newHouse)} and owned_item_id=${q(a1)} and version=1)`, 'Old receipt mutated current home');
   await assetCount(); record('delayed old-house request after create-house and historical retry');
   console.log(JSON.stringify({ passed:true, scenarios:results }, null,2));
