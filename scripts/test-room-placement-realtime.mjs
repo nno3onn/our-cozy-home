@@ -11,7 +11,7 @@ import { randomUUID } from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 import WebSocket from 'ws';
 
-const timeoutMs = 15000;
+const timeoutMs = 20000;
 const tag = `rt-${randomUUID()}`;
 const report = { status: 'running', passed: false, scenarios: [] };
 const users = [], clients = [], itemIds = [randomUUID(), randomUUID()];
@@ -174,12 +174,17 @@ try {
   if (realtime) {
     const session = await ok(b.auth.getSession(), 'B session for Realtime');
     await b.realtime.setAuth(session.session.access_token);
-    channel = b.channel(tag).on('postgres_changes', { event: '*', schema: 'public', table: 'room_placements', filter: `house_id=eq.${houseId}` }, eventReceived);
+    // Channel join alone can precede WAL subscription readiness. The current
+    // SDK supports waiting for the server's postgres_changes confirmation.
+    channel = b.channel(tag, { config: { postgres_changes_options: { wait: true, timeout: 15000 } } }).on('postgres_changes', { event: '*', schema: 'public', table: 'room_placements', filter: `house_id=eq.${houseId}` }, eventReceived);
     await new Promise((resolve, reject) => {
       const timer = setTimeout(() => reject(new Error('Authenticated B subscription timed out')), timeoutMs);
-      channel.subscribe((subscriptionStatus) => {
+      channel.on('system', {}, (payload) => {
+        report.subscription = { extension: payload.extension, status: payload.status, message: safe(payload.message) };
+      });
+      channel.subscribe((subscriptionStatus, error) => {
         if (subscriptionStatus === 'SUBSCRIBED') { clearTimeout(timer); resolve(); }
-        if (['CHANNEL_ERROR', 'TIMED_OUT', 'CLOSED'].includes(subscriptionStatus)) { clearTimeout(timer); reject(new Error(`B subscription ${subscriptionStatus}`)); }
+        if (['CHANNEL_ERROR', 'TIMED_OUT', 'CLOSED'].includes(subscriptionStatus)) { clearTimeout(timer); reject(new Error(`B subscription ${subscriptionStatus}: ${safe(error?.message ?? '')}`)); }
       });
     });
   } else {
@@ -188,6 +193,9 @@ try {
   const place = (itemId, version, key) => rpc(a, 'place_owned_item_scoped', { p_house_id: houseId, p_owned_item_id: itemId, p_slot_id: slotId, p_expected_version: version, p_request_key: key });
   const inserted = await place(itemIds[0], 0, `${tag}-insert`);
   assert.equal(inserted.version, 1);
+  const initialRead = await placements(b);
+  assert.equal(initialRead.length, 1, 'B RLS REST read cannot see the committed A placement');
+  assert.equal(initialRead[0].owned_item_id, itemIds[0]);
   if (realtime) await eventFor('INSERT', itemIds[0], 1);
   const updated = await place(itemIds[1], 1, `${tag}-update`);
   assert.equal(updated.placement_id, inserted.placement_id);
@@ -207,11 +215,14 @@ try {
   assert.equal(rows.length, 1); assert.equal(rows[0].id, inserted.placement_id); assert.equal(rows[0].version, 2);
   passed('A sign-out/re-login and refresh preserve server placement');
 
+  // Commit another update and leave before B reconciles it. A late event
+  // must never be treated as authoritative state; B reads the now-empty room.
+  await place(itemIds[0], 2, `${tag}-update-before-leave`);
   await rpc(a, 'leave_house', {});
   assert.equal((await placements(b)).length, 0, 'B fresh REST still sees departed A placement');
   const inventory = await ok(a.from('owned_items').select('id,quantity,recovered_at').in('id', itemIds), 'A recovered inventory');
   assert.equal(inventory.length, 2); assert.ok(inventory.every((i) => i.quantity === 1 && i.recovered_at === null));
-  passed('leave removes placement in B fresh REST and preserves A inventory');
+  passed('A update followed immediately by leave: B fresh REST empty, A assets preserved');
   const valid = await ok(a.auth.getUser(), 'departed A JWT remains valid');
   assert.equal(valid.user.id, users[0].id);
   const denied = await a.rpc('place_owned_item_scoped', { p_house_id: houseId, p_owned_item_id: itemIds[0], p_slot_id: slotId, p_expected_version: 0, p_request_key: `${tag}-departed` });
