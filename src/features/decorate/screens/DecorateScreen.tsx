@@ -1,4 +1,7 @@
 import { StyleSheet, View } from 'react-native';
+import { useRef } from 'react';
+import type { PlaceItemInput } from '@/domain/models';
+import { createPlacementRequestId } from '../placementRequest';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -20,6 +23,7 @@ const SLOT_ID = 'floor-accent-left';
 
 export function DecorateScreen() {
   const router = useRouter();
+  const request = useRef<PlaceItemInput | null>(null);
   const isOnline = useConnectionStatus();
   const homeQuery = useHomeSnapshot();
   const placeMutation = usePlaceItem();
@@ -39,8 +43,14 @@ export function DecorateScreen() {
   const accentDefinition = placed ? ITEM_BY_ID.get(placed.itemDefinitionId) : undefined;
 
   const placeSelected = () => {
-    if (!selected) return;
-    placeMutation.mutate({ ownedItemId: selected.id, slotId: SLOT_ID, expectedVersion: placement?.version ?? 0 });
+    if (!selected || !isOnline || placeMutation.isPending) return;
+    const houseId = homeQuery.data.house.id;
+    const expectedVersion = placement?.version ?? 0;
+    if (!request.current || request.current.houseId !== houseId || request.current.ownedItemId !== selected.id
+      || request.current.slotId !== SLOT_ID || request.current.expectedVersion !== expectedVersion) {
+      request.current = { houseId, requestId: createPlacementRequestId(), ownedItemId: selected.id, slotId: SLOT_ID, expectedVersion };
+    }
+    placeMutation.mutate(request.current);
   };
 
   return (

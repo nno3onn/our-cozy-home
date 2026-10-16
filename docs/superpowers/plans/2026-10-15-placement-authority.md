@@ -1,0 +1,15 @@
+# Placement authority and departure race plan
+
+User-authorized execution: independently fix #165, preserve dirty checkout/backups and #164/#167, test real transactions in isolation, do not modify production or deploy/merge.
+
+1. Audit current main RPCs, constraints, caller and all membership writers. Record code-inspection risks separately from reproduced behavior. Baseline main TS/Jest; snapshot protected PR heads.
+2. Add failing repository/Demo contract tests for explicit house/request key, fail-closed missing scope, receipt retries and old-house rejection. Keep all old test names and scenarios; augment inputs as required.
+3. CLI-create a new migration: `place_owned_item_scoped(house, owned, slot, expectedVersion, requestKey)`, private-to-callers receipt table, auth/active profile/request validation. Lock caller advisory then requested house; plain membership recheck after lock avoids existing invite membership→house inversion. Require READ COMMITTED to avoid snapshot-stale authorization. Maintain existing allowed shared-slot replacement with the caller's own item (user explicitly confirmed); no foreign item commands or asset deletion. Stub and revoke legacy RPC, with no fallback.
+4. Update client capture and Demo implementation; keep request identity stable across ambiguous retries, capture house before dispatch, invalidate only authoritative reads. Integrate #164 in a separate branch and preserve its captured preview scope/version.
+5. pgTAP assertions for grants/RLS/new/legacy contract and actual fixtures; separate psql session runner for lock-observed place/leave schedules, same-slot A/B, own/foreign items, stale old-house requests, duplicates, abort/disconnect retry. Use loopback-only disposable DB guard. Execute through isolated GitHub Actions if local runtime unavailable.
+6. Independent main-based Draft PR plus an integration-only branch merging exact #164/#167/new commits. Run TypeScript, ESLint, full Jest, both web builds/export, SQL suite and actual concurrency runner in each. Do not claim mocked transport tests prove A/B websocket delivery.
+7. Before first push, disable Vercel git deployment for these two branches in branch-scoped config. Do not dispatch production migration or deployment workflows. Report exact SHAs, errors and missing device/live-auth/browser evidence; keep issue/PR unclosed until acceptance gates reviewed.
+
+Files: new migration + new SQL test; `scripts/test-room-placement-races.mjs`; database CI workflow for disposable psql runner; domain input, Supabase/Demo repositories and placement client/tests; branch-scoped `vercel.json` deployment guard; verification docs. No old migration edits, no economy/assets UI work.
+
+Rollout: review isolated results, deploy client/server in a coordinated approved maintenance window because old clients must fail closed; retain assets and receipt records. Roll back by disabling new execution/read-only placement, never re-enable insecure legacy RPC or drop receipts/data. Actual rollout is not part of this authorization.

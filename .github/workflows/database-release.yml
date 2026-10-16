@@ -4,11 +4,13 @@ on:
   pull_request:
     paths:
       - 'supabase/**'
+      - 'scripts/test-room-placement-races.mjs'
       - '.github/workflows/database-release.yml'
   push:
     branches: [main]
     paths:
       - 'supabase/**'
+      - 'scripts/test-room-placement-races.mjs'
       - '.github/workflows/database-release.yml'
 
 jobs:
@@ -35,3 +37,10 @@ jobs:
         run: supabase db reset --local
       - name: Run pgTAP release matrix
         run: supabase test db
+      - name: Run real placement and departure transaction races
+        env:
+          ROOM_PLACEMENT_DISPOSABLE_DB: '1'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y postgresql-client
+          node scripts/test-room-placement-races.mjs

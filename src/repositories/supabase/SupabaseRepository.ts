@@ -321,7 +321,9 @@ export class SupabaseRepository implements HomeRepository {
   }
 
   async placeItem(input: PlaceItemInput): Promise<RoomPlacement> {
-    const { data, error } = await this.client.rpc('place_owned_item' as never, {
+    if (!input.houseId || !input.requestId) throw new DomainError('forbidden', 'placement_scope_required');
+    const { data, error } = await this.client.rpc('place_owned_item_scoped' as never, {
+      p_house_id: input.houseId, p_request_key: input.requestId,
       p_owned_item_id: input.ownedItemId, p_slot_id: input.slotId, p_expected_version: input.expectedVersion,
     } as never);
     if (error) throw mapSupabaseError(error);

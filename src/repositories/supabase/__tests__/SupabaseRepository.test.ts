@@ -227,8 +227,8 @@ describe('SupabaseRepository', () => {
   it('sends the expected placement version to the server placement RPC', async () => {
     const rpc = jest.fn().mockResolvedValue({ data: [{ placement_id: 'placement-1', owned_item_id: 'owned-1', slot_id: 'floor-accent-left', version: 2 }], error: null });
     const repository = new SupabaseRepository({ rpc } as unknown as SupabaseClient<Database>);
-    await expect(repository.placeItem({ ownedItemId: 'owned-1', slotId: 'floor-accent-left', expectedVersion: 1 })).resolves.toEqual({ id: 'placement-1', ownedItemId: 'owned-1', slotId: 'floor-accent-left', version: 2 });
-    expect(rpc).toHaveBeenCalledWith('place_owned_item', { p_owned_item_id: 'owned-1', p_slot_id: 'floor-accent-left', p_expected_version: 1 });
+    await expect(repository.placeItem({ houseId: 'house-1', requestId: 'placement-request', ownedItemId: 'owned-1', slotId: 'floor-accent-left', expectedVersion: 1 })).resolves.toEqual({ id: 'placement-1', ownedItemId: 'owned-1', slotId: 'floor-accent-left', version: 2 });
+    expect(rpc).toHaveBeenCalledWith('place_owned_item_scoped', { p_house_id: 'house-1', p_request_key: 'placement-request', p_owned_item_id: 'owned-1', p_slot_id: 'floor-accent-left', p_expected_version: 1 });
   });
 
   it('creates a private draft without accepting a client supplied owner or house', async () => {
@@ -289,4 +289,11 @@ describe('SupabaseRepository', () => {
     ]);
     expect(rpc).toHaveBeenCalledWith('get_memory_contribution_detail', { p_memory_id: 'memory-1' });
   });
+});
+
+it('fails closed without a captured house or request key and never calls a legacy RPC', async () => {
+  const rpc = jest.fn().mockResolvedValue({ data: [], error: null });
+  const repository = new SupabaseRepository({ rpc } as unknown as SupabaseClient<Database>);
+  await expect(repository.placeItem({ ownedItemId: 'owned-1', slotId: 'floor-accent-left', expectedVersion: 0 } as import('@/domain/models').PlaceItemInput)).rejects.toMatchObject({ code: 'forbidden' });
+  expect(rpc).not.toHaveBeenCalled();
 });
