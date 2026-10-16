@@ -1,0 +1,80 @@
+{
+  "testedSha": "d5a4dce8f5854a0a29067f91e5cbe3cb46ab9bb6",
+  "run": "https://github.com/nno3onn/our-cozy-home/actions/runs/38843300779",
+  "conclusion": "success",
+  "pgTap": {
+    "files": 22,
+    "tests": 283,
+    "result": "PASS"
+  },
+  "races": {
+    "passed": true,
+    "scenarios": [
+      {
+        "scenario": "membership, ownership, kind, allowed-slot and legacy RPC denials",
+        "passed": true
+      },
+      {
+        "scenario": "caller-supplied stale transaction snapshot rejected",
+        "passed": true
+      },
+      {
+        "scenario": "A/B same-slot contention and uniqueness/version guards",
+        "passed": true
+      },
+      {
+        "scenario": "response-lost retry, payload conflict, stale receipt and aborted/offline retry",
+        "passed": true
+      },
+      {
+        "scenario": "invite membership lock versus placement house lock",
+        "passed": true
+      },
+      {
+        "scenario": "place-first / leave-second",
+        "passed": true
+      },
+      {
+        "scenario": "leave-first / place-second",
+        "passed": true
+      },
+      {
+        "scenario": "delayed old-house request after create-house and historical retry",
+        "passed": true
+      }
+    ]
+  },
+  "authRestRealtime": {
+    "status": "skipped",
+    "passed": null,
+    "scenarios": [
+      {
+        "scenario": "genuine password Auth and house onboarding/invite RPCs",
+        "status": "passed"
+      },
+      {
+        "scenario": "authenticated B postgres_changes INSERT/UPDATE",
+        "status": "skipped",
+        "reason": "room_placements absent from actual supabase_realtime publication"
+      },
+      {
+        "scenario": "B fresh REST matches placement RPC and Realtime state",
+        "status": "passed"
+      },
+      {
+        "scenario": "A sign-out/re-login and refresh preserve server placement",
+        "status": "passed"
+      },
+      {
+        "scenario": "A update followed immediately by leave: B fresh REST empty, A assets preserved",
+        "status": "passed"
+      },
+      {
+        "scenario": "departed A valid JWT cannot place into former house",
+        "status": "passed"
+      }
+    ],
+    "reason": "REST/Auth checks passed; Realtime publication unavailable, so full integration is unverified"
+  },
+  "productionDatabaseTouched": false
+}

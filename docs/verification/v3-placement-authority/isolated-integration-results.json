@@ -1,0 +1,83 @@
+{
+  "testedSha": "b7262227e907871f1be7cdc1721862734c0cdc1e",
+  "run": "https://github.com/nno3onn/our-cozy-home/actions/runs/38843313581",
+  "conclusion": "success",
+  "pgTap": {
+    "files": 23,
+    "tests": 291,
+    "result": "PASS"
+  },
+  "races": {
+    "passed": true,
+    "scenarios": [
+      {
+        "scenario": "membership, ownership, kind, allowed-slot and legacy RPC denials",
+        "passed": true
+      },
+      {
+        "scenario": "caller-supplied stale transaction snapshot rejected",
+        "passed": true
+      },
+      {
+        "scenario": "A/B same-slot contention and uniqueness/version guards",
+        "passed": true
+      },
+      {
+        "scenario": "response-lost retry, payload conflict, stale receipt and aborted/offline retry",
+        "passed": true
+      },
+      {
+        "scenario": "invite membership lock versus placement house lock",
+        "passed": true
+      },
+      {
+        "scenario": "place-first / leave-second",
+        "passed": true
+      },
+      {
+        "scenario": "leave-first / place-second",
+        "passed": true
+      },
+      {
+        "scenario": "delayed old-house request after create-house and historical retry",
+        "passed": true
+      }
+    ]
+  },
+  "authRestRealtime": {
+    "status": "passed",
+    "passed": true,
+    "scenarios": [
+      {
+        "scenario": "genuine password Auth and house onboarding/invite RPCs",
+        "status": "passed"
+      },
+      {
+        "scenario": "authenticated B receives actual postgres_changes INSERT and UPDATE",
+        "status": "passed"
+      },
+      {
+        "scenario": "B fresh REST matches placement RPC and Realtime state",
+        "status": "passed"
+      },
+      {
+        "scenario": "A sign-out/re-login and refresh preserve server placement",
+        "status": "passed"
+      },
+      {
+        "scenario": "A update followed immediately by leave: B fresh REST empty, A assets preserved",
+        "status": "passed"
+      },
+      {
+        "scenario": "departed A valid JWT cannot place into former house",
+        "status": "passed"
+      }
+    ],
+    "subscription": {
+      "extension": "postgres_changes",
+      "status": "ok",
+      "message": "Subscribed to PostgreSQL"
+    }
+  },
+  "productionDatabaseTouched": false
+}
