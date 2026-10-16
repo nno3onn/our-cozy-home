@@ -46,7 +46,8 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y postgresql-client
           node scripts/test-room-placement-races.mjs
-      - name: Verify scoped placement with actual local Auth and REST
+      - name: Verify scoped placement with actual local Auth REST and Realtime
         env:
           ROOM_PLACEMENT_DISPOSABLE_DB: '1'
+          ROOM_PLACEMENT_REQUIRE_REALTIME: '1'
         run: node scripts/test-room-placement-realtime.mjs
