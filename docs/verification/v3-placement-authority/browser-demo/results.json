@@ -1,0 +1,36 @@
+{
+  "sourceSha": "e519988c9e4907801fdfb6cd9205409343ef33f7",
+  "mode": "demo",
+  "environment": "local in-app browser, agent-driven",
+  "viewports": [
+    {
+      "width": 1280,
+      "height": 800,
+      "documentWidth": 1280,
+      "documentHeight": 800
+    },
+    {
+      "width": 320,
+      "height": 740,
+      "documentWidth": 320,
+      "documentHeight": 740
+    }
+  ],
+  "passed": [
+    "preview does not finalize placement label",
+    "cancel restores original placement / empty slot",
+    "explicit confirm updates visible placement",
+    "right-slot placement preserves left-slot cushion",
+    "already placed item cannot be placed again",
+    "explicit Demo reset restores seed",
+    "no outer horizontal overflow",
+    "no captured browser warn/error logs"
+  ],
+  "limitations": [
+    "reload API retained current state; fresh JS process not proven",
+    "new direct decorate tab blocked by browser policy",
+    "not human two-person Supabase UI play",
+    "not native devices"
+  ],
+  "productionWrites": false
+}
