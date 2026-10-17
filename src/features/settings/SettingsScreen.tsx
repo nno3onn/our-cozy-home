@@ -89,7 +89,6 @@ export function SettingsScreen({
             <HouseLeaveControls
               onLeave={() => repository.leaveHouse()}
               onLeft={() => {
-                void queryClient.resetQueries();
                 onLeftHouse?.();
               }}
             />

@@ -204,6 +204,9 @@ export class SupabaseRepository implements HomeRepository {
 
   async getHomeSnapshot(): Promise<HomeSnapshot> {
     const { data: authData, error: authError } = await this.client.auth.getUser();
+    if (authError && (authError.name === 'AuthRetryableFetchError' || authError.status === 0 || (authError.status ?? 0) >= 500)) {
+      throw new DomainError('network_unavailable');
+    }
     if (authError || !authData.user) {
       throw new DomainError('unauthenticated');
     }
@@ -279,6 +282,13 @@ export class SupabaseRepository implements HomeRepository {
       .is('recovered_at', null)
       .or(`profile_id.eq.${authData.user.id},id.in.(${placementsResult.data.map((placement: { owned_item_id: string }) => placement.owned_item_id).join(',') || '00000000-0000-0000-0000-000000000000'})`);
     if (ownedItemsResult.error) throw mapSupabaseError(ownedItemsResult.error);
+
+    // A multi-request snapshot is not one SQL transaction. Recheck membership
+    // after reading the room so a departure during those reads fails closed.
+    const accessResult = await this.client.from('house_memberships').select('id')
+      .eq('id', membershipResult.data.id).eq('status', 'active').maybeSingle();
+    if (accessResult.error) throw mapSupabaseError(accessResult.error);
+    if (!accessResult.data) throw new DomainError('not_found', 'active_house_not_found');
 
     return {
       currentUserId: authData.user.id,
