@@ -1,12 +1,25 @@
 import { useEffect } from 'react';
 import type { QueryClient } from '@tanstack/react-query';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { keysForRealtimeTable, type RealtimeTable } from './queryInvalidation';
+import { keysForRealtimeTable } from './queryInvalidation';
 
-const tables: RealtimeTable[]=['house_memberships','room_placements','memories','memory_contributions','habit_learning'];
+let subscriptionId = 0;
+
 export function subscribeHouseRealtime(client: SupabaseClient, queryClient: QueryClient, houseId: string) {
- const channel=client.channel(`house:${houseId}`);
- tables.forEach(table=>channel.on('postgres_changes' as never,{event:'*',schema:'public',table,filter:`house_id=eq.${houseId}`} as never,()=>{keysForRealtimeTable(table).forEach(key=>void queryClient.invalidateQueries({queryKey:key}));}));
- channel.subscribe(); return ()=>{void client.removeChannel(channel);};
+  let active = true;
+  const refresh = () => {
+    if (active) keysForRealtimeTable('room_placements').forEach(queryKey => {
+      void queryClient.invalidateQueries({ queryKey });
+    });
+  };
+  // realtime-js reuses same-topic channels while async removal is pending.
+  const channel = client.channel(`house:${houseId}:${++subscriptionId}`);
+  // DELETE does not receive the same RLS checks as INSERT/UPDATE. A bounded
+  // authoritative snapshot refresh handles removals without exposing old rows.
+  for (const event of ['INSERT', 'UPDATE'] as const) {
+    channel.on('postgres_changes', { event, schema: 'public', table: 'room_placements', filter: `house_id=eq.${houseId}` }, refresh);
+  }
+  channel.subscribe(status => { if (status === 'SUBSCRIBED') refresh(); });
+  return () => { active = false; void client.removeChannel(channel); };
 }
 export function useHouseRealtime(client: SupabaseClient|undefined,queryClient:QueryClient,houseId:string|undefined){useEffect(()=>client&&houseId?subscribeHouseRealtime(client,queryClient,houseId):undefined,[client,queryClient,houseId]);}

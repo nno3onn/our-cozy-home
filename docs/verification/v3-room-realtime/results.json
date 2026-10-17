@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-15",
+  "base": "95f031889cdf66bb5c5c94406014c4e7d44faa1f",
+  "baselineSuites": 64,
+  "baselineTests": 258,
+  "finalSuites": 66,
+  "finalTests": 267,
+  "success": true,
+  "removedTests": [],
+  "addedTests": [
+    "does not query or subscribe signed out, then binds and releases each active house",
+    "does not reuse an SDK channel that is still asynchronously leaving",
+    "does not subscribe a cached house belonging to the previous account",
+    "invalidates the actual room query without accepting event data as state",
+    "refreshes after a missed event and releases access when the authoritative lookup fails",
+    "refreshes the snapshot when a subscription first connects or reconnects",
+    "releases the channel offline or in background, then reconciles when active again",
+    "removes the channel and ignores late events from a departed house",
+    "subscribes only to RLS-checked room inserts and updates in the intended house"
+  ],
+  "exitCodes": {
+    "typecheck": 0,
+    "eslint": 0,
+    "jest": 0,
+    "demoBuild": 0,
+    "demoExport": 0,
+    "supabaseBuild": 0,
+    "supabaseExport": 0
+  },
+  "sql": {
+    "exitCode": 1,
+    "reason": "supabase start is not running",
+    "pgTapAssertionsAdded": 8,
+    "executed": false
+  },
+  "liveSupabaseAB": "not run",
+  "productionWrites": 0,
+  "originalFilesChecked": 549,
+  "originalFilesChanged": 0
+}

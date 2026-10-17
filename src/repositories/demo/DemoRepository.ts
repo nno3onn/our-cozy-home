@@ -35,6 +35,7 @@ function clone<T>(value: T): T {
 
 export class DemoRepository implements HomeRepository {
   private state: DemoState = clone(demoSeed);
+  private placementResults = new Map<string, { input: PlaceItemInput; result: RoomPlacement }>();
   private purchaseResults = new Map<string, PurchaseResult>();
   private draftResults = new Map<string, CreateMemoryDraftInput>();
 
@@ -113,6 +114,13 @@ export class DemoRepository implements HomeRepository {
   }
 
   async placeItem(input: PlaceItemInput): Promise<RoomPlacement> {
+    if (input.houseId !== this.state.home.house.id || !input.requestId) throw new Error('forbidden');
+    const key = `${this.state.home.currentUserId}:${input.requestId}`;
+    const receipt = this.placementResults.get(key);
+    if (receipt) {
+      if ((['houseId', 'ownedItemId', 'slotId', 'expectedVersion'] as const).some(field => receipt.input[field] !== input[field])) throw new Error('placement_conflict');
+      return clone(receipt.result);
+    }
     const item = this.state.home.ownedItems.find(
       (candidate) => candidate.id === input.ownedItemId,
     );
@@ -124,17 +132,20 @@ export class DemoRepository implements HomeRepository {
       throw new Error('owned_item_not_found');
     }
 
+    if (item.ownerId !== this.state.home.currentUserId || item.quantity <= 0 || item.kind === 'consumable') throw new Error('forbidden');
+
     if (!item.allowedSlotIds.includes(input.slotId)) {
       throw new Error('incompatible_slot');
     }
 
-    if (placement && placement.version !== input.expectedVersion) {
+    if ((placement?.version ?? 0) !== input.expectedVersion || this.state.home.placements.some(candidate => candidate.ownedItemId === item.id && candidate.slotId !== input.slotId)) {
       throw new Error('placement_conflict');
     }
 
     if (placement) {
       placement.ownedItemId = item.id;
       placement.version += 1;
+      this.placementResults.set(key, { input: clone(input), result: clone(placement) });
       return clone(placement);
     }
 
@@ -145,6 +156,7 @@ export class DemoRepository implements HomeRepository {
       version: 1,
     };
     this.state.home.placements.push(created);
+    this.placementResults.set(key, { input: clone(input), result: clone(created) });
     return clone(created);
   }
 
@@ -179,6 +191,7 @@ export class DemoRepository implements HomeRepository {
   }
 
   async resetDemo(): Promise<void> {
+    this.placementResults.clear();
     this.state = clone(demoSeed);
     this.purchaseResults.clear();
     this.draftResults.clear();

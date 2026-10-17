@@ -156,6 +156,8 @@ export type HomeSnapshot = {
 };
 
 export type PlaceItemInput = {
+  houseId: string;
+  requestId: string;
   ownedItemId: string;
   slotId: string;
   expectedVersion: number;

@@ -4,11 +4,15 @@ on:
   pull_request:
     paths:
       - 'supabase/**'
+      - 'scripts/test-room-placement-races.mjs'
+      - 'scripts/test-room-placement-realtime.mjs'
       - '.github/workflows/database-release.yml'
   push:
     branches: [main]
     paths:
       - 'supabase/**'
+      - 'scripts/test-room-placement-races.mjs'
+      - 'scripts/test-room-placement-realtime.mjs'
       - '.github/workflows/database-release.yml'
 
 jobs:
@@ -35,3 +39,18 @@ jobs:
         run: supabase db reset --local
       - name: Run pgTAP release matrix
         run: supabase test db
+      - name: Run real placement and departure transaction races
+        env:
+          ROOM_PLACEMENT_DISPOSABLE_DB: '1'
+        run: |
+          if ! command -v psql >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y postgresql-client
+          fi
+          psql --version
+          node scripts/test-room-placement-races.mjs
+      - name: Verify scoped placement with actual local Auth REST and Realtime
+        env:
+          ROOM_PLACEMENT_DISPOSABLE_DB: '1'
+          ROOM_PLACEMENT_REQUIRE_REALTIME: '1'
+        run: node scripts/test-room-placement-realtime.mjs

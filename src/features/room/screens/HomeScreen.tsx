@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { AnimalAction } from '@/domain/models';
 import { DomainError } from '@/domain/errors';
+import { getPlacedRoomItems } from '@/game/room/placedItems';
 import { ITEM_BY_ID } from '@/catalog/items';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -131,6 +132,7 @@ export function HomeScreen({
       <View style={styles.stage}>
         {!isOnline ? <OfflineReadOnlyBanner /> : null}
         <RoomCanvas
+          roomItems={getPlacedRoomItems(homeQuery.data, memoriesQuery.data)}
           accentFurniture={accentFurniture}
           animals={homeQuery.data.animals}
           isActive={isActive}
