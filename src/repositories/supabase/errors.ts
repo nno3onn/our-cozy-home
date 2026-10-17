@@ -6,7 +6,7 @@ export function mapSupabaseError(error: PostgrestError): DomainError {
   const code: DomainErrorCode =
     error.code === '42501'
       ? 'forbidden'
-      : error.code === '23505'
+      : error.code === '23505' || (error.code === 'P0001' && error.message === 'placement_conflict')
         ? 'conflict'
         : error.code.startsWith('PGRST')
           ? 'not_found'

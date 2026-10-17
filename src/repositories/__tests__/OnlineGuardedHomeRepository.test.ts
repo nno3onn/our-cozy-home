@@ -41,7 +41,7 @@ describe('OnlineGuardedHomeRepository', () => {
     await expect(guarded.getHomeSnapshot()).resolves.toEqual({});
     await expect(guarded.claimAttendance()).rejects.toEqual(new DomainError('network_unavailable', 'offline_read_only'));
     await expect(guarded.purchaseItem({ itemDefinitionId: 'rug-leaf', requestId: 'request-1' })).rejects.toEqual(new DomainError('network_unavailable', 'offline_read_only'));
-    await expect(guarded.placeItem({ ownedItemId: 'owned-1', slotId: 'floor-accent-left', expectedVersion: 1 })).rejects.toEqual(new DomainError('network_unavailable', 'offline_read_only'));
+    await expect(guarded.placeItem({ houseId: 'house-1', requestId: 'placement-1', ownedItemId: 'owned-1', slotId: 'floor-accent-left', expectedVersion: 1 })).rejects.toEqual(new DomainError('network_unavailable', 'offline_read_only'));
     await expect(guarded.requestAccountDeletion('00000000-0000-4000-8000-000000000001')).rejects.toEqual(new DomainError('network_unavailable', 'offline_read_only'));
 
     expect(repository.getHomeSnapshot).toHaveBeenCalledTimes(1);

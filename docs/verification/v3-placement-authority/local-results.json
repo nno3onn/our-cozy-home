@@ -1,0 +1,39 @@
+{
+  "base": "95f031889cdf66bb5c5c94406014c4e7d44faa1f",
+  "independentHead": "16d02c740824014a3a55977218f753d59a270b4b",
+  "integrationHead": "2b35113ea057c855452a92ae885fa0792617bd6e",
+  "baseline": {
+    "suites": 64,
+    "tests": 258
+  },
+  "independent": {
+    "suites": 64,
+    "tests": 261,
+    "missingBaselineCases": [],
+    "addedCases": [
+      "fails closed without a captured house or request key and never calls a legacy RPC",
+      "rejects old-house requests instead of redirecting them to the active Demo home",
+      "replays an identical placement request without changing the slot again"
+    ]
+  },
+  "integration": {
+    "suites": 69,
+    "tests": 297,
+    "renamedByPR164": {
+      "from": [
+        "DecorateTray shows item ownership but only lets the current owner select a movable item"
+      ],
+      "to": "DecorateTray shows only usable owned furniture while preserving owner labels"
+    },
+    "note": "PR164 intentionally hides foreign inventory entries while still denying their selection; no case was dropped for this security change."
+  },
+  "protectedFiles": {
+    "checked": 549,
+    "unchanged": 549
+  },
+  "actualSQL": "passed: isolated-independent-results.json / isolated-integration-results.json",
+  "nativeDevices": "unverified",
+  "productionWrites": false,
+  "verifiedIndependentCodeSha": "d5a4dce8f5854a0a29067f91e5cbe3cb46ab9bb6",
+  "verifiedIntegrationCodeSha": "b7262227e907871f1be7cdc1721862734c0cdc1e"
+}
