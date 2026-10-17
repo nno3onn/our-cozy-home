@@ -1,5 +1,14 @@
 # 우리집 기술 아키텍처
 
+## v3 판단 및 검증 경계 (2026-10-17)
+
+아래는 기존 기술 책임과 도입 단계의 설명이다. 최신 경험은
+[제품 v3 제안](product-v3-proposal.md), 미승인 데이터 정책은
+[승인 대기 결정](product-v3-decisions-needed.md), main·Draft·로컬의 실제 위치와
+안전한 통합 순서는 [v3 로드맵](product-v3-implementation-roadmap.md)을 함께 읽는다.
+테이블/RPC/구독 파일 존재를 실제 운영 적용이나 사용자 흐름 완료로 취급하지 않는다.
+기존 서버 권한·원자성·소유권·RLS·viewer/Storage 계약은 계속 유지한다.
+
 최종 수정일: 2026-09-30
 
 제품 규칙은 [`product-spec.md`](product-spec.md), 상세 설계와 테스트 행렬은
