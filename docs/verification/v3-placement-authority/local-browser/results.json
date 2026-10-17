@@ -1,0 +1,133 @@
+{
+  "date": "2026-10-17",
+  "sourceSha": "d8eac55cad0d92a4c82b6923bba36bfe4eb47f32",
+  "environment": "disposable local Colima/Supabase; no production connection",
+  "sql": {
+    "files": 23,
+    "assertions": 291,
+    "status": "passed"
+  },
+  "races": {
+    "passed": true,
+    "scenarios": [
+      {
+        "scenario": "membership, ownership, kind, allowed-slot and legacy RPC denials",
+        "passed": true
+      },
+      {
+        "scenario": "caller-supplied stale transaction snapshot rejected",
+        "passed": true
+      },
+      {
+        "scenario": "A/B same-slot contention and uniqueness/version guards",
+        "passed": true
+      },
+      {
+        "scenario": "response-lost retry, payload conflict, stale receipt and aborted/offline retry",
+        "passed": true
+      },
+      {
+        "scenario": "invite membership lock versus placement house lock",
+        "passed": true
+      },
+      {
+        "scenario": "place-first / leave-second",
+        "passed": true
+      },
+      {
+        "scenario": "leave-first / place-second",
+        "passed": true
+      },
+      {
+        "scenario": "delayed old-house request after create-house and historical retry",
+        "passed": true
+      }
+    ]
+  },
+  "authRestRealtime": {
+    "status": "passed",
+    "passed": true,
+    "scenarios": [
+      {
+        "scenario": "genuine password Auth and house onboarding/invite RPCs",
+        "status": "passed"
+      },
+      {
+        "scenario": "authenticated B receives actual postgres_changes INSERT and UPDATE",
+        "status": "passed"
+      },
+      {
+        "scenario": "B fresh REST matches placement RPC and Realtime state",
+        "status": "passed"
+      },
+      {
+        "scenario": "A sign-out/re-login and refresh preserve server placement",
+        "status": "passed"
+      },
+      {
+        "scenario": "A update followed immediately by leave: B fresh REST empty, A assets preserved",
+        "status": "passed"
+      },
+      {
+        "scenario": "departed A valid JWT cannot place into former house",
+        "status": "passed"
+      }
+    ],
+    "subscription": {
+      "extension": "postgres_changes",
+      "status": "ok",
+      "message": "Subscribed to PostgreSQL"
+    }
+  },
+  "browser": {
+    "operator": "single agent through real browser UI",
+    "previewCancelConfirm": "passed",
+    "stalePreviewConflict": "passed",
+    "ownItemSharedReplacement": "passed",
+    "otherOpenAccountSeesReplacement": "passed",
+    "freshOriginLoginServerPersistence": "passed",
+    "retainedPreviewAfterDepartureServerDenied": "passed",
+    "postDeparturePlacements": 0,
+    "preservedOwnedItems": 3,
+    "remainingActiveMembers": 1,
+    "mobileViewport": {
+      "width": 320,
+      "height": 740,
+      "scrollWidth": 320,
+      "scrollHeight": 740
+    },
+    "uiLogoutRelogin": "blocked by existing disabled ancestor, issue #171",
+    "departureAutomaticConvergence": "not established; fresh reload confirmed correct state",
+    "offlineBrowserRetry": "not executed"
+  },
+  "native": {
+    "pods": "116 pods installed in ASCII source copy",
+    "simulatorExecution": "blocked: Xcode requires unavailable iOS 26.5 platform; installed runtime iOS 18.5",
+    "physicalDevices": "not executed"
+  },
+  "fixtureCleanup": {
+    "cleaned": true,
+    "users": 2,
+    "houses": 1
+  },
+  "preservation": {
+    "backupManifestFiles": 549,
+    "mismatches": 0,
+    "originalPorcelainEntries": 210
+  },
+  "merge": false,
+  "remoteDeployment": false,
+  "productionWrites": false,
+  "localAutomatic": {
+    "typecheck": "passed",
+    "eslint": "passed",
+    "jest": {
+      "suites": 69,
+      "tests": 297,
+      "status": "passed",
+      "removedTests": 0
+    },
+    "supabaseWebExport": "passed; clear-cache build and actual Supabase UI confirmed",
+    "exportVerification": "passed"
+  }
+}
