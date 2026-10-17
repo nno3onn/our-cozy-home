@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-17",
+  "baseSha": "95f031889cdf66bb5c5c94406014c4e7d44faa1f",
+  "applicationSha": "14bb2d9cd90eef979cc74ccb1b66e837998cefe2",
+  "independent": {
+    "typecheck": "passed",
+    "eslint": "passed",
+    "jest": {
+      "suites": 64,
+      "tests": 261,
+      "added": 3,
+      "removed": 0
+    },
+    "demoBuildExport": "passed",
+    "supabaseBuildExport": "passed"
+  },
+  "combined": {
+    "base": "3ca4e29, same application as PR170 d8eac55",
+    "patch": "ListRow.tsx and additive tests from applicationSha",
+    "typecheck": "passed",
+    "eslint": "passed",
+    "jest": {
+      "suites": 69,
+      "tests": 300,
+      "previousTests": 297,
+      "removed": 0
+    },
+    "supabaseBuildExport": "passed"
+  },
+  "browser": {
+    "operator": "single-agent actual browser",
+    "independentLogoutClick": "passed",
+    "backAfterLogoutProtected": "passed",
+    "switchAtoBSelectedAnimal": "passed",
+    "width320KeyboardEnterLogout": "passed",
+    "width320ScrollWidth": 320,
+    "combinedPreviewCancelConfirmReloadUiLogoutRelogin": "passed",
+    "placementPersistence": {
+      "samePlacementAfterUiLogoutRelogin": true,
+      "placementCount": 1,
+      "version": 1,
+      "slot": "floor-accent-left"
+    },
+    "capturedWarnErrorLogs": []
+  },
+  "native": "not rerun; previously blocked by Xcode/runtime mismatch",
+  "cleanup": {
+    "cleaned": true,
+    "users": 2,
+    "houses": 1
+  },
+  "productionWrites": false,
+  "remoteDeployment": false,
+  "merge": false
+}
