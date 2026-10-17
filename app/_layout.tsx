@@ -6,6 +6,8 @@ import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { AppProviders } from '@/providers/AppProviders';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { HouseRealtimeSync } from '@/realtime/HouseRealtimeSync';
 import { AuthProvider, useAuth } from '@/auth/AuthProvider';
 import { DemoBanner } from '@/components/DemoBanner';
 import { ModeErrorScreen } from '@/components/ModeErrorScreen';
@@ -46,7 +48,7 @@ export default function RootLayout() {
       ) : repositoryResult && !repositoryResult.ok ? (
         <ModeErrorScreen reason={repositoryResult.reason} />
       ) : runtimeConfig.mode === 'supabase' && repositoryResult?.ok && repositoryResult.supabaseRepository ? (
-        <AuthProvider client={repositoryResult.supabaseRepository.getClient()}><AuthenticatedRoutes /></AuthProvider>
+        <AuthProvider client={repositoryResult.supabaseRepository.getClient()}><AuthenticatedRoutes client={repositoryResult.supabaseRepository.getClient()} /></AuthProvider>
       ) : (
         <View style={{ flex: 1 }}>
           {runtimeConfig.mode === 'demo' ? <DemoBanner /> : null}
@@ -57,7 +59,7 @@ export default function RootLayout() {
   );
 }
 
-function AuthenticatedRoutes() {
+function AuthenticatedRoutes({ client }: { client: SupabaseClient }) {
   const { state, onboarding, onboardingError, refreshOnboarding } = useAuth();
   const segments = useSegments();
   const redirect = getAuthRedirect({ ...state, onboarding }, segments);
@@ -72,7 +74,7 @@ function AuthenticatedRoutes() {
     const inviteRedirect = getPendingInviteRedirect(state.pendingInvite, segments);
     if (inviteRedirect) return <Redirect href={inviteRedirect} />;
   }
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return <><HouseRealtimeSync client={client} userId={state.status === 'signed_in' && onboarding === 'complete' ? state.userId : undefined} /><Stack screenOptions={{ headerShown: false }} /></>;
 }
 
 const styles = StyleSheet.create({
