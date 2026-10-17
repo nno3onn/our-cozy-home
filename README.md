@@ -1,5 +1,17 @@
 # 우리집
 
+## v3를 읽는 순서 (2026-10-17)
+
+제품 방향은 **친구와 함께한 시간이 눈에 보이는 집**이다.
+새 개발은 [AGENTS.md](AGENTS.md) → [C01–C08 제품 제안](docs/product-v3-proposal.md) →
+[승인 대기 정책](docs/product-v3-decisions-needed.md) →
+[main/PR 감사와 개발 로드맵](docs/product-v3-implementation-roadmap.md) 순서로 읽는다.
+기존 product-spec은 승인 전 운영 계약, architecture는 기술 책임,
+progress는 시점별 검증 이력이다. v3 문서 추가는 자산·경제·학습 변경 승인이나 기능 완료가 아니다.
+
+아래 실행·원격 배포 절차와 과거 적용 기록은 현재 작업의 실행 승인으로 해석하지 않는다.
+격리 환경을 우선하며 운영 DB 적용·배포·main 병합은 작업별 명시적 승인이 필요하다.
+
 친구 최대 4명이 한 집에서 각자의 동물을 키우고, 공동 방을 꾸미며, 함께한 추억을
 가구로 남기는 Expo 기반 웹·모바일 앱이다. 웹은 데스크톱과 모바일 폭에 대응하는
 정식 실행 대상이며, iOS·Android도 같은 코드베이스에서 유지한다. 현재 저장소는
