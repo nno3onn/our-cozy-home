@@ -21,6 +21,7 @@ export class PrivateDataScope {
   private state: PrivateScopeState;
   private listeners = new Set<() => void>();
   private teardowns = new Set<() => void>();
+  private snapshotRestarts = 0;
 
   constructor(readonly userId: string, private readonly source: HomeRepository, private readonly resetUi: () => void = () => {}) {
     this.state = this.createState(0, 'checking');
@@ -36,7 +37,7 @@ export class PrivateDataScope {
   };
 
   retire = () => { if (this.state.phase !== 'retired') this.replace('retired'); };
-  recheck = () => { if (this.state.phase !== 'retired') this.replace('checking'); };
+  recheck = () => { if (this.state.phase !== 'retired') { this.snapshotRestarts = 0; this.replace('checking'); } };
 
   private current(generation: number) {
     return this.state.generation === generation && this.state.phase !== 'retired';
@@ -60,6 +61,7 @@ export class PrivateDataScope {
             if (property === 'getHomeSnapshot') {
               const home = result as HomeSnapshot;
               if (home.currentUserId !== this.userId) throw new DomainError('forbidden', 'snapshot_identity_changed');
+              this.snapshotRestarts = 0;
               if (home.house.id !== this.state.houseId) this.replace('active', home);
             } else if (property === 'leaveHouse') {
               // Publish the empty private boundary BEFORE the caller navigates.
@@ -69,7 +71,12 @@ export class PrivateDataScope {
             }
             return result;
           } catch (error) {
-            if (this.current(generation) && isAccessLoss(error)) {
+            if (this.current(generation) && property === 'getHomeSnapshot' && error instanceof DomainError && error.message === 'house_snapshot_changed') {
+              // A multi-request read lost its original membership. Erase its
+              // data before one fresh lookup; the user may already have joined
+              // a different house. Never label that partial read an empty room.
+              this.replace(++this.snapshotRestarts <= 1 ? 'checking' : 'denied');
+            } else if (this.current(generation) && isAccessLoss(error)) {
               this.replace(error instanceof DomainError && error.message === 'active_house_not_found' ? 'no-house' : 'denied');
             }
             throw error;

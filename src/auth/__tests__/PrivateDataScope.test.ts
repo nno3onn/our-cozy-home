@@ -110,3 +110,16 @@ it('rejects a snapshot belonging to a different authenticated identity', async (
   expect(snapshot.currentUserId).not.toBe('other-account');
   scope.retire();
 });
+
+it('clears a partial snapshot before a fresh lookup, and bounds repeated membership churn', async () => {
+  const { scope, repository } = await setup();
+  const old = scope.getSnapshot();
+  old.client.setQueryData(['memories'], ['old private data']);
+  jest.spyOn(repository, 'getHomeSnapshot').mockRejectedValue(new DomainError('conflict', 'house_snapshot_changed'));
+  await expect(old.repository.getHomeSnapshot()).rejects.toMatchObject({ message: 'house_snapshot_changed' });
+  expect(scope.getSnapshot().phase).toBe('checking');
+  expect(scope.getSnapshot().client.getQueryData(['memories'])).toBeUndefined();
+  await expect(scope.getSnapshot().repository.getHomeSnapshot()).rejects.toMatchObject({ message: 'house_snapshot_changed' });
+  expect(scope.getSnapshot().phase).toBe('denied');
+  scope.retire();
+});

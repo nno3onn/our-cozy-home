@@ -1,7 +1,8 @@
 /** Disposable loopback transport harness, never an application/remote proxy.
  * ROOM_PLACEMENT_DISPOSABLE_DB=1 node scripts/local-access-proxy.mjs <fixture.json>
- * Write {"mode":"online"|"offline"|"hold"} to adjacent access-network.json.
- * hold buffers A's room-placement response; online releases it. JWT decoding
+ * Write {"mode":"online"|"offline"|"hold"|"hold-logout"} to adjacent access-network.json.
+ * hold buffers A's room response, hold-logout buffers its logout response;
+ * online releases them. JWT decoding
  * selects a test delay only: the actual upstream still verifies Auth and RLS. */
 import assert from 'node:assert/strict';
 import { createServer, request } from 'node:http';
@@ -32,7 +33,7 @@ function isA(req) {
 watchFile(control, { interval: 100 }, async () => {
   try {
     const next = JSON.parse(await readFile(control, 'utf8')).mode;
-    assert.ok(['online', 'offline', 'hold'].includes(next));
+    assert.ok(['online', 'offline', 'hold', 'hold-logout'].includes(next));
     if (next === mode) return;
     mode = next;
     if (mode === 'offline') for (const socket of sockets) socket.destroy();
@@ -45,7 +46,7 @@ const server = createServer((req, res) => {
   const target = localTarget(req);
   if (!target) { res.writeHead(400); res.end(); return; }
   if (mode === 'offline') { req.socket.destroy(); return; }
-  const hold = mode === 'hold' && isA(req) && req.url.startsWith('/rest/v1/room_placements');
+  const hold = isA(req) && ((mode === 'hold' && req.url.startsWith('/rest/v1/room_placements')) || (mode === 'hold-logout' && req.url.startsWith('/auth/v1/logout')));
   const forwarded = request(target, { method: req.method, headers: { ...req.headers, host: upstream.host }, agent: false }, incoming => {
     if (hold) {
       const chunks = []; incoming.on('data', chunk => chunks.push(chunk));

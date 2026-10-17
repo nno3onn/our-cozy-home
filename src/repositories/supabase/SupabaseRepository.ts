@@ -288,7 +288,7 @@ export class SupabaseRepository implements HomeRepository {
     const accessResult = await this.client.from('house_memberships').select('id')
       .eq('id', membershipResult.data.id).eq('status', 'active').maybeSingle();
     if (accessResult.error) throw mapSupabaseError(accessResult.error);
-    if (!accessResult.data) throw new DomainError('not_found', 'active_house_not_found');
+    if (!accessResult.data) throw new DomainError('conflict', 'house_snapshot_changed');
 
     return {
       currentUserId: authData.user.id,

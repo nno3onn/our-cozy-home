@@ -34,7 +34,7 @@ function fixture(revokeAfterRead: boolean, finalError = false) {
 }
 
 it('does not return a room read across a committed departure', async () => {
-  await expect(fixture(true).repository.getHomeSnapshot()).rejects.toMatchObject({ code: 'not_found', message: 'active_house_not_found' });
+  await expect(fixture(true).repository.getHomeSnapshot()).rejects.toMatchObject({ code: 'conflict', message: 'house_snapshot_changed' });
 });
 it('propagates a final RLS denial instead of returning a cached or empty room', async () => {
   await expect(fixture(false, true).repository.getHomeSnapshot()).rejects.toMatchObject({ code: 'forbidden' });
