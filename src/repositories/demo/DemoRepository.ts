@@ -124,11 +124,17 @@ export class DemoRepository implements HomeRepository {
       throw new Error('owned_item_not_found');
     }
 
+    if (item.ownerId !== this.state.home.currentUserId) {
+      throw new Error('forbidden');
+    }
+
     if (!item.allowedSlotIds.includes(input.slotId)) {
       throw new Error('incompatible_slot');
     }
 
-    if (placement && placement.version !== input.expectedVersion) {
+    if ((placement?.version ?? 0) !== input.expectedVersion || this.state.home.placements.some(
+      (candidate) => candidate.ownedItemId === item.id && candidate.slotId !== input.slotId,
+    )) {
       throw new Error('placement_conflict');
     }
 

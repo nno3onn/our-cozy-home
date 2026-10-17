@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-14",
+  "base": "95f031889cdf66bb5c5c94406014c4e7d44faa1f",
+  "branch": "codex/v3-room-rendering-preview",
+  "patchApplied": true,
+  "initialManifestMatch": "18/18",
+  "originalFilesChecked": 549,
+  "originalFilesChanged": 0,
+  "backupFileCount": 279,
+  "baseline": {
+    "typecheckExit": 0,
+    "lintExit": 0,
+    "jestSuites": 64,
+    "jestTests": 258
+  },
+  "final": {
+    "commandExitCodes": {
+      "typecheck": 0,
+      "lint": 0,
+      "jest": 0,
+      "demo-build": 0,
+      "demo-export": 0,
+      "supabase-build": 0,
+      "supabase-export": 0
+    },
+    "jestSuites": 67,
+    "jestTests": 277,
+    "jestSuccess": true
+  },
+  "manualDemo": {
+    "320x800": "cards accessible; select/preview/cancel passed; document size matches viewport",
+    "1280x900": "room bounded to parent, no overlap with fixed inventory aside; explicit confirm passed",
+    "navigationAfterConfirm": "preserved in memory",
+    "reloadAfterConfirm": "resets to seed per existing D-003; persistence criterion not met"
+  },
+  "unverified": [
+    "isolated Supabase A/B race",
+    "cross-account visibility",
+    "server logout/reconnect persistence",
+    "left-house access denial",
+    "native iOS/Android",
+    "physical touch targets and accessibility assistive tech"
+  ],
+  "remoteDatabaseWrites": 0,
+  "migrationsModified": 0,
+  "review": "No important findings after responsive fixes; independent read-only review"
+}

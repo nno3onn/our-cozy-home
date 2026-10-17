@@ -1,0 +1,27 @@
+{
+  "added": [
+    "DecorateTray shows only usable owned furniture while preserving owner labels",
+    "caps a desktop room to the width remaining beside the inventory panel",
+    "carries DB slot metadata through the real snapshot into usable owner-only furniture choices",
+    "confirms a pending preview once even when pressed repeatedly",
+    "keeps a network failure recoverable without claiming success or optimistic inventory changes",
+    "keeps an unavailable joined definition unplaceable while preserving the owned item",
+    "keeps invalid slot metadata unplaceable without guessing from the bundled catalog: [\"floor-accent-left\", 7]",
+    "keeps invalid slot metadata unplaceable without guessing from the bundled catalog: null",
+    "keeps invalid slot metadata unplaceable without guessing from the bundled catalog: {\"unexpected\": \"floor-accent-left\"}",
+    "keeps memory duplicates singular and parent-clipped touch targets at least 44pt",
+    "orders ground, animals, furniture and controls by foot position at 1280",
+    "orders ground, animals, furniture and controls by foot position at 320",
+    "preserves the captured version when another edit arrives and never overwrites it",
+    "preserves the placement conflict signal without exposing raw server messages",
+    "preview and cancel do not write or change the confirmed snapshot",
+    "projects one target without mutating the confirmed snapshot or inventory",
+    "rejects foreign-owned, consumed, incompatible and unsupported movement previews",
+    "renders all 35 decorations in every allowed slot at 1280",
+    "renders all 35 decorations in every allowed slot at 320",
+    "reports a failed definition query instead of treating it as an empty inventory"
+  ],
+  "removedOrRenamed": [
+    "DecorateTray shows item ownership but only lets the current owner select a movable item"
+  ]
+}

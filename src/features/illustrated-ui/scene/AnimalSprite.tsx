@@ -2,6 +2,7 @@ import { Image, StyleSheet, View } from 'react-native';
 
 import type { Animal, Member } from '@/domain/models';
 import type { AnimalAnchor, Viewport } from '@/game/room/roomLayout';
+import { getRoomActorDepth } from '@/game/room/sceneDepth';
 import { toViewport } from '@/game/room/roomLayout';
 
 import { getIllustratedAsset } from './assetManifest';
@@ -24,7 +25,7 @@ export function AnimalSprite({ animal, anchor, member, viewport }: Props) {
   const asset = getIllustratedAsset(key);
 
   return (
-    <View pointerEvents="none" style={[styles.sprite, { left: foot.x - size / 2, top: foot.y - size * 0.94, width: size, height: size }]} testID={`animal-sprite-${animal.id}`}>
+    <View pointerEvents="none" style={[styles.sprite, { zIndex: getRoomActorDepth(foot.y), left: foot.x - size / 2, top: foot.y - size * 0.94, width: size, height: size }]} testID={`animal-sprite-${animal.id}`}>
       {asset?.source ? <Image resizeMode="contain" source={asset.source} style={styles.image} /> : <View style={[styles.bearFallback, { backgroundColor: member.pointColor }]} />}
       <View style={[styles.ownerRibbon, { backgroundColor: member.pointColor }]} />
     </View>
