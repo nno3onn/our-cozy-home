@@ -14,16 +14,9 @@ type ListRowProps = Omit<PressableProps, 'children' | 'style'> & {
   value?: string;
 };
 
-export function ListRow({ description, leading, onPress, title, trailing, value, ...props }: ListRowProps) {
-  return (
-    <Pressable
-      {...props}
-      accessibilityLabel={props.accessibilityLabel ?? title}
-      accessibilityRole={onPress ? 'button' : undefined}
-      disabled={!onPress || props.disabled}
-      onPress={onPress}
-      style={({ pressed }) => [styles.row, pressed && onPress && styles.pressed]}
-    >
+export function ListRow({ description, disabled, leading, onPress, title, trailing, value, ...props }: ListRowProps) {
+  const content = (
+    <>
       {leading}
       <View style={styles.copy}>
         <AppText variant="bodyStrong">{title}</AppText>
@@ -31,6 +24,27 @@ export function ListRow({ description, leading, onPress, title, trailing, value,
       </View>
       {value ? <AppText tone="secondary" variant="label">{value}</AppText> : null}
       {trailing}
+    </>
+  );
+
+  if (!onPress) {
+    return (
+      <View {...props} accessibilityLabel={props.accessibilityLabel ?? title} style={styles.row}>
+        {content}
+      </View>
+    );
+  }
+
+  return (
+    <Pressable
+      {...props}
+      accessibilityLabel={props.accessibilityLabel ?? title}
+      accessibilityRole="button"
+      disabled={disabled}
+      onPress={onPress}
+      style={({ pressed }) => [styles.row, pressed && styles.pressed]}
+    >
+      {content}
     </Pressable>
   );
 }
