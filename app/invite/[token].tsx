@@ -15,6 +15,7 @@ import { spacing } from '@/theme/tokens';
 import { InviteAcceptanceControls } from '@/features/house/screens/InviteAcceptanceControls';
 import { homeSnapshotKey } from '@/features/room/hooks/useHomeSnapshot';
 import { ResponsiveFormPage } from '@/components/layout/ResponsiveFormPage';
+import { usePrivateScope } from '@/auth/PrivateScopeContext';
 
 const stateCopy = {
   cancelled: ['초대가 취소됐어요', '집 관리자에게 새 초대를 요청해 주세요.'],
@@ -30,10 +31,11 @@ export default function InvitePreviewRoute() {
   const repository = useRepository();
   const auth = useOptionalAuth();
   const queryClient = useQueryClient();
+  const privateScope = usePrivateScope();
   const preview = useQuery({ queryKey: ['invite-preview', token], queryFn: () => repository.previewInvite(token), enabled: Boolean(token) });
   const acceptance = useMutation({
     mutationFn: (input: { token: string; requestId: string }) => repository.acceptInvite(input),
-    onSuccess: async () => { await queryClient.invalidateQueries({ queryKey: homeSnapshotKey }); },
+    onSuccess: async () => { if (!privateScope) await queryClient.invalidateQueries({ queryKey: homeSnapshotKey }); },
   });
 
   if (preview.isPending) return <ResponsiveFormPage testID="invite-preview-loading"><AppPageHeader backHref="/" title="초대 확인" /><View accessibilityLabel="초대 확인 중" style={styles.loading}><Skeleton height={36} width="62%" /><Skeleton height={24} /><Skeleton height={52} /></View></ResponsiveFormPage>;
