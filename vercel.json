@@ -2,5 +2,5 @@
   "buildCommand": "npm run build:web",
   "outputDirectory": "dist",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
-  "git": { "deploymentEnabled": { "codex/house-access-boundary": false, "codex/house-access-integration": false } }
+  "git": { "deploymentEnabled": { "codex/house-access-boundary": false, "codex/house-access-integration": false, "codex/house-access-final-fix": false } }
 }
