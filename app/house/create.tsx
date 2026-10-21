@@ -8,7 +8,11 @@ export default function HouseCreateRoute() {
   return (
     <HouseCreateScreen
       onCreate={creation.mutateAsync}
-      onCreated={() => router.replace('/')}
+      onCreated={() => {
+        // Let the private QueryClient rotate and remount its navigator before
+        // requesting the next route. Navigating in the same commit loops Expo Router.
+        setTimeout(() => router.replace('/'), 0);
+      }}
       onOpenExistingHouse={() => router.replace('/')}
     />
   );
