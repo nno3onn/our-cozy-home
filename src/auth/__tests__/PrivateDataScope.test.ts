@@ -111,6 +111,45 @@ it('rejects a snapshot belonging to a different authenticated identity', async (
   scope.retire();
 });
 
+it('keeps the navigator client mounted when a member creates the first house', async () => {
+  const repository = new DemoRepository(), snapshot = await repository.getHomeSnapshot();
+  jest.spyOn(repository, 'getHomeSnapshot').mockRejectedValueOnce(new DomainError('not_found', 'active_house_not_found'));
+  const scope = new PrivateDataScope(snapshot.currentUserId, repository);
+  await expect(scope.getSnapshot().repository.getHomeSnapshot()).rejects.toMatchObject({ message: 'active_house_not_found' });
+  const empty = scope.getSnapshot();
+  expect(empty.phase).toBe('no-house');
+  jest.spyOn(repository, 'createHouse').mockResolvedValue({ house: snapshot.house, membershipId: 'member-a' });
+  await empty.repository.createHouse({ name: 'new house', requestId: 'create-once' });
+  const checking = scope.getSnapshot();
+  expect(checking.phase).toBe('checking');
+  expect(checking.generation).toBeGreaterThan(empty.generation);
+  expect(checking.client).toBe(empty.client);
+  await expect(empty.repository.getHomeSnapshot()).rejects.toMatchObject({ message: 'retired_data_scope' });
+  await checking.repository.getHomeSnapshot();
+  expect(scope.getSnapshot().phase).toBe('active');
+  expect(scope.getSnapshot().client).toBe(empty.client);
+  expect(scope.getSnapshot().client.getQueryData<HomeSnapshot>(queryKeys.home.activeSnapshot)?.house.id).toBe(snapshot.house.id);
+  scope.retire();
+});
+
+it('keeps the navigator client mounted when a member accepts an invitation to a first house', async () => {
+  const repository = new DemoRepository(), snapshot = await repository.getHomeSnapshot();
+  jest.spyOn(repository, 'getHomeSnapshot').mockRejectedValueOnce(new DomainError('not_found', 'active_house_not_found'));
+  const scope = new PrivateDataScope(snapshot.currentUserId, repository);
+  await expect(scope.getSnapshot().repository.getHomeSnapshot()).rejects.toMatchObject({ message: 'active_house_not_found' });
+  const empty = scope.getSnapshot();
+  jest.spyOn(repository, 'acceptInvite').mockResolvedValue({ house: snapshot.house, membershipId: 'member-a', result: 'joined' });
+  await empty.repository.acceptInvite({ token: 'test-token', requestId: 'join-once' });
+  const checking = scope.getSnapshot();
+  expect(checking.phase).toBe('checking');
+  expect(checking.client).toBe(empty.client);
+  await expect(empty.repository.getHomeSnapshot()).rejects.toMatchObject({ message: 'retired_data_scope' });
+  await checking.repository.getHomeSnapshot();
+  expect(scope.getSnapshot().phase).toBe('active');
+  expect(scope.getSnapshot().client).toBe(empty.client);
+  scope.retire();
+});
+
 it('clears a partial snapshot before a fresh lookup, and bounds repeated membership churn', async () => {
   const { scope, repository } = await setup();
   const old = scope.getSnapshot();

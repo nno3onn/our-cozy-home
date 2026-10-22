@@ -8,15 +8,17 @@ import { isAccessLoss } from './privateErrors';
 
 export type PrivateScopeState = {
   generation: number;
+  clientEpoch: number;
   phase: 'checking' | 'active' | 'no-house' | 'denied' | 'retired';
   houseId?: string;
   client: QueryClient;
   repository: HomeRepository;
 };
 
-/** A client and repository capability belong to exactly one identity/generation.
- * Retired clients are never installed in a newer provider, even if a transport
- * ignores cancellation. This does not replace any server ownership/RLS checks. */
+/** Repository capabilities belong to one identity/generation. A QueryClient is
+ * retained only while entering a first house from a confirmed empty state;
+ * leave, account changes, and house changes still replace and clear it.
+ * This does not replace any server ownership/RLS checks. */
 export class PrivateDataScope {
   private state: PrivateScopeState;
   private listeners = new Set<() => void>();
@@ -43,8 +45,8 @@ export class PrivateDataScope {
     return this.state.generation === generation && this.state.phase !== 'retired';
   }
 
-  private createState(generation: number, phase: PrivateScopeState['phase'], snapshot?: HomeSnapshot): PrivateScopeState {
-    const client = new QueryClient({ defaultOptions: {
+  private createState(generation: number, phase: PrivateScopeState['phase'], snapshot?: HomeSnapshot, existingClient?: QueryClient, clientEpoch = generation): PrivateScopeState {
+    const client = existingClient ?? new QueryClient({ defaultOptions: {
       queries: { staleTime: 30_000, retry: (count, error) => !isAccessLoss(error) && count < 1 },
       mutations: { retry: false },
     } });
@@ -62,12 +64,16 @@ export class PrivateDataScope {
               const home = result as HomeSnapshot;
               if (home.currentUserId !== this.userId) throw new DomainError('forbidden', 'snapshot_identity_changed');
               this.snapshotRestarts = 0;
-              if (home.house.id !== this.state.houseId) this.replace('active', home);
+              if (home.house.id !== this.state.houseId) {
+                if (this.state.phase === 'checking' && !this.state.houseId) this.activateFirstHouse(home);
+                else this.replace('active', home);
+              }
             } else if (property === 'leaveHouse') {
               // Publish the empty private boundary BEFORE the caller navigates.
               this.replace('no-house');
             } else if (property === 'createHouse' || property === 'acceptInvite') {
-              this.replace('checking');
+              if (this.state.phase === 'no-house') this.beginFirstHouse();
+              else this.replace('checking');
             }
             return result;
           } catch (error) {
@@ -84,7 +90,26 @@ export class PrivateDataScope {
         };
       },
     });
-    return { generation, phase, houseId: snapshot?.house.id, client, repository };
+    return { generation, clientEpoch, phase, houseId: snapshot?.house.id, client, repository };
+  }
+
+  private beginFirstHouse() {
+    const previous = this.state;
+    // There is no previous house data to retire, but the old repository
+    // capability must expire. Keep the QueryClient and mounted navigator so
+    // Expo Router is not remounted while its create/join mutation resolves.
+    for (const stop of this.teardowns) stop();
+    this.teardowns.clear();
+    this.state = this.createState(previous.generation + 1, 'checking', undefined, previous.client, previous.clientEpoch);
+    this.resetUi();
+    for (const listener of this.listeners) listener();
+  }
+
+  private activateFirstHouse(home: HomeSnapshot) {
+    const state = this.state;
+    this.state = { ...state, phase: 'active', houseId: home.house.id };
+    state.client.setQueryData(queryKeys.home.activeSnapshot, home);
+    for (const listener of this.listeners) listener();
   }
 
   private replace(phase: PrivateScopeState['phase'], snapshot?: HomeSnapshot) {
@@ -95,7 +120,7 @@ export class PrivateDataScope {
     this.teardowns.clear();
     void previous.client.cancelQueries({}, { silent: true });
     previous.client.clear();
-    this.state = this.createState(previous.generation + 1, phase, snapshot);
+    this.state = this.createState(previous.generation + 1, phase, snapshot, undefined, previous.clientEpoch + 1);
     this.resetUi();
     for (const listener of this.listeners) listener();
   }

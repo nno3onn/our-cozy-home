@@ -44,7 +44,7 @@ function IdentityBoundary({ userId, client, children }: PropsWithChildren<{ user
   }, [scope]);
 
   return <PrivateScopeContext.Provider value={scope}>
-    <QueryClientProvider key={state.generation} client={state.client}>
+    <QueryClientProvider key={state.clientEpoch} client={state.client}>
       <RepositoryProvider repository={state.repository}>
         {client ? <HouseRealtimeSync client={client} userId={userId} /> : null}
         <HouseAccessGate>{children}</HouseAccessGate>
