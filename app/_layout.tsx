@@ -7,7 +7,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { AppProviders } from '@/providers/AppProviders';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { HouseRealtimeSync } from '@/realtime/HouseRealtimeSync';
+import { PrivateDataBoundary } from '@/auth/PrivateDataBoundary';
 import { AuthProvider, useAuth } from '@/auth/AuthProvider';
 import { DemoBanner } from '@/components/DemoBanner';
 import { ModeErrorScreen } from '@/components/ModeErrorScreen';
@@ -74,7 +74,9 @@ function AuthenticatedRoutes({ client }: { client: SupabaseClient }) {
     const inviteRedirect = getPendingInviteRedirect(state.pendingInvite, segments);
     if (inviteRedirect) return <Redirect href={inviteRedirect} />;
   }
-  return <><HouseRealtimeSync client={client} userId={state.status === 'signed_in' && onboarding === 'complete' ? state.userId : undefined} /><Stack screenOptions={{ headerShown: false }} /></>;
+  return state.status === 'signed_in'
+    ? <PrivateDataBoundary userId={state.userId} client={client}><Stack screenOptions={{ headerShown: false }} /></PrivateDataBoundary>
+    : <Stack screenOptions={{ headerShown: false }} />;
 }
 
 const styles = StyleSheet.create({

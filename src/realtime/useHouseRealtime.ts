@@ -20,6 +20,17 @@ export function subscribeHouseRealtime(client: SupabaseClient, queryClient: Quer
     channel.on('postgres_changes', { event, schema: 'public', table: 'room_placements', filter: `house_id=eq.${houseId}` }, refresh);
   }
   channel.subscribe(status => { if (status === 'SUBSCRIBED') refresh(); });
-  return () => { active = false; void client.removeChannel(channel); };
+  return () => {
+    if (!active) return;
+    active = false;
+    void client.removeChannel(channel).catch(() => {});
+  };
 }
-export function useHouseRealtime(client: SupabaseClient|undefined,queryClient:QueryClient,houseId:string|undefined){useEffect(()=>client&&houseId?subscribeHouseRealtime(client,queryClient,houseId):undefined,[client,queryClient,houseId]);}
+export function useHouseRealtime(client: SupabaseClient|undefined,queryClient:QueryClient,houseId:string|undefined,registerStop?: (stop: () => void) => () => void){
+  useEffect(() => {
+    if (!client || !houseId) return;
+    const stop = subscribeHouseRealtime(client,queryClient,houseId);
+    const unregister = registerStop?.(stop);
+    return () => { unregister?.(); stop(); };
+  },[client,queryClient,houseId,registerStop]);
+}

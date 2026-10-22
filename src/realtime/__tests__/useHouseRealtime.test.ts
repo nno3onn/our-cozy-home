@@ -3,6 +3,8 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { homeSnapshotKey } from '@/features/room/hooks/useHomeSnapshot';
 import { subscribeHouseRealtime } from '../useHouseRealtime';
+import { PrivateDataScope } from '@/auth/PrivateDataScope';
+import { DemoRepository } from '@/repositories/demo/DemoRepository';
 
 function fixture() {
   const handlers: { filter: { table: string; event: string; filter: string }; callback: () => void }[] = [];
@@ -76,5 +78,17 @@ it('does not reuse an SDK channel that is still asynchronously leaving', () => {
   const stop = subscribeHouseRealtime(client as unknown as SupabaseClient, queries, 'house-a');
   stop();
   expect(() => subscribeHouseRealtime(client as unknown as SupabaseClient, queries, 'house-a')).not.toThrow();
+  queries.clear();
+});
+
+it('fences queued event and reconnect callbacks synchronously when the account retires', () => {
+  const { handlers, client, queries, stop, status } = fixture();
+  const scope = new PrivateDataScope('A', new DemoRepository());
+  scope.registerTeardown(stop);
+  scope.retire();
+  // The SDK may still deliver a queued message before async removal finishes.
+  handlers.forEach(handler => handler.callback()); status('SUBSCRIBED'); stop();
+  expect(client.removeChannel).toHaveBeenCalledTimes(1);
+  expect(queries.getQueryState(homeSnapshotKey)?.isInvalidated).toBe(false);
   queries.clear();
 });

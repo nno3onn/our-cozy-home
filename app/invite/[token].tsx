@@ -15,6 +15,8 @@ import { spacing } from '@/theme/tokens';
 import { InviteAcceptanceControls } from '@/features/house/screens/InviteAcceptanceControls';
 import { homeSnapshotKey } from '@/features/room/hooks/useHomeSnapshot';
 import { ResponsiveFormPage } from '@/components/layout/ResponsiveFormPage';
+import { usePrivateScope } from '@/auth/PrivateScopeContext';
+import { useNavigateAfterHouseEntry } from '@/auth/useNavigateAfterHouseEntry';
 
 const stateCopy = {
   cancelled: ['초대가 취소됐어요', '집 관리자에게 새 초대를 요청해 주세요.'],
@@ -30,10 +32,12 @@ export default function InvitePreviewRoute() {
   const repository = useRepository();
   const auth = useOptionalAuth();
   const queryClient = useQueryClient();
+  const privateScope = usePrivateScope();
+  const finishJoining = useNavigateAfterHouseEntry();
   const preview = useQuery({ queryKey: ['invite-preview', token], queryFn: () => repository.previewInvite(token), enabled: Boolean(token) });
   const acceptance = useMutation({
     mutationFn: (input: { token: string; requestId: string }) => repository.acceptInvite(input),
-    onSuccess: async () => { await queryClient.invalidateQueries({ queryKey: homeSnapshotKey }); },
+    onSuccess: async () => { if (!privateScope) await queryClient.invalidateQueries({ queryKey: homeSnapshotKey }); },
   });
 
   if (preview.isPending) return <ResponsiveFormPage testID="invite-preview-loading"><AppPageHeader backHref="/" title="초대 확인" /><View accessibilityLabel="초대 확인 중" style={styles.loading}><Skeleton height={36} width="62%" /><Skeleton height={24} /><Skeleton height={52} /></View></ResponsiveFormPage>;
@@ -43,7 +47,7 @@ export default function InvitePreviewRoute() {
     return <ResponsiveFormPage><AppPageHeader backHref="/" title="초대 확인" /><EmptyState title={title} description={description} /></ResponsiveFormPage>;
   }
   const continueToSignIn = () => { auth?.setPendingInvite(token); router.push('/auth/sign-in'); };
-  return <ResponsiveFormPage testID="invite-preview-page"><AppPageHeader backHref="/" title="친구 초대" /><View style={styles.intro}><AppText variant="display">{preview.data.houseName}</AppText><AppText tone="secondary">{preview.data.inviterName}님이 함께 살자고 초대했어요.</AppText></View><AppSection title={`현재 ${preview.data.currentMemberCount}/4명`} description="초대를 먼저 수락한 순서대로 입주해요."><InlineNotice message="입주 전에는 이 집의 추억 사진과 글이 공개되지 않아요." /></AppSection>{auth?.state.status === 'signed_out' ? <AppButton label="로그인하고 입주하기" onPress={continueToSignIn} /> : auth?.state.status === 'signed_in' ? <InviteAcceptanceControls onAccept={acceptance.mutateAsync} onJoined={() => router.replace('/')} token={token} /> : <InlineNotice message="데모 모드에서는 초대 미리보기만 확인할 수 있어요." tone="warning" />}</ResponsiveFormPage>;
+  return <ResponsiveFormPage testID="invite-preview-page"><AppPageHeader backHref="/" title="친구 초대" /><View style={styles.intro}><AppText variant="display">{preview.data.houseName}</AppText><AppText tone="secondary">{preview.data.inviterName}님이 함께 살자고 초대했어요.</AppText></View><AppSection title={`현재 ${preview.data.currentMemberCount}/4명`} description="초대를 먼저 수락한 순서대로 입주해요."><InlineNotice message="입주 전에는 이 집의 추억 사진과 글이 공개되지 않아요." /></AppSection>{auth?.state.status === 'signed_out' ? <AppButton label="로그인하고 입주하기" onPress={continueToSignIn} /> : auth?.state.status === 'signed_in' ? <InviteAcceptanceControls onAccept={acceptance.mutateAsync} onJoined={finishJoining} token={token} /> : <InlineNotice message="데모 모드에서는 초대 미리보기만 확인할 수 있어요." tone="warning" />}</ResponsiveFormPage>;
 }
 
 const styles = StyleSheet.create({ intro: { gap: spacing.sm }, loading: { gap: spacing.lg } });

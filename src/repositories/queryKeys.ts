@@ -13,6 +13,8 @@ export const queryKeys = {
 };
 
 export function clearScopedCaches(queryClient: QueryClient, userId: string): void {
+  void queryClient.cancelQueries({ queryKey: queryKeys.user(userId) }, { silent: true });
+  void queryClient.cancelQueries({ queryKey: queryKeys.home.activeSnapshot }, { silent: true });
   queryClient.removeQueries({ queryKey: queryKeys.user(userId) });
   queryClient.removeQueries({ queryKey: queryKeys.home.activeSnapshot });
 }
