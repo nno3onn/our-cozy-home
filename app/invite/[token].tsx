@@ -22,6 +22,8 @@ const stateCopy = {
   full: ['집이 꽉 찼어요', '빈자리가 생겨도 종료된 초대는 다시 열리지 않아요.'],
   invalid: ['초대를 찾지 못했어요', '링크가 올바른지 확인해 주세요.'],
   reissued: ['새 초대가 발급됐어요', '집 관리자에게 최신 링크를 요청해 주세요.'],
+  login_required: ['로그인이 필요해요', '초대 코드는 로그인한 뒤 확인할 수 있어요.'],
+  rate_limited: ['잠시 후 다시 확인해 주세요', '초대 코드 확인 횟수를 초과했어요. 1시간 뒤 다시 시도해 주세요.'],
 } as const;
 
 export default function InvitePreviewRoute() {
@@ -35,14 +37,14 @@ export default function InvitePreviewRoute() {
     mutationFn: (input: { token: string; requestId: string }) => repository.acceptInvite(input),
     onSuccess: async () => { await queryClient.invalidateQueries({ queryKey: homeSnapshotKey }); },
   });
+  const continueToSignIn = () => { auth?.setPendingInvite(token); router.push('/auth/sign-in'); };
 
   if (preview.isPending) return <ResponsiveFormPage testID="invite-preview-loading"><AppPageHeader backHref="/" title="초대 확인" /><View accessibilityLabel="초대 확인 중" style={styles.loading}><Skeleton height={36} width="62%" /><Skeleton height={24} /><Skeleton height={52} /></View></ResponsiveFormPage>;
   if (preview.isError || !preview.data) return <ResponsiveFormPage><AppPageHeader backHref="/" title="초대 확인" /><EmptyState title="초대를 확인하지 못했어요" description="연결을 확인하고 다시 시도해 주세요." actionLabel="다시 시도" onAction={() => void preview.refetch()} /></ResponsiveFormPage>;
   if (preview.data.state !== 'active') {
     const [title, description] = stateCopy[preview.data.state];
-    return <ResponsiveFormPage><AppPageHeader backHref="/" title="초대 확인" /><EmptyState title={title} description={description} /></ResponsiveFormPage>;
+    return <ResponsiveFormPage><AppPageHeader backHref="/" title="초대 확인" /><EmptyState title={title} description={description} actionLabel={preview.data.state === 'login_required' ? '로그인하고 확인하기' : undefined} onAction={preview.data.state === 'login_required' ? continueToSignIn : undefined} /></ResponsiveFormPage>;
   }
-  const continueToSignIn = () => { auth?.setPendingInvite(token); router.push('/auth/sign-in'); };
   return <ResponsiveFormPage testID="invite-preview-page"><AppPageHeader backHref="/" title="친구 초대" /><View style={styles.intro}><AppText variant="display">{preview.data.houseName}</AppText><AppText tone="secondary">{preview.data.inviterName}님이 함께 살자고 초대했어요.</AppText></View><AppSection title={`현재 ${preview.data.currentMemberCount}/4명`} description="초대를 먼저 수락한 순서대로 입주해요."><InlineNotice message="입주 전에는 이 집의 추억 사진과 글이 공개되지 않아요." /></AppSection>{auth?.state.status === 'signed_out' ? <AppButton label="로그인하고 입주하기" onPress={continueToSignIn} /> : auth?.state.status === 'signed_in' ? <InviteAcceptanceControls onAccept={acceptance.mutateAsync} onJoined={() => router.replace('/')} token={token} /> : <InlineNotice message="데모 모드에서는 초대 미리보기만 확인할 수 있어요." tone="warning" />}</ResponsiveFormPage>;
 }
 
