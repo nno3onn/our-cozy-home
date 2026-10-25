@@ -97,8 +97,10 @@ export class SupabaseRepository implements HomeRepository {
       }
       throw mapSupabaseError(error);
     }
-    const result = (data as unknown as { house_id: string; house_name: string; membership_id: string; result: InviteAcceptance['result'] }[] | null)?.[0];
+    const result = (data as unknown as { house_id: string | null; house_name: string | null; membership_id: string | null; result: InviteAcceptance['result'] | 'invite_invalid' | 'rate_limited' }[] | null)?.[0];
     if (!result) throw new DomainError('unknown', 'invite_acceptance_result_missing');
+    if (result.result === 'invite_invalid' || result.result === 'rate_limited') throw new DomainError('conflict', result.result);
+    if (!result.house_id || !result.house_name || !result.membership_id) throw new DomainError('unknown', 'invite_acceptance_result_missing');
     return {
       house: { id: result.house_id, name: result.house_name, capacity: 4 },
       membershipId: result.membership_id,

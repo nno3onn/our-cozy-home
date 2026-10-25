@@ -95,6 +95,19 @@ describe('SupabaseRepository', () => {
     });
   });
 
+  it('rejects a short-code response that the server denied without a house or membership', async () => {
+    const rpc = jest.fn().mockResolvedValue({
+      data: [{ house_id: null, house_name: null, membership_id: null, result: 'rate_limited' }],
+      error: null,
+    });
+    const repository = new SupabaseRepository({ rpc } as unknown as SupabaseClient<Database>);
+
+    await expect(repository.acceptInvite({ token: 'AB12CD34', requestId: 'limited-request' })).rejects.toMatchObject({
+      code: 'conflict', message: 'rate_limited',
+    });
+    expect(rpc).toHaveBeenCalledWith('accept_house_invite', { p_token: 'AB12CD34', p_request_key: 'limited-request' });
+  });
+
   it('maps a leave command result without trusting a client-side role', async () => {
     const rpc = jest.fn().mockResolvedValue({
       data: [{ house_id: 'house-2', house_archived: false, successor_profile_id: 'profile-3', result: 'left' }],

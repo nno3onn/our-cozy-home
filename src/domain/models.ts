@@ -22,7 +22,7 @@ export type InvitePreview = {
   houseName: string | null;
   inviterName: string | null;
   currentMemberCount: number | null;
-  state: 'active' | 'invalid' | 'cancelled' | 'expired' | 'full' | 'reissued';
+  state: 'active' | 'invalid' | 'cancelled' | 'expired' | 'full' | 'reissued' | 'login_required' | 'rate_limited';
 };
 
 export type CreatedInvite = { token: string; code: string; expiresAt: string };

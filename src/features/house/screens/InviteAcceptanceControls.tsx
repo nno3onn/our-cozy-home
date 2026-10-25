@@ -28,6 +28,7 @@ function acceptanceErrorMessage(error: unknown): string {
   if (message === 'invite_expired') return '초대가 만료됐어요. 새 초대를 요청해 주세요.';
   if (message === 'invite_cancelled') return '초대가 취소됐어요. 새 초대를 요청해 주세요.';
   if (message === 'invite_invalid') return '초대를 찾지 못했어요. 집 관리자에게 새 링크를 요청해 주세요.';
+  if (message === 'rate_limited') return '초대 코드 확인 횟수를 초과했어요. 1시간 뒤 다시 시도해 주세요.';
   return '입주를 확인하지 못했어요. 연결을 확인한 뒤 같은 요청을 다시 시도해 주세요.';
 }
 
